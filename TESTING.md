@@ -90,6 +90,29 @@ Scores are shown ×2 (0–42). Each `result-card-{subscale}` carries `data-score
 | HS-06 | Two branch buttons | On `/hasil` | `download-report` and `continue-to-tips` visible |
 | Health | Uptime check | `GET /api/health` | `200`, JSON `status: "ok"` |
 
+## The suite in the TestSprite portal
+
+The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added. **34 tests** remain.
+
+| Use case | TestSprite IDs | Covers |
+| --- | --- | --- |
+| Home & language | HOME-001 to HOME-003 | Landing start button, K9 language switch at question 10, help from the landing page |
+| Start & eligibility | STAR-001 to STAR-005 | LO-04 under 18, LO-05 consent, SK-05 resume card |
+| Question flow | QST-001 to QST-005 | All-0 and all-3 runs, SK-08 safety question before results, SK-04 back, SK-05 reload |
+| Safety & crisis | SAFE-001 to SAFE-008 | K2 safety answers 1–3, K3 URL/back/refresh gate, K4 both branches, K6 directory by country |
+| Results | RESU-001 to RESU-005 | K1 scores (all-0, all-1, all-3), K5 priority panel, K6 in English, K7 disclaimer |
+| Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
+| Tips | TIPS-001 | Tips branch (waits for the tips feature) |
+
+Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
+
+### First run (2026-10-17, production)
+
+32 of 34 passed. The two failures are real findings, not flaky tests:
+
+- **TIPS-001** — the tips page is still a placeholder. Expected until the tips feature lands.
+- **STAR-004** — after starting a screening (age and consent given) and leaving before answering question 1, the landing page offers no way to continue. Fixed in a follow-up PR.
+
 ## Not yet covered (features still to come)
 
 | Invariant | Waiting for |
