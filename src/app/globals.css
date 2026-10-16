@@ -1,0 +1,141 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-lora), ui-serif, Georgia, serif;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Solace brand palette */
+  --color-sky: var(--brand-sky);
+  --color-sky-soft: var(--brand-sky-soft);
+  --color-sage: var(--brand-sage);
+  --color-sage-soft: var(--brand-sage-soft);
+  --color-sun: var(--brand-sun);
+  --color-sun-soft: var(--brand-sun-soft);
+  --color-ink: var(--brand-ink);
+
+  /* Severity tints: calm, never bright red; always paired with text + icon */
+  --color-sev-normal: var(--sev-normal);
+  --color-sev-normal-edge: var(--sev-normal-edge);
+  --color-sev-mild: var(--sev-mild);
+  --color-sev-mild-edge: var(--sev-mild-edge);
+  --color-sev-moderate: var(--sev-moderate);
+  --color-sev-moderate-edge: var(--sev-moderate-edge);
+  --color-sev-severe: var(--sev-severe);
+  --color-sev-severe-edge: var(--sev-severe-edge);
+  --color-sev-extreme: var(--sev-extreme);
+  --color-sev-extreme-edge: var(--sev-extreme-edge);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(0.6);
+    }
+    40% {
+      transform: scale(1);
+    }
+  }
+}
+
+:root {
+  --brand-sky: #a8c5da;
+  --brand-sky-soft: #e4eef5;
+  --brand-sage: #b5c9b7;
+  --brand-sage-soft: #e6eee7;
+  --brand-sun: #f5d7a1;
+  --brand-sun-soft: #fcf1dd;
+  --brand-ink: #1f2a37;
+
+  --background: #fbfaf6;
+  --foreground: #1f2a37;
+  --card: #ffffff;
+  --card-foreground: #1f2a37;
+  --popover: #ffffff;
+  --popover-foreground: #1f2a37;
+  /* Deep calm blue: 7:1 against white text */
+  --primary: #2c5874;
+  --primary-foreground: #ffffff;
+  --secondary: #e4eef5;
+  --secondary-foreground: #1f2a37;
+  --muted: #f2f0ea;
+  --muted-foreground: #4a5361;
+  --accent: #e6eee7;
+  --accent-foreground: #1f2a37;
+  --destructive: #8a3b2e;
+  --border: #e2ddd1;
+  --input: #c9c3b6;
+  --ring: #2c5874;
+  --radius: 0.75rem;
+
+  --sev-normal: #e6eee7;
+  --sev-normal-edge: #8fab92;
+  --sev-mild: #e4eef5;
+  --sev-mild-edge: #86a9c2;
+  --sev-moderate: #fcf1dd;
+  --sev-moderate-edge: #d9b670;
+  --sev-severe: #f8e2cf;
+  --sev-severe-edge: #c98d5c;
+  --sev-extreme: #f1dde3;
+  --sev-extreme-edge: #a96f86;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading;
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
