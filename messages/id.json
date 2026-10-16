@@ -1,0 +1,226 @@
+{
+  "meta": {
+    "title": "Solace — skrining kesehatan mental untuk mahasiswa",
+    "description": "Skrining DASS-21 singkat dan anonim untuk mahasiswa, dengan hasil instan dan langkah berikutnya yang jelas. You are not alone."
+  },
+  "common": {
+    "appName": "Solace",
+    "tagline": "You are not alone.",
+    "loading": "Memuat…",
+    "back": "Kembali",
+    "backToHome": "Kembali ke beranda",
+    "backToResults": "Kembali ke hasil",
+    "opensInNewTab": "(membuka tab baru)"
+  },
+  "header": {
+    "homeLabel": "Solace, ke beranda",
+    "skipToContent": "Langsung ke konten",
+    "helpNow": "Butuh bantuan sekarang",
+    "quickExit": "Keluar cepat",
+    "quickExitShort": "Keluar",
+    "quickExitLabel": "Keluar cepat: tinggalkan Solace ke situs lain. Bisa juga dengan menekan Esc dua kali.",
+    "langSwitch": "EN",
+    "langSwitchLabel": "EN, ganti bahasa ke English"
+  },
+  "footer": {
+    "disclaimer": "Solace adalah alat skrining, bukan diagnosis.",
+    "disclaimerDetail": "Hasilnya tidak menggantikan penilaian tenaga profesional. Jika kamu dalam bahaya segera, hubungi layanan darurat setempat.",
+    "independence": "Tanpa iklan dan tanpa pelacak. Solace tidak berafiliasi dengan klinik, rumah sakit, atau praktik mana pun.",
+    "quickExitHint": "Tekan Esc dua kali untuk keluar cepat."
+  },
+  "landing": {
+    "eyebrow": "Untuk mahasiswa",
+    "title": "Bagaimana kabarmu minggu ini, sebenarnya?",
+    "subtitle": "Skrining singkat tentang suasana hati, kecemasan, dan stres. Hasilnya langsung muncul, lengkap dengan langkah berikutnya yang jelas.",
+    "start": "Mulai skrining",
+    "startHint": "Gratis, tanpa akun, sekitar 5 menit.",
+    "resumeTitle": "Skrining kamu belum selesai",
+    "resumeBody": "{answered} dari 21 pertanyaan sudah terjawab dan tersimpan di perangkat ini.",
+    "resume": "Lanjutkan skrining",
+    "restart": "Mulai dari awal",
+    "lastResultTitle": "Hasil terakhirmu masih tersimpan",
+    "lastResultBody": "Hasil skrining terakhirmu tersimpan di perangkat ini.",
+    "viewResults": "Lihat hasil",
+    "privacyTitle": "Privasimu dijaga",
+    "privacyNoAccountTitle": "Tanpa akun",
+    "privacyNoAccountBody": "Skrining dan hasilnya bisa kamu lihat tanpa membuat akun. Jawabanmu tetap di perangkat ini.",
+    "privacyNoEmailTitle": "Tanpa email",
+    "privacyNoEmailBody": "Kalau nanti membuat akun, cukup nama pengguna dan passphrase. Tidak perlu email, nama asli, atau NIM.",
+    "privacyEncryptedTitle": "Data terenkripsi",
+    "privacyEncryptedBody": "Data akun dienkripsi di browsermu sebelum disimpan, jadi server hanya menyimpan data yang tidak bisa dibaca.",
+    "howTitle": "Cara kerjanya",
+    "howQuestions": "21 pertanyaan DASS-21 dan 1 pertanyaan keamanan",
+    "howTime": "Sekitar 5 menit, tanpa batas waktu",
+    "howPeriod": "Mengacu pada 7 hari terakhir",
+    "howResult": "Hasil langsung muncul, lalu kamu bisa memilih: unduh laporan untuk psikolog, atau lanjut mendapatkan tips berbasis jurnal.",
+    "notDiagnosis": "Solace membantumu mengenali gejala, bukan memberi diagnosis."
+  },
+  "start": {
+    "title": "Sebelum mulai",
+    "intro": "Ada 21 pernyataan tentang perasaanmu selama 7 hari terakhir, lalu 1 pertanyaan keamanan. Tidak ada jawaban benar atau salah, dan kamu bisa kembali ke pertanyaan sebelumnya kapan saja.",
+    "autosave": "Jawabanmu tersimpan otomatis di perangkat ini, jadi kamu bisa berhenti dan melanjutkan nanti.",
+    "ageLegend": "Berapa usiamu?",
+    "ageAdult": "18 tahun atau lebih",
+    "ageMinor": "Di bawah 18 tahun",
+    "minorTitle": "Solace dirancang untuk usia 18 tahun ke atas",
+    "minorBody": "Karena itu skrining ini tidak dimulai. Kalau ada yang sedang membebanimu, cobalah bicara dengan orang dewasa yang kamu percaya, seperti orang tua, wali, atau guru BK.",
+    "minorHelp": "Kalau kamu merasa tidak aman, layanan di bawah ini bisa dihubungi.",
+    "consentLabel": "Aku mengerti bahwa Solace adalah alat skrining, bukan diagnosis, dan jawabanku disimpan di perangkat ini.",
+    "replaceWarning": "Memulai skrining baru akan menggantikan hasil sebelumnya yang tersimpan di perangkat ini.",
+    "begin": "Mulai pertanyaan pertama",
+    "resume": "Lanjutkan dari pertanyaan {question}",
+    "requirements": "Pilih usiamu dan centang persetujuan untuk mulai."
+  },
+  "screening": {
+    "progress": "{current} / {total}",
+    "progressLabel": "Pertanyaan {current} dari {total}",
+    "period": "Selama 1 minggu terakhir",
+    "instructions": "Pilih seberapa sesuai pernyataan ini dengan keadaanmu. Tidak ada jawaban benar atau salah.",
+    "optionsLabel": "Pilihan jawaban",
+    "keyboardHint": "Tekan 1–4 untuk memilih, lalu Enter untuk lanjut.",
+    "previous": "Sebelumnya",
+    "next": "Berikutnya",
+    "toSafety": "Lanjut",
+    "autosaved": "Tersimpan otomatis di perangkat ini.",
+    "placeholderNotice": "Teks pertanyaan versi Indonesia sedang menunggu izin penerjemah. Sementara ini yang tampil adalah penanda tempat."
+  },
+  "safety": {
+    "title": "Satu pertanyaan lagi",
+    "intro": "Pertanyaan ini terpisah dari 21 pertanyaan tadi dan tidak dihitung ke skormu. Kami menanyakannya kepada semua orang agar bisa menunjukkan bantuan yang tepat.",
+    "period": "Pertanyaan ini mengacu pada 2 minggu terakhir.",
+    "optionsLabel": "Pilihan jawaban",
+    "submit": "Lanjut",
+    "previous": "Kembali ke pertanyaan 21",
+    "withdrawTitle": "Ada yang ingin kamu ubah?",
+    "withdrawBody": "Apakah ada yang ingin kamu ubah karena tadi salah pilih, atau karena ragu bercerita? Apa pun alasannya, tidak apa-apa. Daftar layanan bantuan tetap tersedia di halaman hasil."
+  },
+  "crisis": {
+    "title": "Kamu tidak sendirian.",
+    "intro": "Terima kasih sudah jujur. Perasaan seberat ini bisa berubah, dan bantuan tersedia sekarang juga. Pilih langkah yang terasa paling mungkin untukmu saat ini.",
+    "privacy": "Solace tidak menghubungi siapa pun atas namamu, dan tidak ada data yang dikirim dari halaman ini.",
+    "emergencyTitle": "Dalam bahaya segera?",
+    "emergencyBody": "Hubungi nomor darurat sekarang.",
+    "talkTitle": "Bicara dengan seseorang sekarang",
+    "talkBody": "Layanan dukungan psikologis yang bisa kamu hubungi lewat telepon atau chat.",
+    "calmTitle": "Tenangkan diri dulu",
+    "calmBody": "Kalau semuanya terasa terlalu cepat, coba salah satu latihan ini.",
+    "breathingTitle": "Bernapas pelan",
+    "breathingIn": "Tarik napas",
+    "breathingOut": "Hembuskan",
+    "breathingStatic": "Tarik napas pelan selama 4 hitungan, lalu hembuskan pelan selama 6 hitungan. Ulangi beberapa kali.",
+    "groundingTitle": "Grounding 5-4-3-2-1",
+    "groundingIntro": "Perhatikan sekelilingmu, satu langkah demi satu langkah:",
+    "groundingSee": "5 hal yang bisa kamu lihat",
+    "groundingTouch": "4 hal yang bisa kamu sentuh",
+    "groundingHear": "3 hal yang bisa kamu dengar",
+    "groundingSmell": "2 hal yang bisa kamu cium baunya",
+    "groundingTaste": "1 hal yang bisa kamu rasakan di lidah",
+    "planTitle": "Rencana keselamatanmu",
+    "planBody": "Rencana keselamatan adalah catatan pribadi untuk melewati saat-saat sulit. Kamu bisa mulai memikirkannya sekarang:",
+    "planWarningSigns": "Tanda-tanda bahwa saat sulit mungkin datang",
+    "planCoping": "Cara menenangkan diri sendiri",
+    "planDistraction": "Orang dan tempat yang bisa mengalihkan pikiran",
+    "planPeople": "Orang yang bisa dimintai tolong",
+    "planProfessionals": "Layanan profesional yang bisa dihubungi",
+    "planSafeEnvironment": "Cara membuat lingkunganmu lebih aman",
+    "trustedTitle": "Hubungi orang yang kamu percaya",
+    "trustedBody": "Tidak perlu menjelaskan semuanya. Kalimat sederhana sudah cukup, misalnya:",
+    "trustedExample1": "Aku lagi nggak baik-baik saja. Bisa ngobrol sebentar?",
+    "trustedExample2": "Bisa temani aku sebentar? Aku nggak mau sendirian sekarang.",
+    "acknowledge": "Aku sudah membaca informasi di halaman ini.",
+    "continueToResults": "Lanjut ke hasil",
+    "continue": "Lanjutkan",
+    "continueHint": "Tombol lanjut aktif setelah kamu mencentang kotak di atas."
+  },
+  "results": {
+    "title": "Hasil skriningmu",
+    "thanks": "Terima kasih sudah jujur menjawab.",
+    "scoreLabel": "Skor {score} dari 42",
+    "categoryLabel": "Tingkat: {severity}",
+    "priorityTitle": "Kami sarankan bicara dengan profesional",
+    "priorityBody": "Hasilmu menunjukkan gejala tingkat sangat berat. Bicara dengan profesional bisa sangat membantu untuk kondisi seperti ini. Kamu bisa membawa laporan hasil ini ke psikolog, layanan psikologi kampus, atau Puskesmas.",
+    "supportTitle": "Bantuan tetap tersedia",
+    "supportBody": "Kalau kamu butuh seseorang untuk diajak bicara, layanan di bawah ini bisa dihubungi.",
+    "disclaimer": "Hasil ini berasal dari skrining mandiri (DASS-21), bukan diagnosis. Hanya tenaga profesional, seperti psikolog atau psikiater, yang bisa menilai kondisimu secara menyeluruh.",
+    "nextStepsTitle": "Langkah berikutnya",
+    "downloadReport": "Unduh laporan untuk psikolog",
+    "continueToTips": "Lanjut dapatkan tips",
+    "directoryTitle": "Layanan bantuan",
+    "deviceTitle": "Data di perangkat ini",
+    "deviceBody": "Hasil ini hanya tersimpan di browser perangkat ini. Hapus jika perangkat dipakai bersama.",
+    "clearDevice": "Hapus dari perangkat ini",
+    "clearDeviceConfirm": "Ya, hapus sekarang",
+    "clearDeviceCancel": "Batal",
+    "clearDeviceQuestion": "Hapus semua jawaban dan hasil dari perangkat ini?",
+    "instrumentNote": "Skoring memakai DASS-21 (Lovibond & Lovibond, 1995): jumlah 7 item tiap dimensi dikali 2, lalu dibandingkan dengan batas kategori resmi."
+  },
+  "explanation": {
+    "intro": "Hasilmu menunjukkan gejala {subscale} tingkat {severity}.",
+    "introNormal": "Hasilmu untuk dimensi {subscale} berada di rentang normal.",
+    "depression": "Dimensi ini melihat hal-hal seperti suasana hati yang murung, hilangnya minat atau semangat, dan perasaan bahwa hidup kurang berarti selama seminggu terakhir.",
+    "anxiety": "Dimensi ini melihat hal-hal seperti reaksi tubuh saat cemas (misalnya napas atau detak jantung), rasa panik, dan rasa takut tanpa alasan yang jelas selama seminggu terakhir.",
+    "stress": "Dimensi ini melihat hal-hal seperti sulit bersantai, mudah tegang atau gelisah, dan mudah tersinggung selama seminggu terakhir.",
+    "advice": {
+      "normal": "Tetap jaga hal-hal yang selama ini membantumu merasa baik.",
+      "mild": "Perhatikan perubahan perasaanmu beberapa minggu ke depan, dan beri dirimu ruang untuk beristirahat.",
+      "moderate": "Ada baiknya memberi perhatian lebih pada kondisi ini; bicara dengan orang yang kamu percaya atau dengan profesional bisa membantu.",
+      "severe": "Bicara dengan profesional bisa sangat membantu untuk kondisi seperti ini.",
+      "extremely_severe": "Kami sarankan bicara dengan profesional; kamu tidak perlu menghadapinya sendirian."
+    }
+  },
+  "subscale": {
+    "depression": "Depresi",
+    "anxiety": "Kecemasan",
+    "stress": "Stres"
+  },
+  "subscaleInline": {
+    "depression": "depresi",
+    "anxiety": "kecemasan",
+    "stress": "stres"
+  },
+  "severity": {
+    "normal": "Normal",
+    "mild": "Ringan",
+    "moderate": "Sedang",
+    "severe": "Berat",
+    "extremely_severe": "Sangat berat"
+  },
+  "severityInline": {
+    "normal": "normal",
+    "mild": "ringan",
+    "moderate": "sedang",
+    "severe": "berat",
+    "extremely_severe": "sangat berat"
+  },
+  "severityMeter": "Tingkat {level} dari 5",
+  "directory": {
+    "countryLabel": "Negara",
+    "countryHint": "Pilih negara tempatmu berada. Ini terpisah dari pilihan bahasa.",
+    "emergency": "Nomor darurat",
+    "support": "Dukungan psikologis",
+    "call": "Telepon {label}",
+    "open": "Buka {label}",
+    "source": "Sumber",
+    "verifiedAt": "Diverifikasi {date}",
+    "type": {
+      "public": "Layanan publik",
+      "government": "Pemerintah",
+      "nonprofit": "Nirlaba"
+    }
+  },
+  "countries": {
+    "ID": "Indonesia",
+    "US": "Amerika Serikat",
+    "GB": "Inggris"
+  },
+  "comingSoon": {
+    "reportTitle": "Laporan untuk psikolog",
+    "reportBody": "Laporan PDF sedang kami siapkan dan akan segera tersedia di halaman ini. Hasilmu tetap tersimpan di perangkat ini.",
+    "tipsTitle": "Tips berbasis jurnal",
+    "tipsBody": "Rencana tips dan akun tanpa email sedang kami siapkan dan akan segera tersedia di halaman ini."
+  },
+  "notFound": {
+    "title": "Halaman tidak ditemukan",
+    "body": "Halaman yang kamu cari tidak ada atau sudah dipindahkan."
+  }
+}

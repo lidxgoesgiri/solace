@@ -1,0 +1,226 @@
+{
+  "meta": {
+    "title": "Solace — mental health screening for university students",
+    "description": "A short, anonymous DASS-21 screening for university students, with instant results and clear next steps. You are not alone."
+  },
+  "common": {
+    "appName": "Solace",
+    "tagline": "You are not alone.",
+    "loading": "Loading…",
+    "back": "Back",
+    "backToHome": "Back to home",
+    "backToResults": "Back to results",
+    "opensInNewTab": "(opens in a new tab)"
+  },
+  "header": {
+    "homeLabel": "Solace, go to home",
+    "skipToContent": "Skip to content",
+    "helpNow": "I need help now",
+    "quickExit": "Quick exit",
+    "quickExitShort": "Exit",
+    "quickExitLabel": "Quick exit: leave Solace for another site. You can also press Esc twice.",
+    "langSwitch": "ID",
+    "langSwitchLabel": "ID, switch language to Bahasa Indonesia"
+  },
+  "footer": {
+    "disclaimer": "Solace is a screening tool, not a diagnosis.",
+    "disclaimerDetail": "Results do not replace an assessment by a professional. If you are in immediate danger, contact your local emergency services.",
+    "independence": "No ads and no trackers. Solace is not affiliated with any clinic, hospital, or practice.",
+    "quickExitHint": "Press Esc twice for a quick exit."
+  },
+  "landing": {
+    "eyebrow": "For university students",
+    "title": "How are you really doing this week?",
+    "subtitle": "A short screening about mood, anxiety, and stress. Your results appear right away, together with clear next steps.",
+    "start": "Start screening",
+    "startHint": "Free, no account, about 5 minutes.",
+    "resumeTitle": "Your screening isn't finished",
+    "resumeBody": "{answered} of 21 questions are answered and saved on this device.",
+    "resume": "Continue screening",
+    "restart": "Start over",
+    "lastResultTitle": "Your last result is still saved",
+    "lastResultBody": "Your last screening result is saved on this device.",
+    "viewResults": "View results",
+    "privacyTitle": "Your privacy is protected",
+    "privacyNoAccountTitle": "No account",
+    "privacyNoAccountBody": "You can take the screening and see your results without an account. Your answers stay on this device.",
+    "privacyNoEmailTitle": "No email",
+    "privacyNoEmailBody": "If you create an account later, all you need is a username and a passphrase. No email, real name, or student ID.",
+    "privacyEncryptedTitle": "Encrypted data",
+    "privacyEncryptedBody": "Account data is encrypted in your browser before it is stored, so the server only keeps data it cannot read.",
+    "howTitle": "How it works",
+    "howQuestions": "21 DASS-21 questions and 1 safety question",
+    "howTime": "About 5 minutes, no time limit",
+    "howPeriod": "Covers the past 7 days",
+    "howResult": "Your results appear right away. Then you choose: download a report for a psychologist, or continue to research-based tips.",
+    "notDiagnosis": "Solace helps you recognise symptoms. It does not give a diagnosis."
+  },
+  "start": {
+    "title": "Before you start",
+    "intro": "There are 21 statements about how you have felt over the past 7 days, then 1 safety question. There are no right or wrong answers, and you can go back to earlier questions at any time.",
+    "autosave": "Your answers are saved automatically on this device, so you can stop and continue later.",
+    "ageLegend": "How old are you?",
+    "ageAdult": "18 or older",
+    "ageMinor": "Under 18",
+    "minorTitle": "Solace is designed for people aged 18 and over",
+    "minorBody": "So this screening will not start. If something is weighing on you, try talking to an adult you trust, such as a parent, guardian, or school counsellor.",
+    "minorHelp": "If you feel unsafe, you can contact the services below.",
+    "consentLabel": "I understand that Solace is a screening tool, not a diagnosis, and that my answers are saved on this device.",
+    "replaceWarning": "Starting a new screening will replace the previous result saved on this device.",
+    "begin": "Go to the first question",
+    "resume": "Continue from question {question}",
+    "requirements": "Choose your age and tick the consent box to start."
+  },
+  "screening": {
+    "progress": "{current} / {total}",
+    "progressLabel": "Question {current} of {total}",
+    "period": "Over the past week",
+    "instructions": "Choose how much this statement applied to you. There are no right or wrong answers.",
+    "optionsLabel": "Answer options",
+    "keyboardHint": "Press 1–4 to choose, then Enter to continue.",
+    "previous": "Previous",
+    "next": "Next",
+    "toSafety": "Continue",
+    "autosaved": "Saved automatically on this device.",
+    "placeholderNotice": "The Indonesian question text is waiting for the translator's permission. Placeholder text is shown for now."
+  },
+  "safety": {
+    "title": "One more question",
+    "intro": "This question is separate from the 21 questions and is not part of your score. We ask everyone so we can show the right kind of support.",
+    "period": "This question covers the last 2 weeks.",
+    "optionsLabel": "Answer options",
+    "submit": "Continue",
+    "previous": "Back to question 21",
+    "withdrawTitle": "Anything you'd like to change?",
+    "withdrawBody": "Did you change your answer because you picked the wrong option earlier, or because you felt unsure about sharing? Either way, that's okay. The list of support services stays on your results page."
+  },
+  "crisis": {
+    "title": "You are not alone.",
+    "intro": "Thank you for being honest. Feelings this heavy can change, and help is available right now. Choose the step that feels most possible for you at the moment.",
+    "privacy": "Solace never contacts anyone on your behalf, and no data is sent from this page.",
+    "emergencyTitle": "In immediate danger?",
+    "emergencyBody": "Call an emergency number now.",
+    "talkTitle": "Talk to someone now",
+    "talkBody": "Psychological support services you can reach by phone or chat.",
+    "calmTitle": "Calm yourself first",
+    "calmBody": "If everything feels too fast, try one of these exercises.",
+    "breathingTitle": "Slow breathing",
+    "breathingIn": "Breathe in",
+    "breathingOut": "Breathe out",
+    "breathingStatic": "Breathe in slowly for a count of 4, then breathe out slowly for a count of 6. Repeat a few times.",
+    "groundingTitle": "5-4-3-2-1 grounding",
+    "groundingIntro": "Notice what is around you, one step at a time:",
+    "groundingSee": "5 things you can see",
+    "groundingTouch": "4 things you can touch",
+    "groundingHear": "3 things you can hear",
+    "groundingSmell": "2 things you can smell",
+    "groundingTaste": "1 thing you can taste",
+    "planTitle": "Your safety plan",
+    "planBody": "A safety plan is a personal note to help you get through hard moments. You can start thinking about it now:",
+    "planWarningSigns": "Signs that a hard moment might be coming",
+    "planCoping": "Ways to calm yourself",
+    "planDistraction": "People and places that can take your mind off things",
+    "planPeople": "People you can ask for help",
+    "planProfessionals": "Professional services you can contact",
+    "planSafeEnvironment": "Ways to make your surroundings safer",
+    "trustedTitle": "Reach out to someone you trust",
+    "trustedBody": "You don't have to explain everything. A simple sentence is enough, for example:",
+    "trustedExample1": "I'm not doing okay. Can we talk for a bit?",
+    "trustedExample2": "Could you stay with me for a while? I don't want to be alone right now.",
+    "acknowledge": "I have read the information on this page.",
+    "continueToResults": "Continue to results",
+    "continue": "Continue",
+    "continueHint": "The continue button becomes available after you tick the box above."
+  },
+  "results": {
+    "title": "Your screening results",
+    "thanks": "Thank you for answering honestly.",
+    "scoreLabel": "Score {score} of 42",
+    "categoryLabel": "Level: {severity}",
+    "priorityTitle": "We recommend talking to a professional",
+    "priorityBody": "Your results show extremely severe symptoms. Talking to a professional can really help with this. You can bring a report of these results to a psychologist, your campus counselling service, or a public health centre.",
+    "supportTitle": "Support is still here",
+    "supportBody": "If you need someone to talk to, you can contact the services below.",
+    "disclaimer": "These results come from a self-screening (DASS-21), not a diagnosis. Only a professional, such as a psychologist or psychiatrist, can fully assess how you are doing.",
+    "nextStepsTitle": "Next steps",
+    "downloadReport": "Download a report for a psychologist",
+    "continueToTips": "Continue to get tips",
+    "directoryTitle": "Support services",
+    "deviceTitle": "Data on this device",
+    "deviceBody": "These results are only saved in this device's browser. Delete them if you share this device.",
+    "clearDevice": "Delete from this device",
+    "clearDeviceConfirm": "Yes, delete now",
+    "clearDeviceCancel": "Cancel",
+    "clearDeviceQuestion": "Delete all answers and results from this device?",
+    "instrumentNote": "Scoring uses the DASS-21 (Lovibond & Lovibond, 1995): the 7 items of each dimension are summed and doubled, then compared with the official category cutoffs."
+  },
+  "explanation": {
+    "intro": "Your result shows {severity} symptoms of {subscale}.",
+    "introNormal": "Your result for {subscale} is in the normal range.",
+    "depression": "This dimension looks at things like low mood, losing interest or drive, and feeling that life has little meaning over the past week.",
+    "anxiety": "This dimension looks at things like your body's reactions to anxiety (such as breathing or heartbeat), feelings of panic, and feeling scared without a clear reason over the past week.",
+    "stress": "This dimension looks at things like finding it hard to relax, feeling tense or restless, and getting irritated easily over the past week.",
+    "advice": {
+      "normal": "Keep looking after the things that help you feel well.",
+      "mild": "Notice how your feelings change over the next few weeks, and give yourself room to rest.",
+      "moderate": "It may help to pay closer attention to this; talking to someone you trust or to a professional can help.",
+      "severe": "Talking to a professional can really help with this.",
+      "extremely_severe": "We recommend talking to a professional; you don't have to face this alone."
+    }
+  },
+  "subscale": {
+    "depression": "Depression",
+    "anxiety": "Anxiety",
+    "stress": "Stress"
+  },
+  "subscaleInline": {
+    "depression": "depression",
+    "anxiety": "anxiety",
+    "stress": "stress"
+  },
+  "severity": {
+    "normal": "Normal",
+    "mild": "Mild",
+    "moderate": "Moderate",
+    "severe": "Severe",
+    "extremely_severe": "Extremely severe"
+  },
+  "severityInline": {
+    "normal": "normal",
+    "mild": "mild",
+    "moderate": "moderate",
+    "severe": "severe",
+    "extremely_severe": "extremely severe"
+  },
+  "severityMeter": "Level {level} of 5",
+  "directory": {
+    "countryLabel": "Country",
+    "countryHint": "Choose the country you are in. This is separate from the language setting.",
+    "emergency": "Emergency numbers",
+    "support": "Psychological support",
+    "call": "Call {label}",
+    "open": "Open {label}",
+    "source": "Source",
+    "verifiedAt": "Verified {date}",
+    "type": {
+      "public": "Public service",
+      "government": "Government",
+      "nonprofit": "Nonprofit"
+    }
+  },
+  "countries": {
+    "ID": "Indonesia",
+    "US": "United States",
+    "GB": "United Kingdom"
+  },
+  "comingSoon": {
+    "reportTitle": "Report for a psychologist",
+    "reportBody": "We are preparing the PDF report, and it will be available on this page soon. Your results stay saved on this device.",
+    "tipsTitle": "Research-based tips",
+    "tipsBody": "We are preparing the tips plan and the email-free account, and they will be available on this page soon."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you are looking for does not exist or has moved."
+  }
+}
