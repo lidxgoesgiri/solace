@@ -47,7 +47,7 @@
     "privacyNoEmailTitle": "Tanpa email",
     "privacyNoEmailBody": "Kalau nanti membuat akun, cukup nama pengguna dan passphrase. Tidak perlu email, nama asli, atau NIM.",
     "privacyEncryptedTitle": "Data terenkripsi",
-    "privacyEncryptedBody": "Data akun dienkripsi di browsermu sebelum disimpan, jadi server hanya menyimpan data yang tidak bisa dibaca.",
+    "privacyEncryptedBody": "Akun Solace (segera hadir) akan mengenkripsi datamu di browser sebelum disimpan, jadi server hanya menyimpan data yang tidak bisa dibaca. Saat ini jawaban skrining tidak dikirim ke mana pun.",
     "howTitle": "Cara kerjanya",
     "howQuestions": "21 pertanyaan DASS-21 dan 1 pertanyaan keamanan",
     "howTime": "Sekitar 5 menit, tanpa batas waktu",

@@ -47,7 +47,7 @@
     "privacyNoEmailTitle": "No email",
     "privacyNoEmailBody": "If you create an account later, all you need is a username and a passphrase. No email, real name, or student ID.",
     "privacyEncryptedTitle": "Encrypted data",
-    "privacyEncryptedBody": "Account data is encrypted in your browser before it is stored, so the server only keeps data it cannot read.",
+    "privacyEncryptedBody": "Solace accounts (coming soon) will encrypt your data in the browser before it is stored, so the server only keeps data it cannot read. Today, screening answers are not sent anywhere.",
     "howTitle": "How it works",
     "howQuestions": "21 DASS-21 questions and 1 safety question",
     "howTime": "About 5 minutes, no time limit",
