@@ -35,7 +35,7 @@
     "start": "Start screening",
     "startHint": "Free, no account, about 5 minutes.",
     "resumeTitle": "Your screening isn't finished",
-    "resumeBody": "{answered} of 21 questions are answered and saved on this device.",
+    "resumeBody": "{answered, plural, =0 {You started a screening but haven't answered the first question yet.} one {# of 21 questions is answered and saved on this device.} other {# of 21 questions are answered and saved on this device.}}",
     "resume": "Continue screening",
     "restart": "Start over",
     "lastResultTitle": "Your last result is still saved",

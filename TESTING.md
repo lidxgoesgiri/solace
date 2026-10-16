@@ -111,7 +111,7 @@ Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{
 32 of 34 passed. The two failures are real findings, not flaky tests:
 
 - **TIPS-001** — the tips page is still a placeholder. Expected until the tips feature lands.
-- **STAR-004** — after starting a screening (age and consent given) and leaving before answering question 1, the landing page offers no way to continue. Fixed in a follow-up PR.
+- **STAR-004** — after starting a screening (age and consent given) and leaving before answering question 1, the landing page offered no way to continue. Fixed on the same branch: a screening now counts as started once age and consent are confirmed, and the resume card says no question has been answered yet.
 
 ## Not yet covered (features still to come)
 

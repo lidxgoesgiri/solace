@@ -179,6 +179,17 @@ describe("screening guard (SK-03, SK-04, SK-05)", () => {
     expect(resumePath(state)).toBe("/skrining/7");
   });
 
+  it("a started screening with no answers yet can still be resumed (STAR-004)", () => {
+    const started = run([{ type: "BEGIN_SCREENING" }]);
+    expect(hasDraft(started)).toBe(true);
+    expect(resumePath(started)).toBe("/skrining/1");
+    expect(hasDraft(createInitialFlowState())).toBe(false);
+  });
+
+  it("a finished screening is not a draft", () => {
+    expect(hasDraft(afterSafety(0))).toBe(false);
+  });
+
   it("does not accept a safety answer before all 21 items", () => {
     const state = run([{ type: "BEGIN_SCREENING" }, ...answerAll(1).slice(0, 20)]);
     expect(flowReducer(state, { type: "ANSWER_SAFETY", value: 2 })).toBe(state);

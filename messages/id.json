@@ -35,7 +35,7 @@
     "start": "Mulai skrining",
     "startHint": "Gratis, tanpa akun, sekitar 5 menit.",
     "resumeTitle": "Skrining kamu belum selesai",
-    "resumeBody": "{answered} dari 21 pertanyaan sudah terjawab dan tersimpan di perangkat ini.",
+    "resumeBody": "{answered, plural, =0 {Kamu sudah memulai skrining, tapi belum menjawab pertanyaan pertama.} other {# dari 21 pertanyaan sudah terjawab dan tersimpan di perangkat ini.}}",
     "resume": "Lanjutkan skrining",
     "restart": "Mulai dari awal",
     "lastResultTitle": "Hasil terakhirmu masih tersimpan",

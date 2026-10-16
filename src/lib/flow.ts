@@ -198,9 +198,12 @@ export function isScreeningFinished(state: FlowState): boolean {
   return isScreeningComplete(state) && state.safetyAnswer !== null;
 }
 
-/** A screening was started but not finished. */
+/**
+ * A screening was started but not finished. Starting means passing /mulai
+ * (age and consent), even before the first answer.
+ */
 export function hasDraft(state: FlowState): boolean {
-  return answeredCount(state) > 0 && !isScreeningFinished(state);
+  return (hasConsent(state) || answeredCount(state) > 0) && !isScreeningFinished(state);
 }
 
 /**
