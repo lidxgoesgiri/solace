@@ -1,0 +1,20 @@
+{
+  "instrument": "PHQ-9",
+  "item": 9,
+  "language": "id",
+  "status": "TODO(verify): isi dengan teks PHQ-9 versi Indonesia yang tervalidasi dan tinjau bersama psikolog (PRD 9.1)",
+  "attribution": "TODO(verify): atribusi PHQ-9 versi Indonesia",
+  "textSource": {
+    "url": null,
+    "checkedAt": null,
+    "note": "TODO(verify): sumber teks PHQ-9 versi Indonesia tervalidasi (lihat Marvianto, 2025, JP3I, doi:10.15408/jp3i.v14i2.46525)."
+  },
+  "stem": "TODO(verify): kalimat pengantar PHQ-9 versi Indonesia (periode 2 minggu terakhir)",
+  "text": "TODO(verify): teks item 9 PHQ-9 versi Indonesia",
+  "options": [
+    { "value": 0, "label": "TODO(verify): label jawaban 0 PHQ-9 versi Indonesia" },
+    { "value": 1, "label": "TODO(verify): label jawaban 1 PHQ-9 versi Indonesia" },
+    { "value": 2, "label": "TODO(verify): label jawaban 2 PHQ-9 versi Indonesia" },
+    { "value": 3, "label": "TODO(verify): label jawaban 3 PHQ-9 versi Indonesia" }
+  ]
+}

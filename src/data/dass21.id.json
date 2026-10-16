@@ -1,0 +1,120 @@
+{
+  "instrument": "DASS-21",
+  "language": "id",
+  "status": "TODO(verify): menunggu izin tertulis penerjemah (PRD 10.0, 21.1)",
+  "citation": {
+    "text": "Ifdil, I., dkk. (2022). The DASS-21: an Indonesian validation measure. COUNS-EDU, 5(4).",
+    "doi": "10.23916/0020200536840",
+    "url": "https://doi.org/10.23916/0020200536840"
+  },
+  "textSource": {
+    "url": null,
+    "checkedAt": null,
+    "note": "TODO(verify): salin teks item apa adanya dari publikasi setelah izin penerjemah didapat; butir yang disorot studi Jurnal Psikologi Ulayat ditinjau psikolog."
+  },
+  "instructions": "TODO(verify): instruksi DASS-21 versi Indonesia (Ifdil dkk., 2022)",
+  "options": [
+    {
+      "value": 0,
+      "label": "TODO(verify): label jawaban 0 versi Indonesia"
+    },
+    {
+      "value": 1,
+      "label": "TODO(verify): label jawaban 1 versi Indonesia"
+    },
+    {
+      "value": 2,
+      "label": "TODO(verify): label jawaban 2 versi Indonesia"
+    },
+    {
+      "value": 3,
+      "label": "TODO(verify): label jawaban 3 versi Indonesia"
+    }
+  ],
+  "items": [
+    {
+      "number": 1,
+      "text": "TODO(verify): teks item 1 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 2,
+      "text": "TODO(verify): teks item 2 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 3,
+      "text": "TODO(verify): teks item 3 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 4,
+      "text": "TODO(verify): teks item 4 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 5,
+      "text": "TODO(verify): teks item 5 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 6,
+      "text": "TODO(verify): teks item 6 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 7,
+      "text": "TODO(verify): teks item 7 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 8,
+      "text": "TODO(verify): teks item 8 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 9,
+      "text": "TODO(verify): teks item 9 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 10,
+      "text": "TODO(verify): teks item 10 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 11,
+      "text": "TODO(verify): teks item 11 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 12,
+      "text": "TODO(verify): teks item 12 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 13,
+      "text": "TODO(verify): teks item 13 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 14,
+      "text": "TODO(verify): teks item 14 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 15,
+      "text": "TODO(verify): teks item 15 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 16,
+      "text": "TODO(verify): teks item 16 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 17,
+      "text": "TODO(verify): teks item 17 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 18,
+      "text": "TODO(verify): teks item 18 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 19,
+      "text": "TODO(verify): teks item 19 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 20,
+      "text": "TODO(verify): teks item 20 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    },
+    {
+      "number": 21,
+      "text": "TODO(verify): teks item 21 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+    }
+  ]
+}

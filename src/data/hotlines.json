@@ -1,0 +1,79 @@
+{
+  "todo": "TODO(verify): every entry must be re-verified against its official source before release and every 6 months (PRD 9.4, 21.1). verifiedAt: null means not yet re-verified.",
+  "defaultCountry": "ID",
+  "countries": ["ID", "US", "GB"],
+  "services": [
+    {
+      "id": "id-emergency",
+      "country": "ID",
+      "category": "emergency",
+      "name": "112 / 119",
+      "type": "government",
+      "channels": [
+        { "kind": "phone", "number": "112", "label": "112" },
+        { "kind": "phone", "number": "119", "label": "119" }
+      ],
+      "sourceUrl": "https://health.detik.com/berita-detikhealth/d-8092544/kemenkes-buka-layanan-konseling-gratis-bagi-warga-62-yang-anxiety-gegara-demo",
+      "verifiedAt": null
+    },
+    {
+      "id": "id-healing119",
+      "country": "ID",
+      "category": "support",
+      "name": "Healing119",
+      "type": "government",
+      "channels": [
+        { "kind": "web", "url": "https://healing119.id", "label": "healing119.id" },
+        { "kind": "phone", "number": "119", "label": "119 ext 8" }
+      ],
+      "sourceUrl": "https://mediaasuransinews.co.id/news-in-brief/175423/",
+      "verifiedAt": null
+    },
+    {
+      "id": "us-911",
+      "country": "US",
+      "category": "emergency",
+      "name": "911",
+      "type": "government",
+      "channels": [{ "kind": "phone", "number": "911", "label": "911" }],
+      "sourceUrl": "https://988lifeline.org/",
+      "verifiedAt": null
+    },
+    {
+      "id": "us-988",
+      "country": "US",
+      "category": "support",
+      "name": "988 Suicide & Crisis Lifeline",
+      "type": "public",
+      "channels": [
+        { "kind": "phone", "number": "988", "label": "988" },
+        { "kind": "web", "url": "https://988lifeline.org/", "label": "988lifeline.org" }
+      ],
+      "sourceUrl": "https://988lifeline.org/",
+      "verifiedAt": null
+    },
+    {
+      "id": "gb-999",
+      "country": "GB",
+      "category": "emergency",
+      "name": "999",
+      "type": "government",
+      "channels": [{ "kind": "phone", "number": "999", "label": "999" }],
+      "sourceUrl": "https://www.samaritans.org/",
+      "verifiedAt": null
+    },
+    {
+      "id": "gb-samaritans",
+      "country": "GB",
+      "category": "support",
+      "name": "Samaritans",
+      "type": "nonprofit",
+      "channels": [
+        { "kind": "phone", "number": "116123", "label": "116 123" },
+        { "kind": "web", "url": "https://www.samaritans.org/", "label": "samaritans.org" }
+      ],
+      "sourceUrl": "https://www.samaritans.org/",
+      "verifiedAt": null
+    }
+  ]
+}
