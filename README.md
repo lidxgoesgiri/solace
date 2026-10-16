@@ -8,10 +8,11 @@
 
 Solace is a mental health screening web app for university students. It runs the 21-item **DASS-21** plus one separate **safety question**, shows results instantly, and then offers two paths: download a report to bring to a psychologist, or sign in (no email) for research-based tips. Available in **Bahasa Indonesia** (default) and **English**.
 
-Built for **TestSprite Hackathon Season 4**. Every pull request is tested automatically by TestSprite against its Vercel preview.
+Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Vercel preview, and the TestSprite GitHub App tests that preview. The TestSprite suite and its PR trigger are being set up now; this README is updated as each part goes live.
 
-- **Live URL:** _TODO: add the production URL after the first Vercel deploy_
-- **TestSprite suite:** _TODO: link to the suite and its coverage_
+- **Live URL:** https://solace-sc.vercel.app
+- **Health check:** https://solace-sc.vercel.app/api/health
+- **Test plan and suite coverage:** [TESTING.md](TESTING.md)
 
 ## Principles
 
@@ -32,11 +33,12 @@ Built for **TestSprite Hackathon Season 4**. Every pull request is tested automa
 | Crisis gate in the router (`/hasil`, `/laporan`, `/tips`, `/riwayat`) | ✅ |
 | Results: 3 cards (text + icon + colour), explanations, disclaimer, priority panel, help directory | ✅ |
 | "I need help now", quick exit (button or Esc twice), ID ↔ EN switch without reload | ✅ |
+| Health check (`/api/health`) | ✅ |
 | PDF report, accounts and encryption, tips, safety plan, history, AI | ⏳ Coming in later PRs |
 
 ## Safety Contract
 
-These invariants must never break. Each one is guarded by an automated test, and the TestSprite PR check blocks the merge when one fails.
+These invariants must never break. Each one gets an automated test (Vitest, TestSprite, or both). Once Blocking PRs is switched on in TestSprite, a failing check holds the merge. The scenario for each invariant is in [TESTING.md](TESTING.md).
 
 | # | Invariant | Layer | Test scenario | Status |
 | --- | --- | --- | --- | --- |
