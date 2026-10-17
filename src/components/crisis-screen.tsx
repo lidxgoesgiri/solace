@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Eye, Hand, Ear, Flower2, Coffee, ShieldCheck } from "lucide-react";
+import { ArrowRight, Eye, Hand, Ear, Flower2, Coffee, ShieldCheck } from "@/components/icons";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { BreathingPacer } from "@/components/breathing-pacer";
@@ -168,7 +168,7 @@ export function CrisisScreen() {
             data-testid="crisis-ack"
             checked={acknowledged}
             onCheckedChange={(checked) => setAcknowledged(checked === true)}
-            className="mt-0.5 size-5"
+            className="mt-0.5"
           />
           <label htmlFor="crisis-ack" className="text-base leading-snug">
             {t("acknowledge")}

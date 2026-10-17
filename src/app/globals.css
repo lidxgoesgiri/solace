@@ -70,6 +70,45 @@
   --duration-quick: 180ms;
   --duration-base: 320ms;
 
+  /* CSS motion for the screening pages, which stay free of framer-motion
+     to keep their JavaScript small (PRD 14). Same timing tokens. */
+  --animate-page-in: page-in var(--duration-base) var(--ease-calm) both;
+  --animate-rise-in: page-in var(--duration-base) var(--ease-calm) both;
+  --animate-check-in: check-in var(--duration-quick) var(--ease-calm) both;
+  --animate-grow: grow 500ms var(--ease-calm) both;
+
+  @keyframes page-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes check-in {
+    from {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Set --grow-from and --grow-to on the element (0–1). */
+  @keyframes grow {
+    from {
+      transform: scaleX(var(--grow-from, 0));
+    }
+    to {
+      transform: scaleX(var(--grow-to, 1));
+    }
+  }
+
   @keyframes settle {
     0%,
     100% {

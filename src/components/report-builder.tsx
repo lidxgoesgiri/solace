@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowLeft, Download, Info, Lock } from "lucide-react";
+import { ArrowLeft, Download, Info, Lock } from "@/components/icons";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { useSelectedCountry } from "@/components/help-directory";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,8 +15,8 @@ import {
   generateReportCode,
   type ReportModel,
 } from "@/lib/report/model";
+import { preloadReportRenderer, renderReport, saveFile } from "@/lib/report/client";
 import { buildReportLabels } from "@/lib/report/labels";
-import { renderReportPdf } from "@/lib/report/pdf";
 import { useFlow } from "@/store/flow-store";
 
 type Status =
@@ -24,20 +24,6 @@ type Status =
   | { kind: "working" }
   | { kind: "done"; fileName: string; code: string }
   | { kind: "error" };
-
-/** Saves bytes as a file without any network request (PDF-01). */
-function saveFile(bytes: Uint8Array, fileName: string) {
-  // Copy into a plain ArrayBuffer-backed view, as Blob expects.
-  const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 60_000);
-}
 
 /**
  * Report for a psychologist (PRD 12, PDF-01, PDF-02, PDF-04). The preview
@@ -60,6 +46,11 @@ export function ReportBuilder() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
   const view = resultsView(flow);
+
+  // Fetch the PDF engine while the user reads the page (PDF-01).
+  useEffect(() => {
+    void preloadReportRenderer();
+  }, []);
 
   const preview: ReportModel | null = useMemo(
     () =>
@@ -100,7 +91,7 @@ export function ReportBuilder() {
         includeSafety,
         code,
       });
-      const { bytes } = await renderReportPdf(model, labels());
+      const { bytes } = await renderReport(model, labels());
       saveFile(bytes, model.fileName);
       setStatus({ kind: "done", fileName: model.fileName, code });
     } catch {
@@ -149,7 +140,7 @@ export function ReportBuilder() {
             checked={includeSafety}
             onCheckedChange={(checked) => setIncludeSafety(checked === true)}
             aria-describedby="report-include-safety-hint"
-            className="mt-0.5 size-5"
+            className="mt-0.5"
           />
           <div className="space-y-1">
             <label htmlFor="report-include-safety" className="text-base font-medium leading-snug">

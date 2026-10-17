@@ -6,7 +6,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { FlowGuard } from "@/components/flow-guard";
 import { HtmlLang } from "@/components/html-lang";
-import { MotionProvider } from "@/components/motion/motion-provider";
 import { PageTransition } from "@/components/motion/page-transition";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -54,20 +53,18 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={locale} className={`${inter.variable} ${lora.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <NextIntlClientProvider>
-          <MotionProvider>
-            <HtmlLang />
-            <SiteHeader />
-            <main
-              id="content"
-              tabIndex={-1}
-              className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 outline-none sm:px-8 sm:py-14"
-            >
-              <FlowGuard>
-                <PageTransition>{children}</PageTransition>
-              </FlowGuard>
-            </main>
-            <SiteFooter />
-          </MotionProvider>
+          <HtmlLang />
+          <SiteHeader />
+          <main
+            id="content"
+            tabIndex={-1}
+            className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 outline-none sm:px-8 sm:py-14"
+          >
+            <FlowGuard>
+              <PageTransition>{children}</PageTransition>
+            </FlowGuard>
+          </main>
+          <SiteFooter />
         </NextIntlClientProvider>
       </body>
     </html>

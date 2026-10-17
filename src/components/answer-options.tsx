@@ -1,10 +1,7 @@
 "use client";
 
-import { m } from "framer-motion";
-import { Check } from "lucide-react";
-import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
-import { DURATION, EASE_CALM } from "@/components/motion/tokens";
-import { cn } from "@/lib/utils";
+import { Check } from "@/components/icons";
+import { RadioGroup, RadioItem } from "@/components/ui/radio-cards";
 import type { AnswerOption } from "@/lib/content";
 import type { AnswerValue } from "@/lib/scoring";
 
@@ -18,6 +15,14 @@ interface AnswerOptionsProps {
   "aria-describedby"?: string;
 }
 
+const itemClass = [
+  "group flex min-h-15 w-full cursor-pointer items-center gap-4 rounded-2xl border bg-card px-4 py-3.5 text-left text-base sm:px-5",
+  "transition-[border-color,background-color,box-shadow,transform] duration-(--duration-quick) ease-(--ease-calm)",
+  "hover:border-input hover:shadow-(--shadow-soft) active:scale-[0.995]",
+  "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
+  "data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:shadow-(--shadow-soft)",
+].join(" ");
+
 /**
  * Four large radio cards. Click, touch, arrow keys, or keys 1–4 select an
  * answer; the selected card shows a check icon, not only a colour change.
@@ -30,24 +35,19 @@ export function AnswerOptions({
   ...aria
 }: AnswerOptionsProps) {
   return (
-    <RadioGroupPrimitive.Root
+    <RadioGroup
       value={value === null ? "" : String(value)}
+      values={options.map((option) => String(option.value))}
       onValueChange={(next) => onChange(Number(next) as AnswerValue)}
       className="grid gap-2.5"
       {...aria}
     >
       {options.map((option, index) => (
-        <RadioGroupPrimitive.Item
+        <RadioItem
           key={option.value}
           value={String(option.value)}
           data-testid={`${testIdPrefix}-${option.value}`}
-          className={cn(
-            "group flex min-h-15 w-full cursor-pointer items-center gap-4 rounded-2xl border bg-card px-4 py-3.5 text-left text-base sm:px-5",
-            "transition-[border-color,background-color,box-shadow,transform] duration-(--duration-quick) ease-(--ease-calm)",
-            "hover:border-input hover:shadow-(--shadow-soft) active:scale-[0.995]",
-            "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
-            "data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:shadow-(--shadow-soft)",
-          )}
+          className={itemClass}
         >
           <kbd
             aria-hidden="true"
@@ -60,19 +60,12 @@ export function AnswerOptions({
             aria-hidden="true"
             className="flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-input transition-colors duration-(--duration-quick) group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary"
           >
-            <RadioGroupPrimitive.Indicator asChild>
-              <m.span
-                initial={{ scale: 0.4, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: DURATION.quick, ease: EASE_CALM }}
-                className="flex"
-              >
-                <Check className="size-4 text-primary-foreground" strokeWidth={3} />
-              </m.span>
-            </RadioGroupPrimitive.Indicator>
+            {value === option.value ? (
+              <Check className="size-4 animate-check-in text-primary-foreground" strokeWidth={3} />
+            ) : null}
           </span>
-        </RadioGroupPrimitive.Item>
+        </RadioItem>
       ))}
-    </RadioGroupPrimitive.Root>
+    </RadioGroup>
   );
 }

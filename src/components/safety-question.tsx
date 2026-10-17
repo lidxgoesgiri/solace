@@ -1,11 +1,9 @@
 "use client";
 
-import { m } from "framer-motion";
-import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, ShieldCheck } from "@/components/icons";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { AnswerOptions } from "@/components/answer-options";
-import { fadeUp } from "@/components/motion/tokens";
 import { Button } from "@/components/ui/button";
 import { useAnswerKeys } from "@/hooks/use-answer-keys";
 import { useRouter } from "@/i18n/navigation";
@@ -107,17 +105,14 @@ export function SafetyQuestion({
       />
 
       {showWithdrawNote ? (
-        <m.div
+        <div
           role="status"
           data-testid="safety-withdraw-note"
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          className="space-y-1.5 rounded-2xl border border-sky bg-sky-soft p-5"
+          className="animate-rise-in space-y-1.5 rounded-2xl border border-sky bg-sky-soft p-5"
         >
           <p className="font-semibold">{t("withdrawTitle")}</p>
           <p className="text-sm">{t("withdrawBody")}</p>
-        </m.div>
+        </div>
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-6">

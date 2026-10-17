@@ -1,6 +1,5 @@
 "use client";
 
-import { m } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
@@ -30,7 +29,8 @@ function usePrefersReducedMotion(): boolean {
 export function BreathingPacer() {
   const t = useTranslations("crisis");
   const reducedMotion = usePrefersReducedMotion();
-  const [phase, setPhase] = useState<"in" | "out">("in");
+  // Starts small so the first breath in is visible as a CSS transition.
+  const [phase, setPhase] = useState<"in" | "out">("out");
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -39,7 +39,7 @@ export function BreathingPacer() {
       setPhase(next);
       timer = setTimeout(() => run(next === "in" ? "out" : "in"), next === "in" ? INHALE_MS : EXHALE_MS);
     };
-    run("in");
+    timer = setTimeout(() => run("in"), 50);
     return () => clearTimeout(timer);
   }, [reducedMotion]);
 
@@ -48,13 +48,11 @@ export function BreathingPacer() {
       {reducedMotion ? null : (
         <div aria-hidden="true" className="relative flex size-40 items-center justify-center">
           <div className="absolute inset-0 rounded-full border border-sage" />
-          <m.div
-            className="absolute inset-2 rounded-full bg-sky/60"
-            initial={{ scale: 0.6 }}
-            animate={{ scale: phase === "in" ? 1 : 0.6 }}
-            transition={{
-              duration: (phase === "in" ? INHALE_MS : EXHALE_MS) / 1000,
-              ease: "easeInOut",
+          <div
+            className="absolute inset-2 rounded-full bg-sky/60 transition-transform ease-in-out"
+            style={{
+              transform: `scale(${phase === "in" ? 1 : 0.6})`,
+              transitionDuration: `${phase === "in" ? INHALE_MS : EXHALE_MS}ms`,
             }}
           />
           <span className="relative font-heading text-lg font-medium text-ink">

@@ -1,25 +1,19 @@
 "use client";
 
-import { m } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons";
 import { useTranslations } from "next-intl";
-import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import { useState } from "react";
 import { HelpDirectory } from "@/components/help-directory";
-import { fadeUp } from "@/components/motion/tokens";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioItem } from "@/components/ui/radio-cards";
 import { useRouter } from "@/i18n/navigation";
-import {
-  firstUnansweredItem,
-  hasDraft,
-  isScreeningFinished,
-  resumePath,
-} from "@/lib/flow";
+import { firstUnansweredItem, hasDraft, isScreeningFinished, resumePath } from "@/lib/flow";
 import { cn } from "@/lib/utils";
 import { useFlow, useFlowDispatch, useFlowHydrated, useFlowStore } from "@/store/flow-store";
 
-type AgeChoice = "adult" | "minor";
+const AGE_CHOICES = ["adult", "minor"] as const;
+type AgeChoice = (typeof AGE_CHOICES)[number];
 
 const ageCardClass = cn(
   "group flex min-h-14 w-full cursor-pointer items-center gap-3.5 rounded-2xl border bg-card px-5 py-3.5 text-left text-base",
@@ -58,36 +52,37 @@ export function StartForm() {
         <legend id="age-legend" className="mb-4 font-heading text-2xl">
           {t("ageLegend")}
         </legend>
-        <RadioGroupPrimitive.Root
+        <RadioGroup
           aria-labelledby="age-legend"
           value={age ?? ""}
+          values={AGE_CHOICES}
           onValueChange={(value) => setAge(value as AgeChoice)}
           className="grid gap-3 sm:grid-cols-2"
         >
-          <RadioGroupPrimitive.Item value="adult" data-testid="age-adult" className={ageCardClass}>
-            <span className={radioDotClass}>
-              <RadioGroupPrimitive.Indicator className="size-2.5 rounded-full bg-primary" />
-            </span>
-            {t("ageAdult")}
-          </RadioGroupPrimitive.Item>
-          <RadioGroupPrimitive.Item value="minor" data-testid="age-minor" className={ageCardClass}>
-            <span className={radioDotClass}>
-              <RadioGroupPrimitive.Indicator className="size-2.5 rounded-full bg-primary" />
-            </span>
-            {t("ageMinor")}
-          </RadioGroupPrimitive.Item>
-        </RadioGroupPrimitive.Root>
+          {AGE_CHOICES.map((choice) => (
+            <RadioItem
+              key={choice}
+              value={choice}
+              data-testid={`age-${choice}`}
+              className={ageCardClass}
+            >
+              <span className={radioDotClass}>
+                {age === choice ? (
+                  <span className="size-2.5 animate-check-in rounded-full bg-primary" />
+                ) : null}
+              </span>
+              {choice === "adult" ? t("ageAdult") : t("ageMinor")}
+            </RadioItem>
+          ))}
+        </RadioGroup>
       </fieldset>
 
       {age === "minor" ? (
-        <m.section
+        <section
           data-testid="under-18-panel"
           aria-labelledby="minor-title"
           aria-live="polite"
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          className="space-y-4 rounded-2xl border border-sun-edge/60 bg-sun-soft p-6 sm:p-8"
+          className="animate-rise-in space-y-4 rounded-2xl border border-sun-edge/60 bg-sun-soft p-6 sm:p-8"
         >
           <h2 id="minor-title" className="text-2xl">
             {t("minorTitle")}
@@ -95,18 +90,18 @@ export function StartForm() {
           <p>{t("minorBody")}</p>
           <p>{t("minorHelp")}</p>
           <HelpDirectory />
-        </m.section>
+        </section>
       ) : null}
 
       {age === "adult" ? (
-        <m.div variants={fadeUp} initial="hidden" animate="show" className="space-y-6">
+        <div className="animate-rise-in space-y-6">
           <div className="surface flex items-start gap-3.5 p-5">
             <Checkbox
               id="consent"
               data-testid="consent-checkbox"
               checked={consent}
               onCheckedChange={(checked) => setConsent(checked === true)}
-              className="mt-0.5 size-5"
+              className="mt-0.5"
             />
             <label htmlFor="consent" className="text-base leading-snug">
               {t("consentLabel")}
@@ -141,7 +136,7 @@ export function StartForm() {
               </p>
             )}
           </div>
-        </m.div>
+        </div>
       ) : null}
     </div>
   );
