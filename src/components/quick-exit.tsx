@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut } from "@/components/icons";
+import { LogOut } from "@/components/icons/log-out";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";

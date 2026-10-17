@@ -1,6 +1,6 @@
 "use client";
 
-import { LifeBuoy } from "@/components/icons";
+import { LifeBuoy } from "@/components/icons/life-buoy";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";

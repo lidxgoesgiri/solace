@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 import { FormMessage, PassphraseField, TextField, fieldValue } from "@/components/account/fields";
 import { errorCode, nextPathFromLocation } from "@/components/account/use-account";
-import { LogIn } from "@/components/icons";
+import { LogIn } from "@/components/icons/log-in";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
 import { signIn } from "@/lib/account/client";

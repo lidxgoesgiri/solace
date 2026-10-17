@@ -3,7 +3,8 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { useOpenAccount } from "@/components/account/use-account";
-import { LogIn, Lock } from "@/components/icons";
+import { LogIn } from "@/components/icons/log-in";
+import { Lock } from "@/components/icons/lock";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { PATHS } from "@/lib/flow";

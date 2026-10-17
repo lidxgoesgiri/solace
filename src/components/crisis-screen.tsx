@@ -1,6 +1,12 @@
 "use client";
 
-import { ArrowRight, Eye, Hand, Ear, Flower2, Coffee, ShieldCheck } from "@/components/icons";
+import { ArrowRight } from "@/components/icons/arrow-right";
+import { Eye } from "@/components/icons/eye";
+import { Hand } from "@/components/icons/hand";
+import { Ear } from "@/components/icons/ear";
+import { Flower2 } from "@/components/icons/flower-2";
+import { Coffee } from "@/components/icons/coffee";
+import { ShieldCheck } from "@/components/icons/shield-check";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { BreathingPacer } from "@/components/breathing-pacer";

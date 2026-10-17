@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Lock } from "@/components/icons";
+import { Lock } from "@/components/icons/lock";
 
 /** Shown instead of account pages when no database is configured. */
 export async function AccountsUnavailable() {

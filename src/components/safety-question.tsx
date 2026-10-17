@@ -1,6 +1,8 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, ShieldCheck } from "@/components/icons";
+import { ArrowLeft } from "@/components/icons/arrow-left";
+import { ArrowRight } from "@/components/icons/arrow-right";
+import { ShieldCheck } from "@/components/icons/shield-check";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { AnswerOptions } from "@/components/answer-options";

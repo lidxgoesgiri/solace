@@ -1,6 +1,9 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Check, Pause } from "@/components/icons";
+import { ArrowLeft } from "@/components/icons/arrow-left";
+import { ArrowRight } from "@/components/icons/arrow-right";
+import { Check } from "@/components/icons/check";
+import { Pause } from "@/components/icons/pause";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnswerOptions } from "@/components/answer-options";

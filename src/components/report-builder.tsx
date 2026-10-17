@@ -1,6 +1,9 @@
 "use client";
 
-import { ArrowLeft, Download, Info, Lock } from "@/components/icons";
+import { ArrowLeft } from "@/components/icons/arrow-left";
+import { Download } from "@/components/icons/download";
+import { Info } from "@/components/icons/info";
+import { Lock } from "@/components/icons/lock";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useId, useMemo, useState } from "react";
 import { useSelectedCountry } from "@/components/help-directory";

@@ -4,18 +4,16 @@ import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 import { FormMessage, PassphraseField, TextField } from "@/components/account/fields";
 import { errorCode, useOpenAccount } from "@/components/account/use-account";
-import {
-  ArrowRight,
-  ChartLine,
-  ClipboardList,
-  Download,
-  KeyRound,
-  LogIn,
-  LogOut,
-  Sparkles,
-  Trash,
-  UserRound,
-} from "@/components/icons";
+import { ArrowRight } from "@/components/icons/arrow-right";
+import { ChartLine } from "@/components/icons/chart-line";
+import { ClipboardList } from "@/components/icons/clipboard-list";
+import { Download } from "@/components/icons/download";
+import { KeyRound } from "@/components/icons/key-round";
+import { LogIn } from "@/components/icons/log-in";
+import { LogOut } from "@/components/icons/log-out";
+import { Sparkles } from "@/components/icons/sparkles";
+import { Trash } from "@/components/icons/trash";
+import { UserRound } from "@/components/icons/user-round";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { changePassphrase, deleteAccount, exportAccount, signOut } from "@/lib/account/client";

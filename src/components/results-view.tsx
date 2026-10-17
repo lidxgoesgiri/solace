@@ -1,6 +1,8 @@
 "use client";
 
-import { Download, Info, Sparkles } from "@/components/icons";
+import { Download } from "@/components/icons/download";
+import { Info } from "@/components/icons/info";
+import { Sparkles } from "@/components/icons/sparkles";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { HelpDirectory } from "@/components/help-directory";

@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { useId, useState, type ComponentProps, type ReactNode } from "react";
-import { Eye, EyeOff } from "@/components/icons";
+import { Eye } from "@/components/icons/eye";
+import { EyeOff } from "@/components/icons/eye-off";
 import { passphraseStrength, type PassphraseStrength } from "@/lib/account/passphrase";
 import { cn } from "@/lib/utils";
 

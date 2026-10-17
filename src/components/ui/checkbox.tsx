@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "@/components/icons";
+import { Check } from "@/components/icons/check";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 

@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 import { FormMessage, PassphraseField, TextField, fieldValue } from "@/components/account/fields";
 import { errorCode } from "@/components/account/use-account";
-import { KeyRound } from "@/components/icons";
+import { KeyRound } from "@/components/icons/key-round";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { recoverAccount } from "@/lib/account/client";
