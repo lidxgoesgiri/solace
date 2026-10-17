@@ -17,7 +17,7 @@ Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Ver
 ## Principles
 
 1. **Safety first.** The safety question and crisis screen come before every result and cannot be skipped.
-2. **Evidence-based.** Scoring uses the official DASS-21 cutoffs; every tip will cite a DOI.
+2. **Evidence-based.** Scoring uses the official DASS-21 cutoffs; every tip cites its source (a DOI or a WHO/NICE guideline).
 3. **Independent.** No clinics, private hospitals, or practices are named. The help directory lists only public, government, or nonprofit services.
 4. **Private end to end.** No email login, account data encrypted in the browser, no tracking analytics.
 5. **Screening, not diagnosis.** Results say "symptoms of … at … level", never "you have …".
@@ -28,14 +28,23 @@ Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Ver
 | --- | --- |
 | Landing, age check (18+), consent | ✅ |
 | DASS-21, one question per screen, progress, back, autosave, keys 1–4 | ✅ |
+| Pause and continue later; unfinished answers are deleted after 7 days | ✅ |
 | Safety question (PHQ-9 item 9), binary crisis trigger | ✅ |
-| Crisis screen: emergency and support numbers by country, breathing, grounding, safety-plan prompts, confirm to continue | ✅ |
+| Crisis screen: emergency and support numbers by country, breathing, grounding, safety-plan prompts, the user's own plan, confirm to continue | ✅ |
 | Crisis gate in the router (`/hasil`, `/laporan`, `/tips`, `/riwayat`) | ✅ |
 | Results: 3 cards (text + icon + colour), explanations, disclaimer, priority panel, help directory | ✅ |
 | "I need help now", quick exit (button or Esc twice), ID ↔ EN switch without reload | ✅ |
+| PDF report for a psychologist: made in the browser, 2 pages, fonts bundled, report language, optional nickname and safety note (`/laporan`) | ✅ |
+| Accounts without email: passphrase, recovery kit, sign in/out, 30-minute idle lock, change passphrase, export, delete (`/akun`) | ✅ when a database is configured |
+| End-to-end encryption: keys from the passphrase (Argon2id) in the browser; the server stores only ciphertext | ✅ |
+| Tips plan by category and severity, each with its source; breathing, grounding, and muscle relaxation toolkit (`/tips`) | ✅ needs an account |
+| Six-part safety plan, kept on the device or encrypted in the account, with a PDF (`/rencana-keselamatan`) | ✅ |
+| History: trends by category, re-screening reminder after 14 days, worsening warning, daily check-in, past reports (`/riwayat`) | ✅ needs an account |
+| Anonymous daily totals for the product goals (no identifiers, nothing during a crisis) | ✅ |
+| Content Security Policy and security headers | ✅ |
+| Dark mode (follows the system) and offline screening after the first visit (PWA) | ✅ |
 | Health check (`/api/health`) | ✅ |
-| PDF report for a psychologist: made in the browser, 2 pages, fonts bundled, optional nickname and safety note (`/laporan`) | ✅ |
-| Accounts and encryption, tips, safety plan, history, AI | ⏳ Coming in later PRs |
+| AI companion (opt-in) | ⏳ Later: needs an API key and a clinically reviewed risk-phrase list |
 
 ## Safety Contract
 
@@ -52,12 +61,12 @@ These invariants must never break. Each one gets an automated test (Vitest, Test
 | K7 | A disclaimer is always shown before results | TestSprite | Present on the results page and in the PDF | ✅ Results page (TestSprite RESU-005) · ✅ PDF page 1 (Vitest `pdf.test.ts`, `labels.test.ts`) |
 | K8 | The PDF shows the same numbers as the results screen | TestSprite | Compare scores and categories on screen vs PDF text | ✅ Vitest (`model.test.ts`, `pdf.test.ts` read the PDF text) · report preview has the same testids for TestSprite |
 | K9 | Switching language keeps answers | TestSprite | Switch ID → EN at question 10; answers 1–9 kept | ✅ TestSprite (HOME-002) |
-| K10 | Tips match category and severity, each with a DOI source | Vitest (`selectTips`) + TestSprite | Multi-dimension, all normal, severe; every tip card links its source | ⏳ Tips not built yet |
-| K11 | "I need help now" is on every page | TestSprite | Landing, screening, results, tips, history | ✅ TestSprite (HELP-001 to HELP-005) · tips and history pages ⏳ |
-| P1 | The server only receives ciphertext | TestSprite (API) | `records` payloads and responses contain no answer text or scores | ⏳ Accounts not built yet |
-| P2 | No trackers, no commercial referrals | TestSprite | No analytics/ad requests; no CSP violations; every directory entry is public, government, or nonprofit | 🟡 No trackers; directory types in `content.test.ts` · ⏳ CSP, TestSprite |
-| P3 | Deleting an account deletes all data | TestSprite (API + UI) | After deletion, sign-in fails and `records` is empty | ⏳ Accounts not built yet |
-| P4 | Recovery kit restores data | Vitest + TestSprite | Sign up → save kit → recover with a new passphrase → history intact | ⏳ Accounts not built yet |
+| K10 | Tips match category and severity, each with a DOI source | Vitest (`selectTips`) + TestSprite | Multi-dimension, all normal, severe; every tip card links its source | ✅ Vitest (`tips.test.ts`: all 125 category combinations; every tip links a DOI or WHO/NICE guideline) · ⏳ TestSprite (needs accounts on the preview) |
+| K11 | "I need help now" is on every page | TestSprite | Landing, screening, results, tips, history | ✅ TestSprite (HELP-001 to HELP-005) · tips, history, account, and safety-plan pages share the same header |
+| P1 | The server only receives ciphertext | TestSprite (API) | `records` payloads and responses contain no answer text or scores | ✅ Vitest (`api.test.ts`: stored rows hold only ciphertext; `keys.test.ts`) · ⏳ TestSprite |
+| P2 | No trackers, no commercial referrals | TestSprite | No analytics/ad requests; no CSP violations; every directory entry is public, government, or nonprofit | ✅ Vitest (`security-headers.test.ts`: CSP allows only Solace's origin, no tracker code; directory types in `content.test.ts`) · ⏳ TestSprite |
+| P3 | Deleting an account deletes all data | TestSprite (API + UI) | After deletion, sign-in fails and `records` is empty | ✅ Vitest (`api.test.ts`) · ⏳ TestSprite |
+| P4 | Recovery kit restores data | Vitest + TestSprite | Sign up → save kit → recover with a new passphrase → history intact | ✅ Vitest (`api.test.ts`, `keys.test.ts`) · ⏳ TestSprite |
 | A1 | AI is off by default | TestSprite | New accounts see no AI feature until they accept the consent screen | ⏳ AI not built yet (P2) |
 | A2 | Risky phrases trigger the crisis screen, not the AI | Vitest (`risk-check.ts`) + TestSprite | Phrases from the test list → crisis screen; AI endpoint not called | ⏳ AI not built yet (P2) |
 | A3 | AI is unavailable during a crisis | TestSprite | While `crisis_pending`, AI buttons and routes are unreachable | ⏳ AI not built yet (P2) |
@@ -80,16 +89,37 @@ pnpm icons        # regenerate app icons from public/brand
 
 GitHub Actions runs `lint`, `typecheck`, `test`, and `build` on every push and pull request.
 
+### Accounts and environment variables
+
+The screening, results, PDF, and safety plan work without any server storage. Accounts (and with them tips and history) need a Postgres database; without one, those pages say accounts are not available yet and the API answers `503`.
+
+| Variable | Needed for | Notes |
+| --- | --- | --- |
+| `DATABASE_URL` | Accounts in production and previews | Any managed Postgres (for example through the Vercel Marketplace). Tables are created on first use. |
+| `SOLACE_SERVER_SECRET` | Accounts (recommended) | A long random string that keeps decoy salts for unknown usernames stable. Without it, a value derived from `DATABASE_URL` is used. |
+| `SOLACE_TEST_RESET_TOKEN` | Optional, previews only | Lets automated tests delete `demo-*` accounts through `POST /api/test/reset`. Never works in production. |
+| `SOLACE_LOCAL_DB=pglite` | Optional, local `pnpm start` | Uses an embedded PGlite database in `.data/` instead of Postgres. `pnpm dev` does this automatically. |
+
+Account pages are prerendered, so set these before building; on Vercel, redeploy after changing them. Keep every value in Vercel's environment settings or a local `.env.local` (ignored by git).
+
 ## How it is built
 
-- **Next.js** (App Router) + TypeScript strict, **Tailwind CSS** + **shadcn/ui** (Radix)
+- **Next.js 16** (App Router, Turbopack) + TypeScript strict, **Tailwind CSS 4** with small in-house UI primitives (radio cards, checkbox, button) to stay inside the JavaScript budget
 - **next-intl**: `id` (default, unprefixed URLs) and `en` (`/en/...`). The browser language is ignored; only the language switch changes it.
 - **Zustand + persist**: screening answers are autosaved in `localStorage` and never leave the device.
-- **Vitest** for pure logic:
+- **libsodium** (loaded only when an account is used): Argon2id key derivation and XChaCha20-Poly1305 encryption in the browser. The data key is wrapped twice, by the passphrase and by the recovery key.
+- **Drizzle ORM** on Postgres (PGlite locally and in tests). The server keeps an Argon2id hash of a key derived from the passphrase, never the passphrase or the data key.
+- **pdf-lib**: reports and the safety plan are made in the browser.
+- **Vitest** for pure logic and the API:
   - `src/lib/scoring.ts`: DASS-21 scoring, one cutoff constant
   - `src/lib/flow.ts`: flow state machine and crisis gate
+  - `src/lib/tips.ts`: `selectTips`
+  - `src/lib/crypto/`: key derivation, wrapping, record encryption
+  - `src/server/api.test.ts`: the account API against an in-memory database
   - `src/lib/content.ts`: clinical data and help directory
   - message key parity between `messages/id.json` and `messages/en.json`
+
+**JavaScript budget (PRD 14):** the screening pages (`/mulai`, `/skrining/*`, `/keamanan`, `/krisis`) load under 150 KB of gzipped JavaScript in modern browsers (147.5–149.7 KB; legacy polyfills for old browsers are separate). Encryption, PDF, and animation code load only on the pages that use them.
 
 The crisis decision happens only in the browser. A client-side router guard (`src/components/flow-guard.tsx`) asks `guardRoute()` on every navigation, so back, refresh, and typed URLs cannot reach results while a crisis is pending.
 
@@ -102,6 +132,8 @@ The crisis decision happens only in the browser. A client-side router guard (`sr
 | Safety question, English | PHQ-9 item 9, [official form](https://www.phqscreeners.com/) | ✅ Verbatim |
 | Safety question, Indonesian | Validated Indonesian PHQ-9 | ⏳ Placeholder |
 | Help directory | Indonesia, United States, United Kingdom (`src/data/hotlines.json`) | ⏳ Every entry must be re-verified (`verifiedAt` is empty) |
+| Tips (`src/data/tips.json`) | Each tip cites a DOI or a WHO/NICE guideline, checked against Crossref and the publishers' pages | ⏳ Evidence summaries and the reviewer are `TODO(verify)`; the app shows "review pending" until they are filled |
+| Toolkit and safety-plan prompts | Breathing, grounding, muscle relaxation, and the six safety-plan sections | ⏳ Wording to be reviewed by a psychologist |
 | Clinical review | Safety question, crisis screen, and flow | ⏳ Reviewer to be named here |
 
 Solace is a screening tool, not a diagnosis.

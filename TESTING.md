@@ -4,7 +4,7 @@ Solace is tested in two layers:
 
 | Layer | Runs on | Covers |
 | --- | --- | --- |
-| **Vitest** (`pnpm test`) | GitHub Actions, every push and PR | Pure logic: DASS-21 scoring, the flow state machine and crisis gate, clinical data and the help directory, message key parity, the health check |
+| **Vitest** (`pnpm test`) | GitHub Actions, every push and PR | Pure logic and the API: DASS-21 scoring, the flow state machine and crisis gate, draft expiry, tip selection, history trends, encryption, the account API (on an in-memory PGlite database), the PDFs, the security headers, offline caching, clinical data and the help directory, message key parity, the health check |
 | **TestSprite 3.0** | Every PR's Vercel preview, through the TestSprite GitHub App | User behaviour on the live app: the flow, the crisis gate, language, directory, accessibility of key controls |
 
 This file is the scenario plan for the TestSprite suite. Each scenario maps to a Safety Contract invariant (see the README) or a PRD requirement ID.
@@ -94,6 +94,41 @@ Scores are shown ×2 (0–42). Each `result-card-{subscale}` carries `data-score
 | HS-06 | Two branch buttons | On `/hasil` | `download-report` and `continue-to-tips` visible |
 | Health | Uptime check | `GET /api/health` | `200`, JSON `status: "ok"` |
 
+### Pause, report language, security, and offline
+
+| ID | Requirement | Steps | Expected |
+| --- | --- | --- | --- |
+| SK-06 | Pause and continue later | Answer questions 1–4 · on `/skrining/5` click `pause-screening` | Back on `/`; `resume-card` says answers are kept on this device for 7 days; `resume-screening` opens `/skrining/5` with answers 1–4 kept |
+| PDF-03 | Report language | Reach `/hasil` in Indonesian · `download-report` · choose English in `report-language` | The `report-preview` content (title, labels, disclaimer) switches to English while the page around it stays Indonesian; `download-pdf` makes an English PDF |
+| P2-csp | Only Solace's own origin | Open any page and check the response headers; run a full `all-1` flow | `Content-Security-Policy` has `connect-src 'self'`; no CSP violation in the console; no request leaves the Solace origin |
+| PWA | Works offline after the first visit | Visit `/` once and wait a few seconds · go offline · Start · `all-0` · safety 0 | Every step loads; `/hasil` shows the three cards. Manual check: TestSprite cannot switch the network off |
+
+### Accounts (needs `DATABASE_URL` on the preview)
+
+Without a database these pages show `accounts-unavailable` (and `/tips` shows `tips-coming-soon`). Test accounts use usernames that start with `demo-`; on previews with `SOLACE_TEST_RESET_TOKEN` set, `POST /api/test/reset` with the `x-solace-test-token` header removes them.
+
+| ID | Requirement | Steps | Expected |
+| --- | --- | --- | --- |
+| AK-01 | Sign up without email | `/akun/daftar` · fill `register-username` (`demo-…`), `register-passphrase`, `register-passphrase-confirm` (12+ characters, several words) · tick `register-understand` · `register-submit` | `recovery-kit` with a `recovery-code`; `recovery-kit-continue` is disabled until `recovery-kit-saved` is ticked, then opens `/akun` with `account-username` |
+| AK-02 | Sign in | Sign out (`sign-out`) · `/akun/masuk` · `signin-username`, `signin-passphrase` · `signin-submit` | `/akun` with `account-username`; a wrong passphrase shows `account-error` and stays on `/akun/masuk` |
+| P1 | Server sees only ciphertext | Signed in · finish a screening with `all-1` · open `/riwayat` · watch `POST /api/records` | The request body has only `kind`, `nonce`, `ciphertext`; neither it nor `GET /api/records` contains answers, scores, or category names |
+| P3 | Deleting an account deletes everything | On `/akun` type the username in `delete-confirm-username` · `delete-account-confirm` | `delete-account-confirm` stays disabled until the username matches; afterwards `go-sign-up` shows, `GET /api/auth/session` is `401`, and signing in again shows `account-error` |
+| P4 | Recovery kit restores data | Sign up and note `recovery-code` · finish a screening · sign out · `/akun/pulihkan` · `recover-username`, `recover-code`, `recover-passphrase`, `recover-passphrase-confirm` · `recover-submit` | Signed in with the new passphrase; `/riwayat` still lists the screening; the old passphrase no longer works |
+
+### Tips, safety plan, and history
+
+| ID | Requirement | Steps | Expected |
+| --- | --- | --- | --- |
+| K10-a | Tips match category and severity | Signed in · Start · `all-1` · safety 0 · `continue-to-tips` | `tips-plan` has `tips-group-depression` and `tips-group-anxiety` (moderate), no `tips-group-stress` (normal); every `tip-card-*` has a `tip-source-*` link to doi.org or a WHO/NICE guideline |
+| K10-b | All normal | Signed in · Start · `all-0` · safety 0 · `continue-to-tips` | `tips-wellbeing` instead of tip groups |
+| K10-c | Severe → professional first | Signed in · Start · `all-2` · safety 0 · `continue-to-tips` | `professional-help` and `tips-companion` appear before the tips |
+| TP-03 | Toolkit | On `/tips` click `pmr-start` | `pmr-status` counts through the steps; `pmr-stop` stops it |
+| SP-01 | Safety plan without an account | Clean session · `/rencana-keselamatan` · fill `plan-warningSigns` and `plan-people` · `plan-download` | `plan-local-only` says nothing is stored; there is no `plan-save`; `plan-status` names the PDF, and no request is made while it is built |
+| SP-02 | Saved plan on the crisis screen | Signed in · `/rencana-keselamatan` (`plan-in-account`) · fill `plan-coping` · `plan-save` → `plan-status` · Start · `all-0` · safety 1 | `/krisis` shows `crisis-own-plan` with the saved entry |
+| RW-02 | Trends | Signed in · two screenings (`all-1`, then `all-2`) · `/riwayat` | `history-table` has two rows; `trend-feedback` shows depression rising; `worsening-warning` names the subscales that became severe |
+| RW-04 | Daily check-in | On `/riwayat` click `checkin-mood-3` · `checkin-save` | `checkin-status` confirms; the entry appears in `checkin-recent` |
+| K11-new | Help button on the new pages | Visit `/tips`, `/riwayat`, `/akun`, `/rencana-keselamatan` | `help-now` visible on each |
+
 ## The suite in the TestSprite portal
 
 The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added. **34 tests** remain.
@@ -106,7 +141,7 @@ The suite was generated in the TestSprite 3.0 portal against https://solace-sc.v
 | Safety & crisis | SAFE-001 to SAFE-008 | K2 safety answers 1–3, K3 URL/back/refresh gate, K4 both branches, K6 directory by country |
 | Results | RESU-001 to RESU-005 | K1 scores (all-0, all-1, all-3), K5 priority panel, K6 in English, K7 disclaimer |
 | Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
-| Tips | TIPS-001 | Tips branch (waits for the tips feature) |
+| Tips | TIPS-001 | Tips branch (needs a database on the preview, see below) |
 
 Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
 
@@ -121,11 +156,11 @@ Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{
 
 33 of 34 passed, 1 blocked. The Help & exit test "Help link opens crisis support from the safety page" opened `/keamanan` directly in a clean session, and the router guard correctly sent it back to `/mulai`, so the safety page was never reached. The app was right and the test was wrong: the test now starts a screening and answers all 21 items before checking `help-now` on `/keamanan`.
 
-## Not yet covered (features still to come)
+## Not yet covered
+
+The account, tips, and history scenarios above, and TIPS-001, need a database on the preview (`DATABASE_URL`); without one, `/tips` shows `tips-coming-soon`. Once it is set, TIPS-001 should sign in first and then follow K10-a.
 
 | Invariant | Waiting for |
 | --- | --- |
-| K10 (tips match category and severity, each with a DOI) | Tips |
-| P1, P3, P4 (ciphertext only, delete account, recovery kit) | Accounts and encryption |
-| P2 (no trackers, no CSP violations) | Content Security Policy |
+| P1, P3, P4, K10 in TestSprite | A database on the preview (Vitest already covers them) |
 | A1–A3 (AI off by default, risk check, no AI during a crisis) | AI features (P2) |
