@@ -218,7 +218,9 @@
     "languageName": {
       "id": "Bahasa Indonesia",
       "en": "English"
-    }
+    },
+    "languageLabel": "Report language",
+    "languageHint": "Choose the language your psychologist reads most easily. This does not change the language of Solace."
   },
   "explanation": {
     "intro": "Your result shows {severity} symptoms of {subscale}.",

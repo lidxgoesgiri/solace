@@ -218,7 +218,9 @@
     "languageName": {
       "id": "Bahasa Indonesia",
       "en": "English"
-    }
+    },
+    "languageLabel": "Bahasa laporan",
+    "languageHint": "Pilih bahasa yang paling mudah dibaca psikologmu. Pilihan ini tidak mengubah bahasa tampilan Solace."
   },
   "explanation": {
     "intro": "Hasilmu menunjukkan gejala {subscale} tingkat {severity}.",
