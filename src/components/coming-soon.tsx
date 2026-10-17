@@ -17,9 +17,9 @@ interface ComingSoonProps {
 export async function ComingSoon({ title, body, testId }: ComingSoonProps) {
   const common = await getTranslations("common");
   return (
-    <section data-testid={testId} className="space-y-4">
-      <h1 className="text-3xl sm:text-4xl">{title}</h1>
-      <p>{body}</p>
+    <section data-testid={testId} className="mx-auto max-w-2xl space-y-5">
+      <h1 className="text-4xl leading-tight sm:text-5xl">{title}</h1>
+      <p className="measure text-lg leading-relaxed text-muted-foreground">{body}</p>
       <Button asChild variant="outline">
         <Link href={PATHS.hasil}>
           <ArrowLeft aria-hidden="true" />

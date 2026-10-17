@@ -7,9 +7,9 @@ export default function NotFound() {
   const common = useTranslations("common");
 
   return (
-    <section data-testid="not-found" className="space-y-4 py-8 text-center">
-      <h1 className="text-3xl">{t("title")}</h1>
-      <p className="text-muted-foreground">{t("body")}</p>
+    <section data-testid="not-found" className="mx-auto max-w-xl space-y-5 py-12 text-center">
+      <h1 className="text-4xl leading-tight sm:text-5xl">{t("title")}</h1>
+      <p className="text-lg text-muted-foreground">{t("body")}</p>
       <Button asChild variant="outline">
         <Link href="/">{common("backToHome")}</Link>
       </Button>
