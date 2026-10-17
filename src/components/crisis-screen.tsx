@@ -1,12 +1,8 @@
 "use client";
 
 import { ArrowRight } from "@/components/icons/arrow-right";
-import { Eye } from "@/components/icons/eye";
-import { Hand } from "@/components/icons/hand";
-import { Ear } from "@/components/icons/ear";
-import { Flower2 } from "@/components/icons/flower-2";
-import { Coffee } from "@/components/icons/coffee";
 import { ShieldCheck } from "@/components/icons/shield-check";
+import { GroundingList } from "@/components/toolkit/grounding-list";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { BreathingPacer } from "@/components/breathing-pacer";
@@ -44,13 +40,6 @@ export function CrisisScreen() {
     router.push(next);
   };
 
-  const grounding = [
-    { icon: Eye, text: t("groundingSee") },
-    { icon: Hand, text: t("groundingTouch") },
-    { icon: Ear, text: t("groundingHear") },
-    { icon: Flower2, text: t("groundingSmell") },
-    { icon: Coffee, text: t("groundingTaste") },
-  ];
 
   const plan = [
     t("planWarningSigns"),
@@ -123,16 +112,7 @@ export function CrisisScreen() {
           <div className="surface space-y-4 p-6" data-testid="grounding">
             <h3 className="text-xl">{t("groundingTitle")}</h3>
             <p className="text-sm text-muted-foreground">{t("groundingIntro")}</p>
-            <ol className="space-y-2.5">
-              {grounding.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex items-center gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-ink">
-                    <Icon aria-hidden="true" className="size-4" />
-                  </span>
-                  {text}
-                </li>
-              ))}
-            </ol>
+            <GroundingList />
           </div>
         </div>
       </section>

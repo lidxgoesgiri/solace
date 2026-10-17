@@ -1,0 +1,351 @@
+{
+  "todo": "TODO(verify): every tip needs a psychologist's review (reviewedBy, reviewedAt) and a one-sentence evidence summary written after reading its sources (PRD 11.4). Sources here were checked to exist and to match their titles (Crossref for DOIs, the publisher's page for WHO and NICE) on 2026-10-17; their content has not been summarised yet.",
+  "tips": [
+    {
+      "id": "ba-small-activity",
+      "dimensions": ["depression"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "strong",
+      "title": { "id": "Jadwalkan satu kegiatan kecil yang berarti", "en": "Schedule one small meaningful activity" },
+      "body": {
+        "id": "Saat suasana hati sedang turun, kita cenderung menunggu sampai ingin melakukan sesuatu. Cara ini membalik urutannya: lakukan dulu satu hal kecil, lalu perhatikan apa yang berubah.",
+        "en": "When your mood is low, it is natural to wait until you feel like doing something. This turns the order around: do one small thing first, then notice what changes."
+      },
+      "howTo": {
+        "id": [
+          "Pilih satu kegiatan yang dulu kamu nikmati atau yang penting bagimu, lalu buat sekecil mungkin, misalnya jalan kaki 5 menit atau membalas satu pesan.",
+          "Tulis kapan kamu akan melakukannya, hari ini atau besok.",
+          "Setelah selesai, beri nilai 0–10 untuk rasa senang dan rasa berhasil."
+        ],
+        "en": [
+          "Pick one activity you used to enjoy or that matters to you, and make it as small as possible, for example a 5-minute walk or replying to one message.",
+          "Write down when you will do it, today or tomorrow.",
+          "Afterwards, rate from 0 to 10 how much you enjoyed it and how much you achieved."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "Cuijpers, van Straten & Warmerdam (2007), Clinical Psychology Review 27(3)",
+            "url": "https://doi.org/10.1016/j.cpr.2006.11.001"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    },
+    {
+      "id": "physical-activity",
+      "dimensions": ["depression"],
+      "severity": ["normal", "mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "strong",
+      "title": { "id": "Bergerak sedikit setiap hari", "en": "Move a little every day" },
+      "body": {
+        "id": "Gerak tubuh yang teratur bisa membantu sebagian orang merasa lebih baik. Tidak perlu berat; mulailah dari yang bisa kamu lakukan hari ini.",
+        "en": "Regular movement can help some people feel better. It does not have to be hard; start with what you can do today."
+      },
+      "howTo": {
+        "id": [
+          "Pilih satu: jalan kaki, peregangan, yoga, atau naik-turun tangga.",
+          "Mulai dengan 10 menit, sebisa mungkin pada jam yang sama setiap hari.",
+          "Kalau ada teman, ajak bergerak bersama."
+        ],
+        "en": [
+          "Pick one: walking, stretching, yoga, or taking the stairs.",
+          "Start with 10 minutes, at the same time of day if you can.",
+          "If a friend is around, ask them to join you."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "Noetel et al. (2024), BMJ 384:e075847",
+            "url": "https://doi.org/10.1136/bmj-2023-075847"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    },
+    {
+      "id": "reconnect-one-person",
+      "dimensions": ["depression"],
+      "severity": ["normal", "mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "guideline",
+      "title": { "id": "Hubungi kembali satu orang", "en": "Reconnect with one person" },
+      "body": {
+        "id": "Menarik diri itu wajar saat lelah. Kontak kecil dengan orang yang kamu percaya bisa terasa meringankan.",
+        "en": "Pulling back is understandable when you are tired. A small moment of contact with someone you trust can feel lighter."
+      },
+      "howTo": {
+        "id": [
+          "Pilih satu orang yang membuatmu merasa aman: teman, saudara, atau teman sekelas.",
+          "Kirim pesan singkat, misalnya: \"Lagi apa? Sudah lama nggak ngobrol.\"",
+          "Tidak harus membahas perasaanmu; obrolan biasa pun sudah cukup."
+        ],
+        "en": [
+          "Choose one person who makes you feel safe: a friend, a relative, or a classmate.",
+          "Send a short message, for example: \"What are you up to? It's been a while.\"",
+          "You don't have to talk about how you feel; an ordinary chat is enough."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "WHO (2016), mhGAP Intervention Guide, version 2.0",
+            "url": "https://www.who.int/publications/i/item/9789241549790"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    },
+    {
+      "id": "slow-breathing",
+      "dimensions": ["anxiety"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "moderate",
+      "title": { "id": "Napas lambat: tarik 4, hembuskan 6", "en": "Slow breathing: in for 4, out for 6" },
+      "body": {
+        "id": "Memperpanjang napas keluar dapat membantu sebagian orang merasa lebih tenang saat cemas naik.",
+        "en": "Making the out-breath longer can help some people feel calmer when anxiety rises."
+      },
+      "howTo": {
+        "id": [
+          "Duduk atau berdiri dengan nyaman.",
+          "Tarik napas pelan lewat hidung dalam hitungan 4.",
+          "Hembuskan perlahan dalam hitungan 6. Ulangi 5–10 kali.",
+          "Pemandu napas di bagian Toolkit bisa membantumu menjaga ritme."
+        ],
+        "en": [
+          "Sit or stand comfortably.",
+          "Breathe in slowly through your nose for a count of 4.",
+          "Breathe out slowly for a count of 6. Repeat 5–10 times.",
+          "The breathing pacer in the Toolkit section can help you keep the rhythm."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "Fincham et al. (2023), Scientific Reports",
+            "url": "https://doi.org/10.1038/s41598-022-27247-y"
+          },
+          {
+            "label": "WHO (2016), mhGAP Intervention Guide, version 2.0",
+            "url": "https://www.who.int/publications/i/item/9789241549790"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    },
+    {
+      "id": "worry-time",
+      "dimensions": ["anxiety"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "guideline",
+      "title": { "id": "Waktu khawatir terjadwal", "en": "Scheduled worry time" },
+      "body": {
+        "id": "Daripada melawan kekhawatiran sepanjang hari, beri ia waktu sendiri. Teknik ini termasuk dalam self-help berbasis CBT.",
+        "en": "Instead of fighting worries all day, give them a time of their own. This technique is part of CBT-based self-help."
+      },
+      "howTo": {
+        "id": [
+          "Tentukan 15 menit di jam yang sama setiap hari, bukan menjelang tidur.",
+          "Saat khawatir muncul di luar jadwal, catat singkat lalu tunda: \"Nanti, di waktu khawatir.\"",
+          "Di waktu khawatir, baca catatanmu. Untuk tiap kekhawatiran, tanyakan: adakah satu langkah kecil yang bisa kulakukan?"
+        ],
+        "en": [
+          "Set 15 minutes at the same time every day, not close to bedtime.",
+          "When a worry comes up outside that time, jot it down and postpone it: \"Later, in worry time.\"",
+          "In worry time, read your notes. For each worry, ask: is there one small step I can take?"
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "NICE (2011, updated 2019), CG113: Generalised anxiety disorder and panic disorder in adults",
+            "url": "https://www.nice.org.uk/guidance/cg113"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    },
+    {
+      "id": "grounding",
+      "dimensions": ["anxiety"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "moderate",
+      "title": { "id": "Grounding saat cemas memuncak", "en": "Grounding when anxiety peaks" },
+      "body": {
+        "id": "Saat pikiran berpacu, mengarahkan perhatian ke indera bisa membantumu kembali ke saat ini.",
+        "en": "When your thoughts race, turning your attention to your senses can help you come back to the present."
+      },
+      "howTo": {
+        "id": [
+          "Sebutkan 5 hal yang bisa kamu lihat dan 4 hal yang bisa kamu sentuh.",
+          "Lalu 3 hal yang bisa kamu dengar, 2 yang bisa kamu cium, dan 1 yang bisa kamu rasakan.",
+          "Rasakan kakimu menapak di lantai, lalu tarik napas pelan."
+        ],
+        "en": [
+          "Name 5 things you can see and 4 things you can touch.",
+          "Then 3 things you can hear, 2 you can smell, and 1 you can taste.",
+          "Feel your feet on the floor, then take a slow breath."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "WHO (2020), Doing What Matters in Times of Stress: An Illustrated Guide",
+            "url": "https://iris.who.int/handle/10665/331901"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    },
+    {
+      "id": "problem-solving",
+      "dimensions": ["stress"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "guideline",
+      "title": { "id": "Pecah masalah jadi langkah kecil", "en": "Break a problem into small steps" },
+      "body": {
+        "id": "Masalah besar bisa terasa melumpuhkan. Memecahnya menjadi langkah kecil membuat langkah pertama lebih mudah terlihat.",
+        "en": "A big problem can feel paralysing. Breaking it into small steps makes the first one easier to see."
+      },
+      "howTo": {
+        "id": [
+          "Tulis satu masalah yang paling mengganggu minggu ini dalam satu kalimat.",
+          "Tulis tiga kemungkinan langkah, sekecil apa pun.",
+          "Pilih satu yang bisa dimulai hari ini dalam 10 menit, lalu lakukan."
+        ],
+        "en": [
+          "Write the one problem that bothers you most this week in a single sentence.",
+          "Write three possible steps, however small.",
+          "Pick one you can start today in 10 minutes, then do it."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "WHO (2016), mhGAP Intervention Guide, version 2.0",
+            "url": "https://www.who.int/publications/i/item/9789241549790"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    },
+    {
+      "id": "unhook",
+      "dimensions": ["stress"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "moderate",
+      "title": {
+        "id": "Sadari pikiran yang \"mengait\", lalu kembali ke saat ini",
+        "en": "Notice thoughts that hook you, then come back"
+      },
+      "body": {
+        "id": "Pikiran yang berat bisa menarik perhatian menjauh dari apa yang sedang kamu lakukan. Menamai pikiran itu bisa memberi sedikit jarak.",
+        "en": "Heavy thoughts can pull your attention away from what you are doing. Naming the thought can give you a little distance."
+      },
+      "howTo": {
+        "id": [
+          "Saat terjebak pikiran, katakan dalam hati: \"Aku sedang punya pikiran bahwa…\"",
+          "Perhatikan apa yang sedang kamu kerjakan dan apa yang ada di sekitarmu.",
+          "Kembalikan perhatian ke kegiatanmu sekarang, pelan-pelan."
+        ],
+        "en": [
+          "When you are caught in a thought, say to yourself: \"I'm having the thought that…\"",
+          "Notice what you are doing and what is around you.",
+          "Gently bring your attention back to what you are doing now."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "WHO (2020), Doing What Matters in Times of Stress: An Illustrated Guide",
+            "url": "https://iris.who.int/handle/10665/331901"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    },
+    {
+      "id": "sleep-routine",
+      "dimensions": ["depression", "anxiety", "stress"],
+      "severity": ["normal", "mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "strong",
+      "title": { "id": "Rutinitas tidur yang teratur", "en": "A regular sleep routine" },
+      "body": {
+        "id": "Tidur dan suasana hati saling memengaruhi. Jam tidur dan bangun yang teratur adalah langkah awal yang sederhana.",
+        "en": "Sleep and mood affect each other. Regular times for going to bed and getting up are a simple first step."
+      },
+      "howTo": {
+        "id": [
+          "Pilih jam bangun yang sama setiap hari, termasuk akhir pekan.",
+          "Sejam sebelum tidur, redupkan layar dan lakukan hal yang menenangkan.",
+          "Kalau sudah 20 menit belum terlelap, bangun sebentar, lakukan hal yang tenang, lalu coba lagi."
+        ],
+        "en": [
+          "Choose the same wake-up time every day, weekends included.",
+          "An hour before bed, dim your screens and do something calming.",
+          "If you are still awake after 20 minutes, get up for a while, do something quiet, then try again."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
+          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+        },
+        "sources": [
+          {
+            "label": "Scott et al. (2021), Sleep Medicine Reviews 60:101556",
+            "url": "https://doi.org/10.1016/j.smrv.2021.101556"
+          },
+          {
+            "label": "NICE (2022), NG222: Depression in adults: treatment and management",
+            "url": "https://www.nice.org.uk/guidance/ng222"
+          }
+        ]
+      },
+      "reviewedBy": "TODO(verify)",
+      "reviewedAt": null
+    }
+  ]
+}
