@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
-import { FormMessage, PassphraseField, TextField } from "@/components/account/fields";
+import { FormMessage, PassphraseField, TextField, fieldValue } from "@/components/account/fields";
 import { errorCode } from "@/components/account/use-account";
 import { KeyRound } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -32,22 +32,25 @@ export function RecoverForm() {
   const confirmError =
     touched && confirm.length > 0 && confirm !== passphrase ? t("passphraseMismatch") : null;
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setTouched(true);
-    if (
-      busy ||
-      !username.trim() ||
-      !code.trim() ||
-      !isAcceptablePassphrase(passphrase) ||
-      confirm !== passphrase
-    ) {
+    const form = event.currentTarget;
+    const name = fieldValue(form, "recover-username", username);
+    const kit = fieldValue(form, "recover-code", code);
+    const next = fieldValue(form, "recover-passphrase", passphrase);
+    const again = fieldValue(form, "recover-passphrase-confirm", confirm);
+    setUsername(name);
+    setCode(kit);
+    setPassphrase(next);
+    setConfirm(again);
+    if (busy || !name.trim() || !kit.trim() || !isAcceptablePassphrase(next) || again !== next) {
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      await recoverAccount(username.normalize("NFKC").trim().toLowerCase(), code, passphrase);
+      await recoverAccount(name.normalize("NFKC").trim().toLowerCase(), kit, next);
       setPassphrase("");
       setConfirm("");
       router.push(PATHS.akun);

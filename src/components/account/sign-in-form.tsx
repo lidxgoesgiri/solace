@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
-import { FormMessage, PassphraseField, TextField } from "@/components/account/fields";
+import { FormMessage, PassphraseField, TextField, fieldValue } from "@/components/account/fields";
 import { errorCode, nextPathFromLocation } from "@/components/account/use-account";
 import { LogIn } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,17 @@ export function SignInForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (busy || !username.trim() || !passphrase) return;
+    const name = fieldValue(event.currentTarget, "signin-username", username);
+    const pass = fieldValue(event.currentTarget, "signin-passphrase", passphrase);
+    setUsername(name);
+    setPassphrase(pass);
+    if (busy || !name.trim() || !pass) return;
     setBusy(true);
     setError(null);
     try {
-      await signIn(username.normalize("NFKC").trim().toLowerCase(), passphrase);
+      await signIn(name.normalize("NFKC").trim().toLowerCase(), pass);
       setPassphrase("");
       router.push(nextPathFromLocation());
     } catch (caught) {

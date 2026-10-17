@@ -156,3 +156,15 @@ export function FormMessage({
     </p>
   );
 }
+
+/**
+ * The current value of a field in a submitted form, read from the DOM. If
+ * someone typed before the page finished loading, React state can still be
+ * empty while the field shows text; the DOM is the truth at submit time.
+ * (Fields deliberately have no `name`, so a submit before hydration sends
+ * nothing anywhere.)
+ */
+export function fieldValue(form: HTMLFormElement, testId: string, fallback: string): string {
+  const input = form.querySelector<HTMLInputElement>(`[data-testid="${testId}"]`);
+  return input ? input.value : fallback;
+}

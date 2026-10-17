@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
-import { FormMessage, PassphraseField, TextField } from "@/components/account/fields";
+import { FormMessage, PassphraseField, TextField, fieldValue } from "@/components/account/fields";
 import { errorCode } from "@/components/account/use-account";
 import { ArrowRight, Check, Download } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -47,25 +47,29 @@ export function RegisterForm() {
       : null;
   const confirmError =
     touched && confirm.length > 0 && confirm !== passphrase ? t("passphraseMismatch") : null;
-  const ready =
-    USERNAME_PATTERN.test(normalized) &&
-    isAcceptablePassphrase(passphrase) &&
-    confirm === passphrase &&
-    agreed;
-
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setTouched(true);
-    if (!ready || busy) return;
+    const form = event.currentTarget;
+    const name = fieldValue(form, "register-username", username);
+    const pass = fieldValue(form, "register-passphrase", passphrase);
+    const again = fieldValue(form, "register-passphrase-confirm", confirm);
+    setUsername(name);
+    setPassphrase(pass);
+    setConfirm(again);
+    const clean = name.normalize("NFKC").trim().toLowerCase();
+    const valid =
+      USERNAME_PATTERN.test(clean) && isAcceptablePassphrase(pass) && again === pass && agreed;
+    if (!valid || busy) return;
     setBusy(true);
     setError(null);
     try {
       const lastScreening = screeningRecordFromFlow(useFlowStore.getState().flow);
-      const result = await registerAccount(normalized, passphrase, lastScreening);
+      const result = await registerAccount(clean, pass, lastScreening);
       trackEvent("account_created");
       setPassphrase("");
       setConfirm("");
-      setCreated({ username: normalized, ...result });
+      setCreated({ username: clean, ...result });
     } catch (caught) {
       setError(t(`error.${errorCode(caught)}`));
     } finally {
