@@ -6,6 +6,8 @@
  */
 
 import { createHash } from "node:crypto";
+import { mkdir } from "node:fs/promises";
+import { dirname } from "node:path";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import { SCHEMA_SQL, schema } from "./schema";
 
@@ -40,6 +42,8 @@ export async function createPgliteDb(dataDir?: string): Promise<Db> {
     import("@electric-sql/pglite"),
     import("drizzle-orm/pglite"),
   ]);
+  // PGlite creates its own directory but not the parents.
+  if (dataDir) await mkdir(dirname(dataDir), { recursive: true });
   const client = new PGlite(dataDir);
   await client.exec(SCHEMA_SQL);
   return drizzle(client, { schema }) as unknown as Db;

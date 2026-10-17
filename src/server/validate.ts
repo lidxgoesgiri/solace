@@ -10,14 +10,7 @@ import {
 import { isRecord } from "./http";
 import { RECORD_KINDS, type RecordKind } from "./schema";
 
-/** 3–32 characters: lower-case letters, digits, dot, dash, underscore. No email. */
-export const USERNAME_PATTERN = /^[a-z0-9][a-z0-9._-]{2,31}$/;
-
-export function normalizeUsername(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const username = value.normalize("NFKC").trim().toLowerCase();
-  return USERNAME_PATTERN.test(username) ? username : null;
-}
+export { USERNAME_PATTERN, normalizeUsername } from "@/lib/account/username";
 
 export function isAuthKey(value: unknown): value is string {
   return isBase64Url(value, KEY_BYTES);

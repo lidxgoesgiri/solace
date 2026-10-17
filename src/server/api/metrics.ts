@@ -7,20 +7,10 @@
 import { sql } from "drizzle-orm";
 import type { ApiContext } from "../context";
 import { clientIp, fail, isRecord, json, readJson } from "../http";
+import { isMetricEvent } from "@/lib/metrics";
 import { LIMITS } from "../rate-limit";
 
-export const METRIC_EVENTS = [
-  "screening_started",
-  "results_viewed",
-  "report_downloaded",
-  "tips_opened",
-  "account_created",
-] as const;
-export type MetricEvent = (typeof METRIC_EVENTS)[number];
-
-export function isMetricEvent(value: unknown): value is MetricEvent {
-  return METRIC_EVENTS.includes(value as MetricEvent);
-}
+export { METRIC_EVENTS, isMetricEvent, type MetricEvent } from "@/lib/metrics";
 
 /** POST /api/metrics */
 export async function recordMetric(request: Request, ctx: ApiContext): Promise<Response> {

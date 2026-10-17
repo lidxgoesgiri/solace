@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/logo";
+import { Link } from "@/i18n/navigation";
+import { PATHS } from "@/lib/flow";
 
 /** Disclaimer on every page (GL-04). */
 export async function SiteFooter() {
@@ -20,6 +22,37 @@ export async function SiteFooter() {
           <p>{t("disclaimerDetail")}</p>
           <p>{t("independence")}</p>
           <p className="hidden sm:block">{t("quickExitHint")}</p>
+          <nav aria-label={t("navLabel")} className="pt-2">
+            <ul className="flex flex-wrap gap-x-5 gap-y-1">
+              <li>
+                <Link
+                  href={PATHS.akun}
+                  className="underline decoration-ink/30 underline-offset-4 hover:text-foreground hover:decoration-ink"
+                  data-testid="footer-account"
+                >
+                  {t("navAccount")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={PATHS.rencana}
+                  className="underline decoration-ink/30 underline-offset-4 hover:text-foreground hover:decoration-ink"
+                  data-testid="footer-safety-plan"
+                >
+                  {t("navPlan")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={PATHS.riwayat}
+                  className="underline decoration-ink/30 underline-offset-4 hover:text-foreground hover:decoration-ink"
+                  data-testid="footer-history"
+                >
+                  {t("navHistory")}
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </footer>
