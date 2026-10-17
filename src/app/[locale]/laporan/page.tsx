@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeFromParams } from "@/i18n/locale";
-import { ComingSoon } from "@/components/coming-soon";
+import { ReportBuilder } from "@/components/report-builder";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -9,13 +9,12 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const locale = await localeFromParams(params);
-  const t = await getTranslations({ locale, namespace: "comingSoon" });
-  return { title: t("reportTitle") };
+  const t = await getTranslations({ locale, namespace: "report" });
+  return { title: t("title") };
 }
 
 export default async function ReportPage({ params }: PageProps) {
   const locale = await localeFromParams(params);
   setRequestLocale(locale);
-  const t = await getTranslations("comingSoon");
-  return <ComingSoon title={t("reportTitle")} body={t("reportBody")} testId="report-coming-soon" />;
+  return <ReportBuilder />;
 }
