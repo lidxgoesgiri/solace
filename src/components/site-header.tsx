@@ -3,6 +3,7 @@ import { HelpNowButton } from "@/components/help-now-button";
 import { LangSwitch } from "@/components/lang-switch";
 import { Logo } from "@/components/logo";
 import { QuickExit } from "@/components/quick-exit";
+import { ThemeSwitch } from "@/components/theme-switch";
 import { Link } from "@/i18n/navigation";
 
 export async function SiteHeader() {
@@ -28,8 +29,11 @@ export async function SiteHeader() {
           </span>
         </Link>
         <LangSwitch />
+        {/* On phones the switch shares the second row with "help now", so the
+            first row keeps the logo, language, and quick exit. */}
+        <ThemeSwitch className="max-sm:order-[10000]" />
         <QuickExit />
-        <HelpNowButton className="order-last w-full sm:order-none sm:w-auto" />
+        <HelpNowButton className="order-last grow basis-48 sm:order-none sm:grow-0 sm:basis-auto" />
       </div>
     </header>
   );

@@ -20,7 +20,9 @@
     "quickExitShort": "Keluar",
     "quickExitLabel": "Keluar cepat: tinggalkan Solace ke situs lain. Bisa juga dengan menekan Esc dua kali.",
     "langSwitch": "EN",
-    "langSwitchLabel": "EN, ganti bahasa ke English"
+    "langSwitchLabel": "EN, ganti bahasa ke English",
+    "themeDark": "Mode gelap",
+    "themeLight": "Mode terang"
   },
   "footer": {
     "disclaimer": "Solace adalah alat skrining, bukan diagnosis.",

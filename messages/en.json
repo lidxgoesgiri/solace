@@ -20,7 +20,9 @@
     "quickExitShort": "Exit",
     "quickExitLabel": "Quick exit: leave Solace for another site. You can also press Esc twice.",
     "langSwitch": "ID",
-    "langSwitchLabel": "ID, switch language to Bahasa Indonesia"
+    "langSwitchLabel": "ID, switch language to Bahasa Indonesia",
+    "themeDark": "Dark mode",
+    "themeLight": "Light mode"
   },
   "footer": {
     "disclaimer": "Solace is a screening tool, not a diagnosis.",
