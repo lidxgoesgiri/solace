@@ -17,15 +17,7 @@
  *   /krisis, regardless of how it was reached (link, back, refresh, URL).
  */
 
-import {
-  DASS21_ITEM_COUNT,
-  isAnswerValue,
-  isComplete,
-  meetsPriorityThreshold,
-  scoreDass21,
-  type AnswerValue,
-  type Dass21Result,
-} from "./scoring";
+import { DASS21_ITEM_COUNT, isAnswerValue, isComplete, type AnswerValue } from "./answers";
 import type { Locale } from "./content";
 
 const FLOW_LOCALES: readonly Locale[] = ["id", "en"];
@@ -262,30 +254,6 @@ export function pathAfterCrisis(state: FlowState): string {
   if (isScreeningFinished(state)) return PATHS.hasil;
   if (hasDraft(state)) return resumePath(state);
   return PATHS.landing;
-}
-
-export interface ResultsView {
-  result: Dass21Result;
-  /** "Prioritas" panel (PRD 9.2, HS-07, K5). */
-  showPriorityPanel: boolean;
-  /** Keep the help directory near the top (PRD 9.5). */
-  showSupportFirst: boolean;
-}
-
-/** Everything the results page needs, or null when results are not available. */
-export function resultsView(state: FlowState): ResultsView | null {
-  if (!isScreeningFinished(state) || mustShowCrisis(state)) return null;
-  const result = scoreDass21(state.answers);
-  if (!result) return null;
-  const showPriorityPanel = meetsPriorityThreshold(result);
-  return {
-    result,
-    showPriorityPanel,
-    showSupportFirst:
-      showPriorityPanel ||
-      state.safetyEverPositive ||
-      (state.safetyAnswer ?? 0) > 0,
-  };
 }
 
 /* ------------------------------------------------------------------------ */

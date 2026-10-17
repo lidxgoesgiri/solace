@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@/i18n/navigation";
 import { LOCALES, isLocale, type Locale } from "@/lib/content";
-import { PATHS, resultsView } from "@/lib/flow";
+import { PATHS } from "@/lib/flow";
+import { resultsView } from "@/lib/results";
 import {
   NICKNAME_MAX_LENGTH,
   buildReportModel,

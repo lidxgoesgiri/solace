@@ -9,7 +9,7 @@ import { useAnswerKeys } from "@/hooks/use-answer-keys";
 import { Link, useRouter } from "@/i18n/navigation";
 import type { AnswerOption } from "@/lib/content";
 import { PATHS } from "@/lib/flow";
-import { DASS21_ITEM_COUNT, type AnswerValue } from "@/lib/scoring";
+import { DASS21_ITEM_COUNT, type AnswerValue } from "@/lib/answers";
 import { useFlow, useFlowDispatch } from "@/store/flow-store";
 
 // Where the bar stood on the previous question, so it grows from there.

@@ -1,6 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createInitialFlowState, flowReducer, resultsView, type FlowEvent, type FlowState } from "@/lib/flow";
+import { createInitialFlowState, flowReducer, type FlowEvent, type FlowState } from "@/lib/flow";
+import { resultsView } from "@/lib/results";
 import type { AnswerValue } from "@/lib/scoring";
 import { buildReportModel, type ReportOptions } from "./model";
 import { renderReportPdf } from "./pdf";

@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeFromParams } from "@/i18n/locale";
 import { ScreeningQuestion } from "@/components/screening-question";
 import { getDass21, isTodoPlaceholder } from "@/lib/content";
-import { DASS21_ITEM_COUNT } from "@/lib/scoring";
+import { DASS21_ITEM_COUNT } from "@/lib/answers";
 
 interface PageProps {
   params: Promise<{ locale: string; n: string }>;

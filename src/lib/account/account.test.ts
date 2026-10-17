@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createInitialFlowState, flowReducer, mustShowCrisis, resultsView, type FlowEvent } from "@/lib/flow";
+import { createInitialFlowState, flowReducer, mustShowCrisis, type FlowEvent } from "@/lib/flow";
+import { resultsView } from "@/lib/results";
 import { scoreDass21, type AnswerValue } from "@/lib/scoring";
 import { isAcceptablePassphrase, passphraseStrength } from "./passphrase";
 import { flowFromScreeningRecord, scoreRecord, screeningRecordFromFlow, sortByCompletion } from "./screening";

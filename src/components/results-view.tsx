@@ -9,7 +9,8 @@ import { Stagger } from "@/components/motion/reveal";
 import { ResultCard } from "@/components/result-card";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
-import { PATHS, resultsView } from "@/lib/flow";
+import { PATHS } from "@/lib/flow";
+import { resultsView } from "@/lib/results";
 import { SUBSCALES } from "@/lib/scoring";
 import { useFlow, useFlowDispatch } from "@/store/flow-store";
 
