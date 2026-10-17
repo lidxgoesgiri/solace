@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioItem } from "@/components/ui/radio-cards";
 import { useRouter } from "@/i18n/navigation";
+import { trackEvent } from "@/lib/metrics-client";
 import { firstUnansweredItem, hasDraft, isScreeningFinished, resumePath } from "@/lib/flow";
 import { cn } from "@/lib/utils";
 import { useFlow, useFlowDispatch, useFlowHydrated, useFlowStore } from "@/store/flow-store";
@@ -43,6 +44,7 @@ export function StartForm() {
   const begin = () => {
     if (!canBegin) return;
     dispatch({ type: "BEGIN_SCREENING", at: new Date().toISOString() });
+    trackEvent("screening_started");
     router.push(resumePath(useFlowStore.getState().flow));
   };
 

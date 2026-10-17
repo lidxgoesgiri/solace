@@ -6,7 +6,7 @@
 export const METRIC_EVENTS = [
   "screening_started",
   "results_viewed",
-  "report_downloaded",
+  "report_opened",
   "tips_opened",
   "account_created",
 ] as const;

@@ -21,6 +21,7 @@ import {
   type ReportModel,
 } from "@/lib/report/model";
 import { preloadReportRenderer, renderReport, saveFile } from "@/lib/report/client";
+import { trackEvent } from "@/lib/metrics-client";
 import { buildReportLabels } from "@/lib/report/labels";
 import { useFlow } from "@/store/flow-store";
 
@@ -55,9 +56,11 @@ export function ReportBuilder() {
 
   const view = resultsView(flow);
 
-  // Fetch the PDF engine while the user reads the page (PDF-01).
+  // Fetch the PDF engine while the user reads the page (PDF-01). The page
+  // view is counted now, never while a PDF is being built.
   useEffect(() => {
     void preloadReportRenderer();
+    trackEvent("report_opened");
   }, []);
 
   const preview: ReportModel | null = useMemo(
