@@ -33,7 +33,7 @@ export function LangSwitch() {
         })
       }
     >
-      <Languages aria-hidden="true" />
+      <Languages aria-hidden="true" className="max-[359px]:hidden" />
       {t("langSwitch")}
     </Button>
   );

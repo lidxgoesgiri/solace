@@ -42,8 +42,8 @@ export function QuickExit() {
       onClick={quickExit}
     >
       <LogOut aria-hidden="true" />
-      <span className="min-[360px]:hidden">{t("quickExitShort")}</span>
-      <span className="hidden min-[360px]:inline">{t("quickExit")}</span>
+      <span className="min-[420px]:hidden">{t("quickExitShort")}</span>
+      <span className="hidden min-[420px]:inline">{t("quickExit")}</span>
     </Button>
   );
 }
