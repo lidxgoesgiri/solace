@@ -7,6 +7,9 @@ import {
   flowReducer,
   guardRoute,
   hasDraft,
+  isDraftExpired,
+  expireStaleDraft,
+  DRAFT_TTL_MS,
   mustShowCrisis,
   parseRoute,
   pathAfterCrisis,
@@ -58,6 +61,9 @@ describe("parseRoute", () => {
     ["/laporan", "laporan"],
     ["/tips", "tips"],
     ["/riwayat", "riwayat"],
+    ["/rencana-keselamatan", "rencana-keselamatan"],
+    ["/akun", "akun"],
+    ["/en/akun/masuk", "akun"],
     ["/something-else", "other"],
   ])("%s → %s", (path, name) => {
     expect(parseRoute(path).name).toBe(name);
@@ -75,6 +81,8 @@ describe("parseRoute", () => {
     expect(routeNeedsState("/")).toBe(false);
     expect(routeNeedsState("/krisis")).toBe(false);
     expect(routeNeedsState("/mulai")).toBe(false);
+    expect(routeNeedsState("/rencana-keselamatan")).toBe(false);
+    expect(routeNeedsState("/akun/daftar")).toBe(false);
     expect(routeNeedsState("/skrining/3")).toBe(true);
     for (const path of GATED_PATHS) expect(routeNeedsState(path)).toBe(true);
   });
@@ -479,5 +487,78 @@ describe("sanitizeFlowState", () => {
     });
     expect(restored.answers.slice(0, 8)).toEqual([0, 1, 2, 3, null, null, null, null]);
     expect(restored.answers).toHaveLength(21);
+  });
+});
+
+describe("draft expiry and pause (SK-06, PRD 13.4)", () => {
+  const T0 = "2026-10-10T08:00:00.000Z";
+  const at = (ms: number) => new Date(Date.parse(T0) + ms);
+
+  function draftAt(updatedAt: string): FlowState {
+    return run([
+      { type: "BEGIN_SCREENING", at: updatedAt },
+      { type: "ANSWER_ITEM", item: 1, value: 2, at: updatedAt },
+    ]);
+  }
+
+  it("records when the draft last changed", () => {
+    const state = draftAt(T0);
+    expect(state.updatedAt).toBe(T0);
+    const later = flowReducer(state, {
+      type: "ANSWER_ITEM",
+      item: 2,
+      value: 1,
+      at: "2026-10-11T08:00:00.000Z",
+    });
+    expect(later.updatedAt).toBe("2026-10-11T08:00:00.000Z");
+  });
+
+  it("ignores invalid timestamps", () => {
+    const state = flowReducer(draftAt(T0), {
+      type: "ANSWER_ITEM",
+      item: 2,
+      value: 1,
+      at: "yesterday",
+    });
+    expect(state.updatedAt).toBe(T0);
+  });
+
+  it("keeps a draft for 7 days and drops it after that", () => {
+    const state = draftAt(T0);
+    expect(isDraftExpired(state, at(DRAFT_TTL_MS))).toBe(false);
+    expect(isDraftExpired(state, at(DRAFT_TTL_MS + 1))).toBe(true);
+    expect(expireStaleDraft(state, at(DRAFT_TTL_MS + 1))).toEqual(createInitialFlowState());
+    expect(expireStaleDraft(state, at(DRAFT_TTL_MS))).toBe(state);
+  });
+
+  it("never expires a finished screening or a draft without a timestamp", () => {
+    const finished = { ...afterSafety(0), updatedAt: T0 };
+    expect(isDraftExpired(finished, at(30 * DRAFT_TTL_MS))).toBe(false);
+    const legacy = run([{ type: "BEGIN_SCREENING" }, ...answerAll().slice(0, 3)]);
+    expect(legacy.updatedAt).toBeNull();
+    expect(isDraftExpired(legacy, at(30 * DRAFT_TTL_MS))).toBe(false);
+  });
+
+  it("K3: expiring a draft never clears a pending crisis", () => {
+    const state = flowReducer(draftAt(T0), { type: "REQUEST_HELP", from: "/skrining/2" });
+    const expired = expireStaleDraft(state, at(DRAFT_TTL_MS + 1));
+    expect(expired.answers.every((answer) => answer === null)).toBe(true);
+    expect(expired.crisis).toBe("crisis_pending");
+    expect(mustShowCrisis(expired)).toBe(true);
+    expect(guardRoute(expired, "/hasil")).toBe(PATHS.krisis);
+  });
+
+  it("sanitizes the stored timestamp", () => {
+    expect(sanitizeFlowState({ updatedAt: "not a date" }).updatedAt).toBeNull();
+    expect(sanitizeFlowState({ updatedAt: T0 }).updatedAt).toBe(T0);
+  });
+
+  it("the safety plan and account pages are valid places to return to after help", () => {
+    const state = flowReducer(createInitialFlowState(), {
+      type: "REQUEST_HELP",
+      from: "/en/rencana-keselamatan",
+    });
+    expect(state.crisisReturnTo).toBe("/rencana-keselamatan");
+    expect(guardRoute(state, "/rencana-keselamatan")).toBeNull();
   });
 });

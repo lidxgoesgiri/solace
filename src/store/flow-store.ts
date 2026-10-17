@@ -6,6 +6,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import {
   FLOW_STATE_VERSION,
   createInitialFlowState,
+  expireStaleDraft,
   flowReducer,
   sanitizeFlowState,
   type FlowEvent,
@@ -38,8 +39,11 @@ export const useFlowStore = create<FlowStore>()(
       // Stored data is untrusted: rebuild it through the sanitizer, and never
       // let restored data clear a crisis that is already pending in memory.
       merge: (persisted, current) => {
-        const restored = sanitizeFlowState(
-          (persisted as { flow?: unknown } | undefined)?.flow,
+        // A draft untouched for 7 days is dropped (SK-06, PRD 13.4); a
+        // pending crisis survives that too.
+        const restored = expireStaleDraft(
+          sanitizeFlowState((persisted as { flow?: unknown } | undefined)?.flow),
+          new Date(),
         );
         const flow =
           current.flow.crisis === "crisis_pending" &&
