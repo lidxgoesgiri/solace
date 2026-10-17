@@ -42,7 +42,7 @@ export function StartForm() {
 
   const begin = () => {
     if (!canBegin) return;
-    dispatch({ type: "BEGIN_SCREENING" });
+    dispatch({ type: "BEGIN_SCREENING", at: new Date().toISOString() });
     router.push(resumePath(useFlowStore.getState().flow));
   };
 

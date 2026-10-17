@@ -87,6 +87,7 @@ export function LandingResume() {
           <p className="text-muted-foreground">
             {t("resumeBody", { answered: answeredCount(flow) })}
           </p>
+          <p className="text-sm text-muted-foreground">{t("resumeExpiry")}</p>
           <div className="flex flex-wrap gap-3 pt-1">
             <Button asChild>
               <Link href={resumePath(flow)} data-testid="resume-screening">
