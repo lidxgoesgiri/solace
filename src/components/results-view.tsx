@@ -4,17 +4,20 @@ import { Download } from "@/components/icons/download";
 import { Info } from "@/components/icons/info";
 import { Sparkles } from "@/components/icons/sparkles";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HelpDirectory } from "@/components/help-directory";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { Stagger } from "@/components/motion/reveal";
 import { ResultCard } from "@/components/result-card";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
+import { screeningRecordFromFlow } from "@/lib/account/screening";
 import { PATHS } from "@/lib/flow";
 import { resultsView } from "@/lib/results";
+import { trackEvent } from "@/lib/metrics-client";
 import { SUBSCALES } from "@/lib/scoring";
-import { useFlow, useFlowDispatch } from "@/store/flow-store";
+import { isAccountOpen } from "@/store/account-store";
+import { useFlow, useFlowDispatch, useFlowStore } from "@/store/flow-store";
 
 /**
  * Results page (HS-01–HS-07). Rendered only after the flow guard has
@@ -28,6 +31,21 @@ export function ResultsView() {
   const [confirmClear, setConfirmClear] = useState(false);
 
   const view = resultsView(flow);
+  const shownFor = view ? flow.completedAt : null;
+
+  useEffect(() => {
+    if (!shownFor) return;
+    trackEvent("results_viewed");
+    // Signed in: keep this result in the account as well (encrypted). The
+    // account code loads only in that case.
+    if (!isAccountOpen()) return;
+    const record = screeningRecordFromFlow(useFlowStore.getState().flow);
+    if (!record) return;
+    void import("@/lib/account/client")
+      .then(({ saveScreeningIfNew }) => saveScreeningIfNew(record))
+      .catch(() => undefined);
+  }, [shownFor]);
+
   if (!view) return null;
   const { result, showPriorityPanel, showSupportFirst } = view;
 
