@@ -10,10 +10,12 @@
 //   src/app/icon.png               512×512
 //   src/app/apple-icon.png         180×180
 //   src/app/favicon.ico            16, 32, 48 (PNG-compressed ICO)
+//   public/icons/icon-192.png      192×192, for the web app manifest (PWA)
+//   public/icons/icon-512.png      512×512, for the web app manifest (PWA)
 //
 // The logo is only trimmed, padded, and resized; its shapes are never redrawn.
 
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -88,6 +90,11 @@ async function main() {
 
   await writeFile(app("icon.png"), await iconPng(square, 512, 0.08));
   await writeFile(app("apple-icon.png"), await iconPng(square, 180, 0.1));
+
+  const pwa = (file) => path.join(root, "public", "icons", file);
+  await mkdir(path.join(root, "public", "icons"), { recursive: true });
+  await writeFile(pwa("icon-192.png"), await iconPng(square, 192, 0.08));
+  await writeFile(pwa("icon-512.png"), await iconPng(square, 512, 0.08));
 
   const icoImages = [];
   for (const size of [16, 32, 48]) {

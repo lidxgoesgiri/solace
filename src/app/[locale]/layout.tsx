@@ -10,6 +10,7 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { routing } from "@/i18n/routing";
+import { serviceWorkerScript } from "@/lib/pwa";
 import "../globals.css";
 
 // Self-hosted by next/font at build time: no request to Google Fonts at runtime.
@@ -68,6 +69,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             </FlowGuard>
           </main>
           <SiteFooter />
+          {process.env.NODE_ENV === "production" ? (
+            // Offline support (PRD 14), outside React so screening pages ship no extra JS.
+            <script dangerouslySetInnerHTML={{ __html: serviceWorkerScript(locale) }} />
+          ) : null}
         </NextIntlClientProvider>
       </body>
     </html>
