@@ -74,7 +74,7 @@ Scores are shown ×2 (0–42). Each `result-card-{subscale}` carries `data-score
 | PDF-01 | PDF made in the browser | On `/laporan` click `download-pdf` | `report-status` names `solace-dass21-YYYY-MM-DD.pdf` and a code like `SOL-XXXX-XXXX`; no network request is made while the PDF is built |
 | PDF-opt | Report options | On `/laporan` type a nickname in `report-nickname`, untick `report-include-safety` | `report-nickname-preview` shows the nickname; `report-safety` disappears |
 | K9 | Switching language keeps answers | Start · answer questions 1–9 with mixed values · at question 10 click `lang-switch` | URL `/en/skrining/10`; `<html lang="en">`; going back with `prev-question`, each of 1–9 still has its option selected |
-| K11 | Help button on every page | Visit `/`, `/mulai`, `/skrining/1`, `/keamanan`, `/krisis`, `/hasil`, `/en` | `help-now` visible on each; clicking it opens `/krisis` |
+| K11 | Help button on every page | Visit `/`, `/mulai`, `/skrining/1`, `/keamanan`, `/krisis`, `/hasil`, `/en`. `/keamanan` and `/hasil` are only reachable through the flow (Start · `all-0`); opened directly in a clean session they redirect to `/mulai` by design | `help-now` visible on each; clicking it opens `/krisis` |
 
 ### Global, onboarding, and screening
 
@@ -116,6 +116,10 @@ Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{
 
 - **TIPS-001** — the tips page is still a placeholder. Expected until the tips feature lands.
 - **STAR-004** — after starting a screening (age and consent given) and leaving before answering question 1, the landing page offered no way to continue. Fixed on the same branch: a screening now counts as started once age and consent are confirmed, and the resume card says no question has been answered yet.
+
+### PR #2 run (2026-10-17, preview)
+
+33 of 34 passed, 1 blocked. The Help & exit test "Help link opens crisis support from the safety page" opened `/keamanan` directly in a clean session, and the router guard correctly sent it back to `/mulai`, so the safety page was never reached. The app was right and the test was wrong: the test now starts a screening and answers all 21 items before checking `help-now` on `/keamanan`.
 
 ## Not yet covered (features still to come)
 
