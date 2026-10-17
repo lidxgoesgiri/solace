@@ -23,6 +23,7 @@ export interface Dass21Content {
   language: Locale;
   status: string;
   citation: { text: string; doi: string; url: string };
+  textSource?: { url: string | null; checkedAt: string | null; note: string };
   instructions: string;
   options: AnswerOption[];
   items: { number: number; text: string }[];
