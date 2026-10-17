@@ -7,7 +7,12 @@
  * network request (PDF-01).
  */
 
-import type { RenderedReport, ReportLabels } from "./pdf";
+import type {
+  RenderedReport,
+  ReportLabels,
+  SafetyPlanLabels,
+  SafetyPlanPdfInput,
+} from "./pdf";
 import type { ReportModel } from "./model";
 
 let renderer: Promise<typeof import("./pdf")> | null = null;
@@ -20,6 +25,14 @@ export function preloadReportRenderer(): Promise<typeof import("./pdf")> {
 export async function renderReport(model: ReportModel, labels: ReportLabels): Promise<RenderedReport> {
   const { renderReportPdf } = await preloadReportRenderer();
   return renderReportPdf(model, labels);
+}
+
+export async function renderSafetyPlan(
+  input: SafetyPlanPdfInput,
+  labels: SafetyPlanLabels,
+): Promise<RenderedReport> {
+  const { renderSafetyPlanPdf } = await preloadReportRenderer();
+  return renderSafetyPlanPdf(input, labels);
 }
 
 /** Saves bytes as a file without any network request (PDF-01). */

@@ -1,21 +1,31 @@
 "use client";
 
 import { ArrowRight } from "@/components/icons/arrow-right";
-import { Eye } from "@/components/icons/eye";
-import { Hand } from "@/components/icons/hand";
-import { Ear } from "@/components/icons/ear";
-import { Flower2 } from "@/components/icons/flower-2";
-import { Coffee } from "@/components/icons/coffee";
 import { ShieldCheck } from "@/components/icons/shield-check";
+import { GroundingList } from "@/components/toolkit/grounding-list";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BreathingPacer } from "@/components/breathing-pacer";
 import { CountrySelect, ServiceList } from "@/components/help-directory";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { PATHS, pathAfterCrisis } from "@/lib/flow";
 import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
+
+/**
+ * The user's own plan (SP-02) is code-split with React.lazy and rendered
+ * only after the crisis screen has mounted, so its code is fetched after
+ * the page shows and never adds to the screen's initial JavaScript (Next's
+ * own dynamic loader would cost more than this panel on /krisis).
+ */
+const noSubscribe = () => () => {};
+
+const LazyCrisisPlanPanel = lazy(() =>
+  import("@/components/safety-plan/crisis-plan-panel").then((mod) => ({
+    default: mod.CrisisPlanPanel,
+  })),
+);
 
 /**
  * Full crisis screen (PRD 9.3). It offers several steps, not only numbers,
@@ -25,12 +35,19 @@ import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
  */
 export function CrisisScreen() {
   const t = useTranslations("crisis");
+  const all = useTranslations();
   const router = useRouter();
   const hydrated = useFlowHydrated();
   const flow = useFlow();
   const dispatch = useFlowDispatch();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [acknowledged, setAcknowledged] = useState(false);
+  // False on the server and during hydration: the lazy panel never renders on the server.
+  const mounted = useSyncExternalStore(
+    noSubscribe,
+    () => true,
+    () => false,
+  );
 
   const next = hydrated ? pathAfterCrisis(flow) : PATHS.landing;
 
@@ -43,14 +60,6 @@ export function CrisisScreen() {
     dispatch({ type: "ACKNOWLEDGE_CRISIS" });
     router.push(next);
   };
-
-  const grounding = [
-    { icon: Eye, text: t("groundingSee") },
-    { icon: Hand, text: t("groundingTouch") },
-    { icon: Ear, text: t("groundingHear") },
-    { icon: Flower2, text: t("groundingSmell") },
-    { icon: Coffee, text: t("groundingTaste") },
-  ];
 
   const plan = [
     t("planWarningSigns"),
@@ -123,16 +132,7 @@ export function CrisisScreen() {
           <div className="surface space-y-4 p-6" data-testid="grounding">
             <h3 className="text-xl">{t("groundingTitle")}</h3>
             <p className="text-sm text-muted-foreground">{t("groundingIntro")}</p>
-            <ol className="space-y-2.5">
-              {grounding.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex items-center gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-ink">
-                    <Icon aria-hidden="true" className="size-4" />
-                  </span>
-                  {text}
-                </li>
-              ))}
-            </ol>
+            <GroundingList />
           </div>
         </div>
       </section>
@@ -145,11 +145,26 @@ export function CrisisScreen() {
         <ul className="grid gap-x-8 sm:grid-cols-2">
           {plan.map((text) => (
             <li key={text} className="flex items-start gap-3 border-b py-3">
-              <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-sage-ink" />
+              <span
+                aria-hidden="true"
+                className="mt-2 size-1.5 shrink-0 rounded-full bg-sage-ink"
+              />
               {text}
             </li>
           ))}
         </ul>
+        {mounted ? (
+          <Suspense fallback={null}>
+            <LazyCrisisPlanPanel />
+          </Suspense>
+        ) : null}
+        <Link
+          href={PATHS.rencana}
+          data-testid="crisis-make-plan"
+          className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4"
+        >
+          {all("plan.crisisMakePlan")}
+        </Link>
       </section>
 
       <section aria-labelledby="crisis-trusted" data-testid="crisis-trusted" className="space-y-4">

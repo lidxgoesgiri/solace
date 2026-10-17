@@ -7,7 +7,7 @@
 
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb, type PDFFont, type PDFImage, type PDFPage, type RGB } from "pdf-lib";
-import type { Locale, ServiceType } from "@/lib/content";
+import type { HelpService, Locale, ServiceType } from "@/lib/content";
 import type { Severity, Subscale } from "@/lib/scoring";
 import { INTER_REGULAR, INTER_SEMIBOLD, LOGO_PNG, LORA_SEMIBOLD } from "./assets";
 import type { ReportModel } from "./model";
@@ -389,9 +389,23 @@ function hostOf(url: string): string {
   }
 }
 
-function drawDirectory(w: Writer, model: ReportModel, labels: ReportLabels) {
+type DirectoryLabels = Pick<
+  ReportLabels,
+  | "directoryTitle"
+  | "directoryCountry"
+  | "emergency"
+  | "support"
+  | "call"
+  | "source"
+  | "verifiedAt"
+  | "notVerified"
+  | "serviceType"
+  | "formatDate"
+>;
+
+function drawServiceList(w: Writer, services: readonly HelpService[], labels: DirectoryLabels) {
   w.heading(`${labels.directoryTitle} · ${labels.directoryCountry}`);
-  for (const service of model.services) {
+  for (const service of services) {
     w.ensure(30);
     const category = service.category === "emergency" ? labels.emergency : labels.support;
     const channels = service.channels
@@ -413,7 +427,11 @@ function drawDirectory(w: Writer, model: ReportModel, labels: ReportLabels) {
   }
 }
 
-function drawFooters(w: Writer, labels: ReportLabels) {
+function drawDirectory(w: Writer, model: ReportModel, labels: ReportLabels) {
+  drawServiceList(w, model.services, labels);
+}
+
+function drawFooters(w: Writer, labels: Pick<ReportLabels, "footer" | "page">) {
   const total = w.pages.length;
   w.pages.forEach((page, index) => {
     const y = MARGIN - 18;
@@ -478,6 +496,89 @@ export async function renderReportPdf(
   drawInstrument(w, model, labels);
   drawDirectory(w, model, labels);
 
+  drawFooters(w, labels);
+
+  return { bytes: await doc.save(), pages: w.texts };
+}
+
+/* ------------------------------------------------------------------------ */
+/* Safety plan (SP-03)                                                      */
+/* ------------------------------------------------------------------------ */
+
+export interface SafetyPlanPdfInput {
+  locale: Locale;
+  /** Section title and the user's text, in display order. */
+  sections: { title: string; text: string }[];
+  services: readonly HelpService[];
+}
+
+export interface SafetyPlanLabels extends DirectoryLabels {
+  docTitle: string;
+  intro: string;
+  madeOn: string;
+  empty: string;
+  disclaimer: string;
+  footer: string;
+  page: (page: number, total: number) => string;
+}
+
+/**
+ * The safety plan as a one- or two-page PDF, made in the browser and never
+ * sent anywhere (SP-03). Same fonts and layout rules as the report.
+ */
+export async function renderSafetyPlanPdf(
+  input: SafetyPlanPdfInput,
+  labels: SafetyPlanLabels,
+  now: Date = new Date(),
+): Promise<RenderedReport> {
+  const doc = await PDFDocument.create();
+  doc.registerFontkit(fontkit);
+  const fonts: Fonts = {
+    regular: await doc.embedFont(decodeBase64(INTER_REGULAR), { subset: true }),
+    semibold: await doc.embedFont(decodeBase64(INTER_SEMIBOLD), { subset: true }),
+    heading: await doc.embedFont(decodeBase64(LORA_SEMIBOLD), { subset: true }),
+  };
+  const logo = await doc.embedPng(decodeBase64(LOGO_PNG));
+
+  doc.setTitle(labels.docTitle, { showInWindowTitleBar: true });
+  doc.setAuthor("");
+  doc.setSubject("");
+  doc.setKeywords([]);
+  doc.setCreator("Solace");
+  doc.setProducer("Solace");
+  doc.setLanguage(input.locale === "id" ? "id-ID" : "en");
+  doc.setCreationDate(now);
+  doc.setModificationDate(now);
+
+  const w = new Writer(doc, fonts);
+  w.addPage();
+  const logoSize = 30;
+  w.image(logo, MARGIN, PAGE_HEIGHT - MARGIN - logoSize, logoSize, logoSize * (271 / 266));
+  w.text(labels.docTitle, MARGIN + logoSize + 12, PAGE_HEIGHT - MARGIN - 20, fonts.heading, 18);
+  w.y = PAGE_HEIGHT - MARGIN - logoSize - 18;
+  w.paragraph(labels.madeOn, MARGIN, CONTENT_WIDTH, fonts.regular, 9, MUTED);
+  w.y -= 4;
+  w.paragraph(labels.intro, MARGIN, CONTENT_WIDTH, fonts.regular, 9.5);
+  w.y -= 6;
+
+  input.sections.forEach((section, index) => {
+    w.heading(`${index + 1}. ${section.title}`);
+    const paragraphs = section.text
+      .split(/\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    if (paragraphs.length === 0) {
+      w.paragraph(labels.empty, MARGIN, CONTENT_WIDTH, fonts.regular, 10, MUTED);
+    } else {
+      for (const paragraph of paragraphs) w.paragraph(paragraph, MARGIN, CONTENT_WIDTH, fonts.regular, 10.5);
+    }
+    w.y -= 4;
+  });
+
+  w.y -= 6;
+  drawServiceList(w, input.services, labels);
+  w.y -= 8;
+  w.paragraph(labels.disclaimer, MARGIN, CONTENT_WIDTH, fonts.regular, 8.5, MUTED);
   drawFooters(w, labels);
 
   return { bytes: await doc.save(), pages: w.texts };
