@@ -4,6 +4,7 @@ import { Download, Info, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { HelpDirectory } from "@/components/help-directory";
+import { Stagger } from "@/components/motion/reveal";
 import { ResultCard } from "@/components/result-card";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -32,17 +33,17 @@ export function ResultsView() {
   };
 
   return (
-    <div className="space-y-10" data-testid="results">
+    <div className="mx-auto max-w-4xl space-y-14" data-testid="results">
       {showPriorityPanel ? (
         <section
           data-testid="priority-panel"
           aria-labelledby="priority-title"
-          className="space-y-4 rounded-2xl border-2 border-sev-extreme-edge bg-sev-extreme p-5 text-ink"
+          className="space-y-5 rounded-3xl border border-sev-extreme-edge bg-sev-extreme p-6 text-ink shadow-(--shadow-soft) sm:p-8"
         >
-          <h2 id="priority-title" className="text-2xl">
+          <h2 id="priority-title" className="text-3xl">
             {t("priorityTitle")}
           </h2>
-          <p>{t("priorityBody")}</p>
+          <p className="measure text-lg leading-relaxed">{t("priorityBody")}</p>
           <Button asChild>
             <Link href={PATHS.laporan} data-testid="priority-download-report">
               <Download aria-hidden="true" />
@@ -55,36 +56,38 @@ export function ResultsView() {
         <section
           data-testid="support-panel"
           aria-labelledby="support-title"
-          className="space-y-4 rounded-2xl border bg-sky-soft p-5"
+          className="space-y-5 rounded-3xl border border-sky bg-sky-soft p-6 shadow-(--shadow-soft) sm:p-8"
         >
-          <h2 id="support-title" className="text-2xl">
+          <h2 id="support-title" className="text-3xl">
             {t("supportTitle")}
           </h2>
-          <p>{t("supportBody")}</p>
+          <p className="measure text-lg leading-relaxed">{t("supportBody")}</p>
           <HelpDirectory />
         </section>
       ) : null}
 
-      <header className="space-y-2">
-        <h1 className="text-3xl sm:text-4xl">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("thanks")}</p>
-      </header>
+      <div className="space-y-6">
+        <header className="space-y-3">
+          <h1 className="text-4xl leading-tight sm:text-5xl">{t("title")}</h1>
+          <p className="font-heading text-xl text-sage-ink italic">{t("thanks")}</p>
+        </header>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        {SUBSCALES.map((subscale) => (
-          <ResultCard key={subscale} subscale={subscale} result={result[subscale]} />
-        ))}
+        <Stagger className="space-y-4">
+          {SUBSCALES.map((subscale) => (
+            <ResultCard key={subscale} subscale={subscale} result={result[subscale]} />
+          ))}
+        </Stagger>
       </div>
 
-      <section aria-labelledby="next-steps-title" className="space-y-4">
+      <section aria-labelledby="next-steps-title" className="space-y-6">
         <p
           data-testid="disclaimer"
-          className="flex gap-3 rounded-xl border bg-muted p-4 text-sm"
+          className="flex gap-3 rounded-2xl border bg-muted/70 p-5 text-sm leading-relaxed"
         >
-          <Info aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+          <Info aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-sage-ink" />
           <span>{t("disclaimer")}</span>
         </p>
-        <h2 id="next-steps-title" className="text-2xl">
+        <h2 id="next-steps-title" className="text-3xl">
           {t("nextStepsTitle")}
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -104,19 +107,19 @@ export function ResultsView() {
       </section>
 
       {showSupportFirst ? null : (
-        <section aria-labelledby="directory-title" className="space-y-4">
-          <h2 id="directory-title" className="text-2xl">
+        <section aria-labelledby="directory-title" className="space-y-5 border-t pt-12">
+          <h2 id="directory-title" className="text-3xl">
             {t("directoryTitle")}
           </h2>
           <HelpDirectory />
         </section>
       )}
 
-      <section aria-labelledby="device-title" className="space-y-3 rounded-2xl border bg-card p-5">
-        <h2 id="device-title" className="text-xl">
+      <section aria-labelledby="device-title" className="surface space-y-3 p-6 sm:p-8">
+        <h2 id="device-title" className="text-2xl">
           {t("deviceTitle")}
         </h2>
-        <p className="text-sm">{t("deviceBody")}</p>
+        <p className="measure text-muted-foreground">{t("deviceBody")}</p>
         {confirmClear ? (
           <div className="space-y-3" role="group" aria-labelledby="clear-question">
             <p id="clear-question" className="font-medium">
@@ -148,7 +151,7 @@ export function ResultsView() {
         )}
       </section>
 
-      <p className="text-xs text-muted-foreground">{t("instrumentNote")}</p>
+      <p className="measure text-xs leading-relaxed text-muted-foreground">{t("instrumentNote")}</p>
     </div>
   );
 }

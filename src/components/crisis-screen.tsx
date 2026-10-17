@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Eye, Hand, Ear, Flower2, Coffee } from "lucide-react";
+import { ArrowRight, Eye, Hand, Ear, Flower2, Coffee, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { BreathingPacer } from "@/components/breathing-pacer";
@@ -56,64 +56,71 @@ export function CrisisScreen() {
   ];
 
   return (
-    <section data-testid="crisis-screen" aria-labelledby="crisis-title" className="space-y-10">
-      <header className="space-y-3">
+    <section
+      data-testid="crisis-screen"
+      aria-labelledby="crisis-title"
+      className="mx-auto max-w-3xl space-y-10 sm:space-y-14"
+    >
+      <header className="space-y-4 sm:space-y-5">
         <h1
           id="crisis-title"
           ref={headingRef}
           tabIndex={-1}
-          className="text-3xl outline-none sm:text-4xl"
+          className="text-[2.6rem] leading-[1.08] outline-none sm:text-6xl"
         >
           {t("title")}
         </h1>
-        <p className="text-lg">{t("intro")}</p>
-        <p className="text-sm text-muted-foreground">{t("privacy")}</p>
+        <p className="measure text-lg leading-relaxed sm:text-xl">{t("intro")}</p>
+        <p className="flex items-start gap-2.5 text-sm text-muted-foreground">
+          <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
+          {t("privacy")}
+        </p>
       </header>
 
       <section
         aria-labelledby="crisis-emergency"
         data-testid="crisis-emergency"
-        className="space-y-4 rounded-2xl border-2 border-sun bg-sun-soft p-5"
+        className="space-y-5 rounded-3xl border border-sun-edge bg-sun-soft p-6 shadow-(--shadow-soft) sm:p-8"
       >
-        <div className="space-y-1">
-          <h2 id="crisis-emergency" className="text-2xl">
+        <div className="space-y-1.5">
+          <h2 id="crisis-emergency" className="text-3xl">
             {t("emergencyTitle")}
           </h2>
-          <p>{t("emergencyBody")}</p>
+          <p className="text-lg">{t("emergencyBody")}</p>
         </div>
         <CountrySelect />
         <ServiceList category="emergency" />
       </section>
 
-      <section aria-labelledby="crisis-talk" data-testid="crisis-talk" className="space-y-4">
-        <div className="space-y-1">
-          <h2 id="crisis-talk" className="text-2xl">
+      <section aria-labelledby="crisis-talk" data-testid="crisis-talk" className="space-y-5">
+        <div className="space-y-1.5">
+          <h2 id="crisis-talk" className="text-3xl">
             {t("talkTitle")}
           </h2>
-          <p>{t("talkBody")}</p>
+          <p className="text-muted-foreground">{t("talkBody")}</p>
         </div>
         <ServiceList category="support" />
       </section>
 
-      <section aria-labelledby="crisis-calm" data-testid="crisis-calm" className="space-y-4">
-        <div className="space-y-1">
-          <h2 id="crisis-calm" className="text-2xl">
+      <section aria-labelledby="crisis-calm" data-testid="crisis-calm" className="space-y-5">
+        <div className="space-y-1.5">
+          <h2 id="crisis-calm" className="text-3xl">
             {t("calmTitle")}
           </h2>
-          <p>{t("calmBody")}</p>
+          <p className="text-muted-foreground">{t("calmBody")}</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-3 rounded-2xl border bg-card p-5">
-            <h3 className="text-lg">{t("breathingTitle")}</h3>
+          <div className="surface space-y-4 p-6">
+            <h3 className="text-xl">{t("breathingTitle")}</h3>
             <BreathingPacer />
           </div>
-          <div className="space-y-3 rounded-2xl border bg-card p-5" data-testid="grounding">
-            <h3 className="text-lg">{t("groundingTitle")}</h3>
-            <p className="text-sm">{t("groundingIntro")}</p>
-            <ol className="space-y-2">
+          <div className="surface space-y-4 p-6" data-testid="grounding">
+            <h3 className="text-xl">{t("groundingTitle")}</h3>
+            <p className="text-sm text-muted-foreground">{t("groundingIntro")}</p>
+            <ol className="space-y-2.5">
               {grounding.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-center gap-3">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sage-soft">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-ink">
                     <Icon aria-hidden="true" className="size-4" />
                   </span>
                   {text}
@@ -124,35 +131,38 @@ export function CrisisScreen() {
         </div>
       </section>
 
-      <section aria-labelledby="crisis-plan" data-testid="crisis-plan" className="space-y-3">
-        <h2 id="crisis-plan" className="text-2xl">
+      <section aria-labelledby="crisis-plan" data-testid="crisis-plan" className="space-y-4">
+        <h2 id="crisis-plan" className="text-3xl">
           {t("planTitle")}
         </h2>
-        <p>{t("planBody")}</p>
-        <ul className="list-disc space-y-1 pl-6">
+        <p className="measure text-muted-foreground">{t("planBody")}</p>
+        <ul className="grid gap-x-8 sm:grid-cols-2">
           {plan.map((text) => (
-            <li key={text}>{text}</li>
+            <li key={text} className="flex items-start gap-3 border-b py-3">
+              <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-sage-ink" />
+              {text}
+            </li>
           ))}
         </ul>
       </section>
 
-      <section aria-labelledby="crisis-trusted" data-testid="crisis-trusted" className="space-y-3">
-        <h2 id="crisis-trusted" className="text-2xl">
+      <section aria-labelledby="crisis-trusted" data-testid="crisis-trusted" className="space-y-4">
+        <h2 id="crisis-trusted" className="text-3xl">
           {t("trustedTitle")}
         </h2>
-        <p>{t("trustedBody")}</p>
-        <div className="space-y-2">
-          <blockquote className="rounded-xl border-l-4 border-sage bg-sage-soft p-4 font-heading italic">
+        <p className="measure text-muted-foreground">{t("trustedBody")}</p>
+        <div className="flex flex-col items-start gap-3">
+          <blockquote className="max-w-md rounded-3xl rounded-bl-md bg-sage-soft px-5 py-4 font-heading text-lg italic">
             {t("trustedExample1")}
           </blockquote>
-          <blockquote className="rounded-xl border-l-4 border-sage bg-sage-soft p-4 font-heading italic">
+          <blockquote className="max-w-md rounded-3xl rounded-bl-md bg-sage-soft px-5 py-4 font-heading text-lg italic">
             {t("trustedExample2")}
           </blockquote>
         </div>
       </section>
 
-      <div className="space-y-4 rounded-2xl border bg-card p-5">
-        <div className="flex items-start gap-3">
+      <div className="surface space-y-5 p-6 sm:p-8">
+        <div className="flex items-start gap-3.5">
           <Checkbox
             id="crisis-ack"
             data-testid="crisis-ack"

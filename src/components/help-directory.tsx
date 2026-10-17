@@ -43,7 +43,7 @@ export function CountrySelect({ className }: { className?: string }) {
         onChange={(event) => {
           if (isCountry(event.target.value)) setCountry(event.target.value);
         }}
-        className="block min-h-11 w-full max-w-xs rounded-lg border border-input bg-card px-3 text-base"
+        className="block min-h-11 w-full max-w-xs cursor-pointer rounded-xl border border-input bg-card px-3.5 text-base transition-colors hover:border-ink/60"
       >
         {helpDirectory.countries.map((code) => (
           <option key={code} value={code}>
@@ -67,11 +67,11 @@ function ServiceItem({ service }: { service: HelpService }) {
     <li
       data-testid={`service-${service.id}`}
       data-service-type={service.type}
-      className="space-y-3 rounded-xl border bg-card p-4"
+      className="space-y-4 rounded-2xl border bg-card p-5 shadow-(--shadow-soft)"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-lg font-semibold">{service.name}</p>
-        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+        <p className="font-heading text-xl font-medium">{service.name}</p>
+        <span className="rounded-full border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
           {t(`type.${service.type}`)}
         </span>
       </div>
@@ -105,7 +105,7 @@ function ServiceItem({ service }: { service: HelpService }) {
           href={service.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline underline-offset-2"
+          className="underline decoration-ink/30 underline-offset-3 hover:decoration-ink"
         >
           {t("source")}
           <span className="sr-only"> {common("opensInNewTab")}</span>
@@ -150,11 +150,11 @@ export function HelpDirectory({ className }: { className?: string }) {
     <div data-testid="help-directory" className={cn("space-y-6", className)}>
       <CountrySelect />
       <section className="space-y-3">
-        <h3 className="text-lg">{t("emergency")}</h3>
+        <h3 className="text-xl">{t("emergency")}</h3>
         <ServiceList category="emergency" />
       </section>
       <section className="space-y-3">
-        <h3 className="text-lg">{t("support")}</h3>
+        <h3 className="text-xl">{t("support")}</h3>
         <ServiceList category="support" />
       </section>
     </div>

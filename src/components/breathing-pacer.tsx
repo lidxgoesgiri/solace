@@ -1,5 +1,6 @@
 "use client";
 
+import { m } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
@@ -45,17 +46,23 @@ export function BreathingPacer() {
   return (
     <div className="flex flex-col items-center gap-4" data-testid="breathing-pacer">
       {reducedMotion ? null : (
-        <div aria-hidden="true" className="relative flex size-36 items-center justify-center">
-          <div
-            className="absolute inset-0 rounded-full bg-sky/70"
-            style={{ animation: `breathe ${INHALE_MS + EXHALE_MS}ms ease-in-out infinite` }}
+        <div aria-hidden="true" className="relative flex size-40 items-center justify-center">
+          <div className="absolute inset-0 rounded-full border border-sage" />
+          <m.div
+            className="absolute inset-2 rounded-full bg-sky/60"
+            initial={{ scale: 0.6 }}
+            animate={{ scale: phase === "in" ? 1 : 0.6 }}
+            transition={{
+              duration: (phase === "in" ? INHALE_MS : EXHALE_MS) / 1000,
+              ease: "easeInOut",
+            }}
           />
-          <span className="relative font-heading text-lg font-semibold text-ink">
+          <span className="relative font-heading text-lg font-medium text-ink">
             {phase === "in" ? t("breathingIn") : t("breathingOut")}
           </span>
         </div>
       )}
-      <p className="text-center text-sm">{t("breathingStatic")}</p>
+      <p className="text-center text-sm text-muted-foreground">{t("breathingStatic")}</p>
     </div>
   );
 }
