@@ -2,6 +2,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Solace has no dark theme yet: dark: styles apply only under a .dark class,
+   never because the operating system is in dark mode. */
+@custom-variant dark (&:is(.dark *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -19,6 +23,7 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -29,8 +34,11 @@
   --color-sky-soft: var(--brand-sky-soft);
   --color-sage: var(--brand-sage);
   --color-sage-soft: var(--brand-sage-soft);
+  --color-sage-ink: var(--brand-sage-ink);
   --color-sun: var(--brand-sun);
   --color-sun-soft: var(--brand-sun-soft);
+  --color-sun-edge: var(--brand-sun-edge);
+  --color-sun-hover: var(--brand-sun-hover);
   --color-ink: var(--brand-ink);
 
   /* Severity tints: calm, never bright red; always paired with text + icon */
@@ -45,20 +53,31 @@
   --color-sev-extreme: var(--sev-extreme);
   --color-sev-extreme-edge: var(--sev-extreme-edge);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: calc(var(--radius) * 1.25);
+  --radius-2xl: calc(var(--radius) * 1.5);
+  --radius-3xl: calc(var(--radius) * 2);
+  --radius-4xl: calc(var(--radius) * 2.5);
 
-  @keyframes breathe {
+  /* One soft, warm depth model for raised surfaces */
+  --shadow-soft: 0 1px 2px rgb(31 42 55 / 0.04), 0 10px 30px -18px rgb(31 42 55 / 0.22);
+  --shadow-lift: 0 1px 2px rgb(31 42 55 / 0.05), 0 18px 40px -22px rgb(31 42 55 / 0.3);
+
+  /* Motion tokens, mirrored in src/lib/motion.ts */
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-quick: 180ms;
+  --duration-base: 320ms;
+
+  @keyframes settle {
     0%,
     100% {
-      transform: scale(0.6);
+      opacity: 0.35;
+      transform: scale(0.85);
     }
-    40% {
+    50% {
+      opacity: 1;
       transform: scale(1);
     }
   }
@@ -66,39 +85,46 @@
 
 :root {
   --brand-sky: #a8c5da;
-  --brand-sky-soft: #e4eef5;
+  --brand-sky-soft: #e6eff5;
   --brand-sage: #b5c9b7;
-  --brand-sage-soft: #e6eee7;
+  --brand-sage-soft: #e8efe8;
+  /* Sage deep enough for small labels: 6.9:1 on the paper background */
+  --brand-sage-ink: #3d5c45;
   --brand-sun: #f5d7a1;
-  --brand-sun-soft: #fcf1dd;
+  --brand-sun-soft: #fbf0dc;
+  --brand-sun-edge: #e2bd76;
+  --brand-sun-hover: #f0c97f;
   --brand-ink: #1f2a37;
 
-  --background: #fbfaf6;
+  /* Warm paper canvas; cards sit one step lighter */
+  --background: #f8f5ef;
   --foreground: #1f2a37;
-  --card: #ffffff;
+  --card: #fffdf9;
   --card-foreground: #1f2a37;
-  --popover: #ffffff;
+  --popover: #fffdf9;
   --popover-foreground: #1f2a37;
-  /* Deep calm blue: 7:1 against white text */
+  /* Deep calm blue: 7.6:1 against white text */
   --primary: #2c5874;
+  --primary-hover: #234a62;
   --primary-foreground: #ffffff;
-  --secondary: #e4eef5;
+  --secondary: #e6eff5;
   --secondary-foreground: #1f2a37;
-  --muted: #f2f0ea;
-  --muted-foreground: #4a5361;
-  --accent: #e6eee7;
+  --muted: #f0ebe1;
+  --muted-foreground: #4f5866;
+  --accent: #e8efe8;
   --accent-foreground: #1f2a37;
   --destructive: #8a3b2e;
-  --border: #e2ddd1;
-  --input: #c9c3b6;
+  /* Hairlines for layout; --input is the control boundary (3.5:1 or more) */
+  --border: #e3dccf;
+  --input: #8a8375;
   --ring: #2c5874;
-  --radius: 0.75rem;
+  --radius: 1rem;
 
-  --sev-normal: #e6eee7;
+  --sev-normal: #e8efe8;
   --sev-normal-edge: #8fab92;
-  --sev-mild: #e4eef5;
+  --sev-mild: #e6eff5;
   --sev-mild-edge: #86a9c2;
-  --sev-moderate: #fcf1dd;
+  --sev-moderate: #fbf0dc;
   --sev-moderate-edge: #d9b670;
   --sev-severe: #f8e2cf;
   --sev-severe-edge: #c98d5c;
@@ -113,6 +139,7 @@
   html {
     @apply font-sans;
     -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
   }
   body {
     @apply bg-background text-foreground antialiased;
@@ -121,11 +148,47 @@
   h2,
   h3 {
     @apply font-heading;
+    font-weight: 500;
+    letter-spacing: -0.012em;
     text-wrap: balance;
+  }
+  p,
+  li {
+    text-wrap: pretty;
   }
   :focus-visible {
     outline: 3px solid var(--ring);
-    outline-offset: 2px;
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: var(--brand-sun);
+    color: var(--brand-ink);
+  }
+}
+
+@layer components {
+  /* Small label above a heading: "the horizon" the section sits on */
+  .kicker {
+    @apply flex items-center gap-3 text-xs font-semibold tracking-[0.14em] text-sage-ink uppercase;
+  }
+  .kicker::after {
+    content: "";
+    @apply h-px flex-1 bg-border;
+  }
+  .kicker-plain::after {
+    content: none;
+  }
+  /* Large, quiet numerals for ordered steps and scores */
+  .numeral {
+    @apply font-heading font-medium tabular-nums;
+    font-feature-settings: "lnum";
+  }
+  .measure {
+    max-width: 62ch;
+  }
+  .surface {
+    @apply rounded-2xl border bg-card;
+    box-shadow: var(--shadow-soft);
   }
 }
 
