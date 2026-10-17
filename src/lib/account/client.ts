@@ -197,28 +197,39 @@ interface ServerRecord extends SealedRecord {
   updatedAt: string;
 }
 
+let recordsInFlight: Promise<StoredRecord[]> | null = null;
+
 /** Loads and decrypts every record once per sign-in (or again with `force`). */
 export async function loadRecords(force = false): Promise<StoredRecord[]> {
   const dataKey = requireKey();
   const cached = useAccountStore.getState().records;
   if (cached && !force) return cached;
-  const { records } = await api<{ records: ServerRecord[] }>("/api/records");
-  const decrypted: StoredRecord[] = [];
-  for (const record of records) {
-    try {
-      decrypted.push({
-        id: record.id,
-        kind: record.kind,
-        value: await decryptRecord(dataKey, record.kind, record),
-        createdAt: record.createdAt,
-        updatedAt: record.updatedAt,
-      } as StoredRecord);
-    } catch {
-      // A record that does not open is skipped rather than breaking the page.
+  if (recordsInFlight && !force) return recordsInFlight;
+  const run = (async () => {
+    const { records } = await api<{ records: ServerRecord[] }>("/api/records");
+    const decrypted: StoredRecord[] = [];
+    for (const record of records) {
+      try {
+        decrypted.push({
+          id: record.id,
+          kind: record.kind,
+          value: await decryptRecord(dataKey, record.kind, record),
+          createdAt: record.createdAt,
+          updatedAt: record.updatedAt,
+        } as StoredRecord);
+      } catch {
+        // A record that does not open is skipped rather than breaking the page.
+      }
     }
-  }
-  useAccountStore.setState({ records: decrypted });
-  return decrypted;
+    // Only keep them if the same account is still open.
+    if (useAccountStore.getState().dataKey === dataKey)
+      useAccountStore.setState({ records: decrypted });
+    return decrypted;
+  })().finally(() => {
+    recordsInFlight = null;
+  });
+  recordsInFlight = run;
+  return run;
 }
 
 /** Creates a record, or replaces the one with `id`. */
@@ -261,17 +272,28 @@ export async function removeRecord(id: string): Promise<void> {
   if (records) useAccountStore.setState({ records: records.filter((record) => record.id !== id) });
 }
 
+// Saves in flight, keyed by completion time: two effects (or two tabs of the
+// same page) asking at once must still produce one record.
+const pendingScreenings = new Map<string, Promise<boolean>>();
+
 /** Saves a finished screening unless the account already has it (same completion time). */
-export async function saveScreeningIfNew(screening: ScreeningRecord): Promise<boolean> {
-  const records = await loadRecords();
-  const exists = records.some(
-    (record) =>
-      record.kind === "screening" &&
-      (record.value as ScreeningRecord).completedAt === screening.completedAt,
-  );
-  if (exists) return false;
-  await saveRecord("screening", screening);
-  return true;
+export function saveScreeningIfNew(screening: ScreeningRecord): Promise<boolean> {
+  const key = screening.completedAt;
+  const pending = pendingScreenings.get(key);
+  if (pending) return pending;
+  const run = (async () => {
+    const records = await loadRecords();
+    const exists = records.some(
+      (record) =>
+        record.kind === "screening" &&
+        (record.value as ScreeningRecord).completedAt === screening.completedAt,
+    );
+    if (exists) return false;
+    await saveRecord("screening", screening);
+    return true;
+  })().finally(() => pendingScreenings.delete(key));
+  pendingScreenings.set(key, run);
+  return run;
 }
 
 /** AK-08: every record, decrypted, as one JSON document. */
