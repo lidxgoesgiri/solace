@@ -34,7 +34,8 @@ Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Ver
 | Results: 3 cards (text + icon + colour), explanations, disclaimer, priority panel, help directory | ✅ |
 | "I need help now", quick exit (button or Esc twice), ID ↔ EN switch without reload | ✅ |
 | Health check (`/api/health`) | ✅ |
-| PDF report, accounts and encryption, tips, safety plan, history, AI | ⏳ Coming in later PRs |
+| PDF report for a psychologist: made in the browser, 2 pages, fonts bundled, optional nickname and safety note (`/laporan`) | ✅ |
+| Accounts and encryption, tips, safety plan, history, AI | ⏳ Coming in later PRs |
 
 ## Safety Contract
 
@@ -48,8 +49,8 @@ These invariants must never break. Each one gets an automated test (Vitest, Test
 | K4 | The crisis gate covers both branches | TestSprite | Download and sign-up branches both pass through the crisis first | ✅ TestSprite (SAFE-005) · logic in `flow.test.ts` |
 | K5 | Extremely severe scores show the Priority panel on top | TestSprite | Depression ≥ 28 → professional-help panel before tips | ✅ TestSprite (RESU-003) · logic in `flow.test.ts` |
 | K6 | The help directory follows country, not language | TestSprite | EN + Indonesia → Healing119; ID + United Kingdom → Samaritans | ✅ TestSprite (SAFE-006, RESU-004) · data in `content.test.ts` |
-| K7 | A disclaimer is always shown before results | TestSprite | Present on the results page and in the PDF | 🟡 Results page ✅ TestSprite (RESU-005) · ⏳ PDF |
-| K8 | The PDF shows the same numbers as the results screen | TestSprite | Compare scores and categories on screen vs PDF text | ⏳ PDF not built yet |
+| K7 | A disclaimer is always shown before results | TestSprite | Present on the results page and in the PDF | ✅ Results page (TestSprite RESU-005) · ✅ PDF page 1 (Vitest `pdf.test.ts`, `labels.test.ts`) |
+| K8 | The PDF shows the same numbers as the results screen | TestSprite | Compare scores and categories on screen vs PDF text | ✅ Vitest (`model.test.ts`, `pdf.test.ts` read the PDF text) · report preview has the same testids for TestSprite |
 | K9 | Switching language keeps answers | TestSprite | Switch ID → EN at question 10; answers 1–9 kept | ✅ TestSprite (HOME-002) |
 | K10 | Tips match category and severity, each with a DOI source | Vitest (`selectTips`) + TestSprite | Multi-dimension, all normal, severe; every tip card links its source | ⏳ Tips not built yet |
 | K11 | "I need help now" is on every page | TestSprite | Landing, screening, results, tips, history | ✅ TestSprite (HELP-001 to HELP-005) · tips and history pages ⏳ |

@@ -69,8 +69,12 @@ Scores are shown ×2 (0–42). Each `result-card-{subscale}` carries `data-score
 | K6-a | Directory follows country, not language | Open `/krisis` · click `lang-switch` (EN) · leave `country-select` on Indonesia | `service-id-healing119` visible |
 | K6-b | 〃 | Open `/krisis` in Indonesian · choose United Kingdom in `country-select` | `service-gb-samaritans` visible; it has a `tel:116123` link |
 | K7 | Disclaimer before results' actions | Reach `/hasil` | `disclaimer` visible and placed before `download-report` and `continue-to-tips`; `footer-disclaimer` on every page |
+| K7-pdf | Disclaimer in the report | Reach `/hasil` · click `download-report` | On `/laporan`, `report-disclaimer` is visible in the page 1 preview (the PDF page 1 has the same text; see `pdf.test.ts`) |
+| K8 | PDF numbers match the results screen | Start · `all-1` · safety 0 · note the three `result-card-*` scores · click `download-report` | On `/laporan`, each `report-score-{subscale}` row has the same `data-score` and `data-severity` as the matching result card, and `data-raw` = score ÷ 2 |
+| PDF-01 | PDF made in the browser | On `/laporan` click `download-pdf` | `report-status` names `solace-dass21-YYYY-MM-DD.pdf` and a code like `SOL-XXXX-XXXX`; no network request is made while the PDF is built |
+| PDF-opt | Report options | On `/laporan` type a nickname in `report-nickname`, untick `report-include-safety` | `report-nickname-preview` shows the nickname; `report-safety` disappears |
 | K9 | Switching language keeps answers | Start · answer questions 1–9 with mixed values · at question 10 click `lang-switch` | URL `/en/skrining/10`; `<html lang="en">`; going back with `prev-question`, each of 1–9 still has its option selected |
-| K11 | Help button on every page | Visit `/`, `/mulai`, `/skrining/1`, `/keamanan`, `/krisis`, `/hasil`, `/en` | `help-now` visible on each; clicking it opens `/krisis` |
+| K11 | Help button on every page | Visit `/`, `/mulai`, `/skrining/1`, `/keamanan`, `/krisis`, `/hasil`, `/en`. `/keamanan` and `/hasil` are only reachable through the flow (Start · `all-0`); opened directly in a clean session they redirect to `/mulai` by design | `help-now` visible on each; clicking it opens `/krisis` |
 
 ### Global, onboarding, and screening
 
@@ -113,11 +117,14 @@ Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{
 - **TIPS-001** — the tips page is still a placeholder. Expected until the tips feature lands.
 - **STAR-004** — after starting a screening (age and consent given) and leaving before answering question 1, the landing page offered no way to continue. Fixed on the same branch: a screening now counts as started once age and consent are confirmed, and the resume card says no question has been answered yet.
 
+### PR #2 run (2026-10-17, preview)
+
+33 of 34 passed, 1 blocked. The Help & exit test "Help link opens crisis support from the safety page" opened `/keamanan` directly in a clean session, and the router guard correctly sent it back to `/mulai`, so the safety page was never reached. The app was right and the test was wrong: the test now starts a screening and answers all 21 items before checking `help-now` on `/keamanan`.
+
 ## Not yet covered (features still to come)
 
 | Invariant | Waiting for |
 | --- | --- |
-| K8 (PDF numbers match the screen), K7 in the PDF | PDF report |
 | K10 (tips match category and severity, each with a DOI) | Tips |
 | P1, P3, P4 (ciphertext only, delete account, recovery kit) | Accounts and encryption |
 | P2 (no trackers, no CSP violations) | Content Security Policy |
