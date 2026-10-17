@@ -4,8 +4,7 @@ import { ArrowRight } from "@/components/icons/arrow-right";
 import { ShieldCheck } from "@/components/icons/shield-check";
 import { GroundingList } from "@/components/toolkit/grounding-list";
 import { useTranslations } from "next-intl";
-import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BreathingPacer } from "@/components/breathing-pacer";
 import { CountrySelect, ServiceList } from "@/components/help-directory";
 import { Button } from "@/components/ui/button";
@@ -14,11 +13,18 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { PATHS, pathAfterCrisis } from "@/lib/flow";
 import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
 
-// The user's own plan (SP-02) is read from memory after the page shows, so
-// the crisis screen's own JavaScript stays as small as possible.
-const CrisisPlanPanel = dynamic(
-  () => import("@/components/safety-plan/crisis-plan-panel").then((mod) => mod.CrisisPlanPanel),
-  { ssr: false },
+/**
+ * The user's own plan (SP-02) is code-split with React.lazy and rendered
+ * only after the crisis screen has mounted, so its code is fetched after
+ * the page shows and never adds to the screen's initial JavaScript (Next's
+ * own dynamic loader would cost more than this panel on /krisis).
+ */
+const noSubscribe = () => () => {};
+
+const LazyCrisisPlanPanel = lazy(() =>
+  import("@/components/safety-plan/crisis-plan-panel").then((mod) => ({
+    default: mod.CrisisPlanPanel,
+  })),
 );
 
 /**
@@ -36,6 +42,12 @@ export function CrisisScreen() {
   const dispatch = useFlowDispatch();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [acknowledged, setAcknowledged] = useState(false);
+  // False on the server and during hydration: the lazy panel never renders on the server.
+  const mounted = useSyncExternalStore(
+    noSubscribe,
+    () => true,
+    () => false,
+  );
 
   const next = hydrated ? pathAfterCrisis(flow) : PATHS.landing;
 
@@ -141,7 +153,11 @@ export function CrisisScreen() {
             </li>
           ))}
         </ul>
-        <CrisisPlanPanel />
+        {mounted ? (
+          <Suspense fallback={null}>
+            <LazyCrisisPlanPanel />
+          </Suspense>
+        ) : null}
         <Link
           href={PATHS.rencana}
           data-testid="crisis-make-plan"
