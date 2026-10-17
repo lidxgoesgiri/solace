@@ -11,7 +11,7 @@ import {
   type Country,
   type HelpService,
   type ServiceCategory,
-} from "@/lib/content";
+} from "@/lib/hotlines";
 import { cn } from "@/lib/utils";
 import { usePrefsHydrated, usePrefsStore } from "@/store/prefs-store";
 
