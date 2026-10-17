@@ -439,5 +439,44 @@
     "pmrRelease": "Lepaskan dan rasakan bedanya ({seconds} detik)",
     "pmrDone": "Selesai. Tarik napas pelan dan perhatikan tubuhmu.",
     "pmrStepOf": "Langkah {step} dari {total}"
+  },
+  "plan": {
+    "title": "Rencana keselamatan",
+    "intro": "Rencana keselamatan adalah catatan pribadi untuk membantumu melewati saat-saat berat. Isi sebanyak yang kamu mau; tidak ada jawaban yang benar atau salah, dan kamu bisa mengubahnya kapan saja.",
+    "hint": {
+      "warningSigns": "Pikiran, perasaan, atau situasi yang biasanya muncul sebelum saat sulit. Misalnya: susah tidur beberapa hari, mulai menghindari teman.",
+      "coping": "Hal yang bisa kamu lakukan sendiri untuk menenangkan diri. Misalnya: napas lambat, mandi air hangat, mendengarkan lagu tertentu.",
+      "distraction": "Orang atau tempat yang bisa mengalihkan pikiranmu sejenak. Misalnya: mengobrol dengan teman, pergi ke perpustakaan atau taman.",
+      "people": "Orang yang bisa kamu hubungi dan mintai tolong. Tulis nama dan cara menghubunginya.",
+      "professionals": "Layanan profesional yang bisa kamu hubungi, misalnya layanan konseling kampus atau layanan di daftar bantuan Solace.",
+      "safeEnvironment": "Langkah agar sekitarmu lebih aman saat sulit, misalnya meminta seseorang menemanimu atau menyimpan sementara benda yang bisa membahayakanmu."
+    },
+    "localOnly": "Kamu belum masuk akun, jadi rencana ini tidak disimpan di mana pun. Unduh PDF sebelum menutup halaman ini.",
+    "localSignIn": "Masuk untuk menyimpannya terenkripsi",
+    "savedInAccount": "Rencanamu disimpan terenkripsi di akunmu. Hanya kamu yang bisa membukanya.",
+    "save": "Simpan rencana",
+    "saving": "Menyimpan…",
+    "saved": "Rencana tersimpan.",
+    "saveError": "Rencana belum tersimpan. Coba lagi.",
+    "download": "Unduh PDF",
+    "downloading": "Menyiapkan PDF…",
+    "downloaded": "Rencana tersimpan sebagai {fileName}.",
+    "downloadError": "PDF belum bisa dibuat. Coba lagi.",
+    "loading": "Membuka rencanamu…",
+    "helpTitle": "Butuh bantuan sekarang?",
+    "helpLink": "Buka layar bantuan",
+    "crisisYourPlan": "Rencana keselamatanmu",
+    "crisisMakePlan": "Buat rencana keselamatan",
+    "crisisEditPlan": "Ubah rencana",
+    "pdf": {
+      "docTitle": "Rencana Keselamatan",
+      "intro": "Rencana pribadi untuk membantu melewati saat-saat berat. Simpan di tempat yang mudah kamu jangkau.",
+      "madeOn": "Dibuat {date}",
+      "empty": "(belum diisi)",
+      "disclaimer": "Solace adalah alat skrining, bukan layanan darurat. Jika kamu dalam bahaya segera, hubungi nomor darurat di atas.",
+      "footer": "Solace · Rencana keselamatan",
+      "page": "Halaman {page} dari {total}",
+      "fileName": "solace-rencana-keselamatan-{date}.pdf"
+    }
   }
 }

@@ -4,14 +4,22 @@ import { ArrowRight } from "@/components/icons/arrow-right";
 import { ShieldCheck } from "@/components/icons/shield-check";
 import { GroundingList } from "@/components/toolkit/grounding-list";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { BreathingPacer } from "@/components/breathing-pacer";
 import { CountrySelect, ServiceList } from "@/components/help-directory";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { PATHS, pathAfterCrisis } from "@/lib/flow";
 import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
+
+// The user's own plan (SP-02) is read from memory after the page shows, so
+// the crisis screen's own JavaScript stays as small as possible.
+const CrisisPlanPanel = dynamic(
+  () => import("@/components/safety-plan/crisis-plan-panel").then((mod) => mod.CrisisPlanPanel),
+  { ssr: false },
+);
 
 /**
  * Full crisis screen (PRD 9.3). It offers several steps, not only numbers,
@@ -21,6 +29,7 @@ import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
  */
 export function CrisisScreen() {
   const t = useTranslations("crisis");
+  const all = useTranslations();
   const router = useRouter();
   const hydrated = useFlowHydrated();
   const flow = useFlow();
@@ -39,7 +48,6 @@ export function CrisisScreen() {
     dispatch({ type: "ACKNOWLEDGE_CRISIS" });
     router.push(next);
   };
-
 
   const plan = [
     t("planWarningSigns"),
@@ -125,11 +133,22 @@ export function CrisisScreen() {
         <ul className="grid gap-x-8 sm:grid-cols-2">
           {plan.map((text) => (
             <li key={text} className="flex items-start gap-3 border-b py-3">
-              <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-sage-ink" />
+              <span
+                aria-hidden="true"
+                className="mt-2 size-1.5 shrink-0 rounded-full bg-sage-ink"
+              />
               {text}
             </li>
           ))}
         </ul>
+        <CrisisPlanPanel />
+        <Link
+          href={PATHS.rencana}
+          data-testid="crisis-make-plan"
+          className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4"
+        >
+          {all("plan.crisisMakePlan")}
+        </Link>
       </section>
 
       <section aria-labelledby="crisis-trusted" data-testid="crisis-trusted" className="space-y-4">

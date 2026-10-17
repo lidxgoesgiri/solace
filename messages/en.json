@@ -439,5 +439,44 @@
     "pmrRelease": "Let go and notice the difference ({seconds} seconds)",
     "pmrDone": "Done. Take a slow breath and notice your body.",
     "pmrStepOf": "Step {step} of {total}"
+  },
+  "plan": {
+    "title": "Safety plan",
+    "intro": "A safety plan is a personal note to help you get through hard moments. Fill in as much as you like; there are no right or wrong answers, and you can change it at any time.",
+    "hint": {
+      "warningSigns": "Thoughts, feelings, or situations that usually come before a hard moment. For example: not sleeping for a few days, starting to avoid friends.",
+      "coping": "Things you can do on your own to calm down. For example: slow breathing, a warm shower, listening to a particular song.",
+      "distraction": "People or places that can take your mind off things for a while. For example: chatting with a friend, going to the library or a park.",
+      "people": "People you can contact and ask for help. Write their names and how to reach them.",
+      "professionals": "Professional services you can contact, for example your campus counselling service or a service in Solace's help directory.",
+      "safeEnvironment": "Steps to make your surroundings safer in a hard moment, for example asking someone to stay with you or to keep things that could hurt you for a while."
+    },
+    "localOnly": "You are not signed in, so this plan is not stored anywhere. Download the PDF before you close this page.",
+    "localSignIn": "Sign in to save it encrypted",
+    "savedInAccount": "Your plan is saved encrypted in your account. Only you can open it.",
+    "save": "Save plan",
+    "saving": "Saving…",
+    "saved": "Plan saved.",
+    "saveError": "Your plan was not saved. Please try again.",
+    "download": "Download PDF",
+    "downloading": "Preparing the PDF…",
+    "downloaded": "Plan saved as {fileName}.",
+    "downloadError": "The PDF could not be made. Please try again.",
+    "loading": "Opening your plan…",
+    "helpTitle": "Need help now?",
+    "helpLink": "Open the help screen",
+    "crisisYourPlan": "Your safety plan",
+    "crisisMakePlan": "Make a safety plan",
+    "crisisEditPlan": "Edit plan",
+    "pdf": {
+      "docTitle": "Safety Plan",
+      "intro": "A personal plan to help get through hard moments. Keep it somewhere easy to reach.",
+      "madeOn": "Made on {date}",
+      "empty": "(not filled in yet)",
+      "disclaimer": "Solace is a screening tool, not an emergency service. If you are in immediate danger, call an emergency number above.",
+      "footer": "Solace · Safety plan",
+      "page": "Page {page} of {total}",
+      "fileName": "solace-safety-plan-{date}.pdf"
+    }
   }
 }
