@@ -184,7 +184,7 @@ export function ReportBuilder() {
       <section
         aria-labelledby="report-preview-title"
         data-testid="report-preview"
-        className="space-y-5 rounded-md border bg-white p-6 text-ink shadow-(--shadow-lift) sm:p-10"
+        className="paper space-y-5 rounded-md border bg-white p-6 shadow-(--shadow-lift) sm:p-10"
       >
         <h2 id="report-preview-title" className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
           {t("previewTitle")}

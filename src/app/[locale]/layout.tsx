@@ -39,7 +39,10 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
 }
 
 export const viewport: Viewport = {
-  themeColor: "#f8f5ef",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8f5ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#12171d" },
+  ],
   width: "device-width",
   initialScale: 1,
 };

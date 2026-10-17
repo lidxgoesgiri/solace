@@ -40,6 +40,8 @@
   --color-sun-edge: var(--brand-sun-edge);
   --color-sun-hover: var(--brand-sun-hover);
   --color-ink: var(--brand-ink);
+  /* Text that stays dark on light pastel (the warm button, the paper preview). */
+  --color-paper-ink: var(--paper-ink);
 
   /* Severity tints: calm, never bright red; always paired with text + icon */
   --color-sev-normal: var(--sev-normal);
@@ -134,6 +136,9 @@
   --brand-sun-edge: #e2bd76;
   --brand-sun-hover: #f0c97f;
   --brand-ink: #1f2a37;
+  --paper-ink: #1f2a37;
+
+  color-scheme: light dark;
 
   /* Warm paper canvas; cards sit one step lighter */
   --background: #f8f5ef;
@@ -169,6 +174,62 @@
   --sev-severe-edge: #c98d5c;
   --sev-extreme: #f1dde3;
   --sev-extreme-edge: #a96f86;
+}
+
+/* Dark mode follows the system setting (PRD 6, NFR contrast in both
+   modes). Pastels deepen into quiet tints; text and lines turn light. The
+   logo keeps its white circle so its white gaps stay readable. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-sky-soft: #1d2b37;
+    --brand-sage-soft: #1d2b22;
+    --brand-sage-ink: #a6c3ab;
+    --brand-sun-soft: #2c2618;
+    --brand-sun-edge: #8a6f3e;
+    --brand-ink: #e6ebf0;
+
+    --background: #12171d;
+    --foreground: #e6ebf0;
+    --card: #1a2129;
+    --card-foreground: #e6ebf0;
+    --popover: #1a2129;
+    --popover-foreground: #e6ebf0;
+    --primary: #9cc3dd;
+    --primary-hover: #b6d4e8;
+    --primary-foreground: #10212d;
+    --secondary: #1f2e3a;
+    --secondary-foreground: #e6ebf0;
+    --muted: #202831;
+    --muted-foreground: #a9b3bf;
+    --accent: #1f2d25;
+    --accent-foreground: #e6ebf0;
+    --destructive: #eaa696;
+    --border: #2b3541;
+    --input: #758191;
+    --ring: #9cc3dd;
+
+    --sev-normal: #1f2d23;
+    --sev-normal-edge: #6f9a75;
+    --sev-mild: #1c2a36;
+    --sev-mild-edge: #6f95b1;
+    --sev-moderate: #2e2717;
+    --sev-moderate-edge: #b8964f;
+    --sev-severe: #33251a;
+    --sev-severe-edge: #b07a4c;
+    --sev-extreme: #33212a;
+    --sev-extreme-edge: #a26d84;
+  }
+}
+
+/* A sheet of paper (the report preview) keeps light colours in dark mode. */
+.paper {
+  color-scheme: light;
+  --brand-ink: #1f2a37;
+  --foreground: #1f2a37;
+  --muted-foreground: #4f5866;
+  --border: #e3dccf;
+  --brand-sage-ink: #3d5c45;
+  color: var(--paper-ink);
 }
 
 @layer base {
