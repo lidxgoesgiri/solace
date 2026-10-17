@@ -11,6 +11,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { routing } from "@/i18n/routing";
 import { serviceWorkerScript } from "@/lib/pwa";
+import { themeScript } from "@/lib/theme";
 import "../globals.css";
 
 // Self-hosted by next/font at build time: no request to Google Fonts at runtime.
@@ -54,7 +55,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className={`${inter.variable} ${lora.variable}`}>
+    // The theme script may set data-theme on <html> before React hydrates.
+    <html lang={locale} className={`${inter.variable} ${lora.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Applies a pinned light or dark mode before the first paint (src/lib/theme.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript() }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <NextIntlClientProvider>
           <HtmlLang />

@@ -101,6 +101,7 @@ Scores are shown ×2 (0–42). Each `result-card-{subscale}` carries `data-score
 | SK-06 | Pause and continue later | Answer questions 1–4 · on `/skrining/5` click `pause-screening` | Back on `/`; `resume-card` says answers are kept on this device for 7 days; `resume-screening` opens `/skrining/5` with answers 1–4 kept |
 | PDF-03 | Report language | Reach `/hasil` in Indonesian · `download-report` · choose English in `report-language` | The `report-preview` content (title, labels, disclaimer) switches to English while the page around it stays Indonesian; `download-pdf` makes an English PDF |
 | P2-csp | Only Solace's own origin | Open any page and check the response headers; run a full `all-1` flow | `Content-Security-Policy` has `connect-src 'self'`; no CSP violation in the console; no request leaves the Solace origin |
+| Theme | Light and dark mode | Clean session, system in light mode · click `theme-switch` · reload · open `/mulai` · click `theme-switch` again | Dark after the first click and still dark after the reload and on `/mulai` (`<html data-theme="dark">`); the button then reads "Mode terang" / "Light mode". The second click returns to light and to following the system. With the system in dark mode, the page starts dark with no click |
 | PWA | Works offline after the first visit | Visit `/` once and wait a few seconds · go offline · Start · `all-0` · safety 0 | Every step loads; `/hasil` shows the three cards. Manual check: TestSprite cannot switch the network off |
 
 ### Accounts (needs `DATABASE_URL` on the preview)

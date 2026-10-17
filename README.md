@@ -42,7 +42,7 @@ Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Ver
 | History: trends by category, re-screening reminder after 14 days, worsening warning, daily check-in, past reports (`/riwayat`) | ✅ needs an account |
 | Anonymous daily totals for the product goals (no identifiers, nothing during a crisis) | ✅ |
 | Content Security Policy and security headers | ✅ |
-| Dark mode (follows the system) and offline screening after the first visit (PWA) | ✅ |
+| Dark mode: follows the system, or pick light or dark with the header switch (remembered on the device); offline screening after the first visit (PWA) | ✅ |
 | Health check (`/api/health`) | ✅ |
 | AI companion (opt-in) | ⏳ Later: needs an API key and a clinically reviewed risk-phrase list |
 

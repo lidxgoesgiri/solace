@@ -176,11 +176,14 @@
   --sev-extreme-edge: #a96f86;
 }
 
-/* Dark mode follows the system setting (PRD 6, NFR contrast in both
-   modes). Pastels deepen into quiet tints; text and lines turn light. The
-   logo keeps its white circle so its white gaps stay readable. */
+/* Dark mode (PRD 6, NFR contrast in both modes) follows the system
+   setting unless the header's theme switch pins light or dark on this
+   device (<html data-theme>, src/lib/theme.ts). Pastels deepen into quiet
+   tints; text and lines turn light. The logo keeps its white circle so its
+   white gaps stay readable. The two dark blocks below must stay identical
+   (theme.test.ts checks). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --brand-sky-soft: #1d2b37;
     --brand-sage-soft: #1d2b22;
     --brand-sage-ink: #a6c3ab;
@@ -219,6 +222,51 @@
     --sev-extreme: #33212a;
     --sev-extreme-edge: #a26d84;
   }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --brand-sky-soft: #1d2b37;
+  --brand-sage-soft: #1d2b22;
+  --brand-sage-ink: #a6c3ab;
+  --brand-sun-soft: #2c2618;
+  --brand-sun-edge: #8a6f3e;
+  --brand-ink: #e6ebf0;
+
+  --background: #12171d;
+  --foreground: #e6ebf0;
+  --card: #1a2129;
+  --card-foreground: #e6ebf0;
+  --popover: #1a2129;
+  --popover-foreground: #e6ebf0;
+  --primary: #9cc3dd;
+  --primary-hover: #b6d4e8;
+  --primary-foreground: #10212d;
+  --secondary: #1f2e3a;
+  --secondary-foreground: #e6ebf0;
+  --muted: #202831;
+  --muted-foreground: #a9b3bf;
+  --accent: #1f2d25;
+  --accent-foreground: #e6ebf0;
+  --destructive: #eaa696;
+  --border: #2b3541;
+  --input: #758191;
+  --ring: #9cc3dd;
+
+  --sev-normal: #1f2d23;
+  --sev-normal-edge: #6f9a75;
+  --sev-mild: #1c2a36;
+  --sev-mild-edge: #6f95b1;
+  --sev-moderate: #2e2717;
+  --sev-moderate-edge: #b8964f;
+  --sev-severe: #33251a;
+  --sev-severe-edge: #b07a4c;
+  --sev-extreme: #33212a;
+  --sev-extreme-edge: #a26d84;
 }
 
 /* A sheet of paper (the report preview) keeps light colours in dark mode. */
@@ -289,6 +337,28 @@
   .surface {
     @apply rounded-2xl border bg-card;
     box-shadow: var(--shadow-soft);
+  }
+  /* The theme switch shows the mode it switches to: "dark" in light mode,
+     "light" in dark mode. Hidden labels are display:none, so screen
+     readers hear only the visible one. */
+  .theme-when-light,
+  .theme-when-dark {
+    @apply inline-flex items-center gap-1.5;
+  }
+  .theme-when-dark,
+  :root[data-theme="dark"] .theme-when-light {
+    display: none;
+  }
+  :root[data-theme="dark"] .theme-when-dark {
+    display: inline-flex;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-when-light {
+      display: none;
+    }
+    :root:not([data-theme="light"]) .theme-when-dark {
+      display: inline-flex;
+    }
   }
 }
 
