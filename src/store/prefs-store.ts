@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { helpDirectory, isCountry, type Country } from "@/lib/content";
+import { helpDirectory, isCountry, type Country } from "@/lib/hotlines";
 
 interface PrefsStore {
   /** Country for the help directory; independent of language (DL-01, K6). */

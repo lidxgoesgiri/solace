@@ -2,14 +2,14 @@
 
 import { m } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { AnswerOptions } from "@/components/answer-options";
 import { EASE_CALM } from "@/components/motion/tokens";
 import { Button } from "@/components/ui/button";
 import { useAnswerKeys } from "@/hooks/use-answer-keys";
 import { useRouter } from "@/i18n/navigation";
-import { getDass21, isLocale, isTodoPlaceholder } from "@/lib/content";
+import type { AnswerOption } from "@/lib/content";
 import { PATHS } from "@/lib/flow";
 import { DASS21_ITEM_COUNT } from "@/lib/scoring";
 import { useFlow, useFlowDispatch } from "@/store/flow-store";
@@ -21,16 +21,25 @@ let lastProgress: number | null = null;
  * One DASS-21 item per screen with progress (SK-01–SK-05, SK-07). Answers are
  * stored by item number, so switching language keeps them (K9).
  */
-export function ScreeningQuestion({ n }: { n: number }) {
+export function ScreeningQuestion({
+  n,
+  text,
+  isPlaceholder,
+  options,
+}: {
+  n: number;
+  /** Item text in the page language; null when `n` is not an item. */
+  text: string | null;
+  /** True while the text is a TODO(verify) placeholder. */
+  isPlaceholder: boolean;
+  options: AnswerOption[];
+}) {
   const t = useTranslations("screening");
-  const locale = useLocale();
   const router = useRouter();
   const flow = useFlow();
   const dispatch = useFlowDispatch();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const content = getDass21(isLocale(locale) ? locale : "id");
-  const item = content.items[n - 1];
   const selected = flow.answers[n - 1] ?? null;
   const isLast = n === DASS21_ITEM_COUNT;
 
@@ -57,7 +66,7 @@ export function ScreeningQuestion({ n }: { n: number }) {
     onSubmit: goNext,
   });
 
-  if (!item) return null;
+  if (text === null) return null;
 
   return (
     <div
@@ -108,12 +117,12 @@ export function ScreeningQuestion({ n }: { n: number }) {
           <span className="sr-only">
             {t("progressLabel", { current: n, total: DASS21_ITEM_COUNT })}.{" "}
           </span>
-          {item.text}
+          {text}
         </h1>
         <p id="question-instructions" className="text-muted-foreground">
           {t("instructions")}
         </p>
-        {isTodoPlaceholder(item.text) ? (
+        {isPlaceholder ? (
           <p
             className="rounded-xl border border-sun-edge/60 bg-sun-soft p-3 text-xs"
             data-testid="placeholder-notice"
@@ -124,7 +133,7 @@ export function ScreeningQuestion({ n }: { n: number }) {
       </div>
 
       <AnswerOptions
-        options={content.options}
+        options={options}
         value={selected}
         onChange={(value) => dispatch({ type: "ANSWER_ITEM", item: n, value })}
         testIdPrefix="answer-option"
