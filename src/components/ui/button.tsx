@@ -11,7 +11,7 @@ const VARIANTS = {
   ghost: "border-transparent text-foreground hover:bg-muted aria-expanded:bg-muted",
   destructive:
     "border-destructive/30 bg-card text-destructive hover:bg-destructive/10 focus-visible:border-destructive/40 focus-visible:ring-destructive/20",
-  warm: "border-sun-edge bg-sun text-ink hover:bg-sun-hover",
+  warm: "border-sun-edge bg-sun text-paper-ink hover:bg-sun-hover",
 } as const;
 
 const SIZES = {
