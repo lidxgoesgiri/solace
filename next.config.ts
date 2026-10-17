@@ -12,6 +12,13 @@ const withNextIntl = createNextIntlPlugin({
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    // Vercel restores .next/cache before every build, and Turbopack's build
+    // cache (on by default since Next 16.3) kept serving a stale compile of
+    // src/app/globals.css: production shipped CSS without dark mode. Every
+    // build now compiles from source.
+    turbopackFileSystemCacheForBuild: false,
+  },
   // Postgres in-process for local development and tests only (src/server/db.ts).
   serverExternalPackages: ["@electric-sql/pglite"],
   turbopack: {
