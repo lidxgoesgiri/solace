@@ -36,7 +36,12 @@ export function SafetyQuestion() {
 
   const submit = () => {
     if (selected === null) return;
-    dispatch({ type: "ANSWER_SAFETY", value: selected });
+    dispatch({
+      type: "ANSWER_SAFETY",
+      value: selected,
+      at: new Date().toISOString(),
+      locale: isLocale(locale) ? locale : undefined,
+    });
     router.push(pathAfterSafety(useFlowStore.getState().flow));
   };
 

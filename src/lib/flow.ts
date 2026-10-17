@@ -26,6 +26,9 @@ import {
   type AnswerValue,
   type Dass21Result,
 } from "./scoring";
+import type { Locale } from "./content";
+
+const FLOW_LOCALES: readonly Locale[] = ["id", "en"];
 
 export const FLOW_STATE_VERSION = 1;
 
@@ -47,6 +50,10 @@ export interface FlowState {
   crisisReturnTo: string | null;
   /** The safety answer was > 0 at some point this session (PRD 9.5). */
   safetyEverPositive: boolean;
+  /** When the safety question was submitted (ISO 8601), for the report. */
+  completedAt: string | null;
+  /** Interface language when the screening was finished ("bahasa instrumen"). */
+  completedLocale: Locale | null;
 }
 
 export type FlowEvent =
@@ -54,7 +61,8 @@ export type FlowEvent =
   | { type: "BEGIN_SCREENING" }
   /** `item` is 1-based. */
   | { type: "ANSWER_ITEM"; item: number; value: AnswerValue }
-  | { type: "ANSWER_SAFETY"; value: AnswerValue }
+  /** `at` (ISO 8601) and `locale` are passed in so the reducer stays pure. */
+  | { type: "ANSWER_SAFETY"; value: AnswerValue; at?: string; locale?: Locale }
   /** "Butuh bantuan sekarang". `from` is the app path the user was on. */
   | { type: "REQUEST_HELP"; from: string | null }
   /** Confirm button on the crisis screen. */
@@ -72,6 +80,8 @@ export function createInitialFlowState(): FlowState {
     crisisSource: null,
     crisisReturnTo: null,
     safetyEverPositive: false,
+    completedAt: null,
+    completedLocale: null,
   };
 }
 
@@ -359,10 +369,15 @@ export function flowReducer(state: FlowState, event: FlowEvent): FlowState {
 
     case "ANSWER_SAFETY": {
       if (!isScreeningComplete(state) || !isAnswerValue(event.value)) return state;
+      const completion = {
+        completedAt: event.at ?? state.completedAt,
+        completedLocale: event.locale ?? state.completedLocale,
+      };
       if (event.value > 0) {
         // Binary trigger (PRD 9.1): any answer above 0 opens the crisis screen.
         return {
           ...state,
+          ...completion,
           safetyAnswer: event.value,
           crisis: "crisis_pending",
           crisisSource: "safety_question",
@@ -371,7 +386,7 @@ export function flowReducer(state: FlowState, event: FlowEvent): FlowState {
         };
       }
       // Answering 0 never clears a pending crisis.
-      return { ...state, safetyAnswer: 0 };
+      return { ...state, ...completion, safetyAnswer: 0 };
     }
 
     case "REQUEST_HELP": {
@@ -446,5 +461,12 @@ export function sanitizeFlowState(input: unknown): FlowState {
     crisisReturnTo,
     safetyEverPositive:
       raw.safetyEverPositive === true || (safetyAnswer !== null && safetyAnswer > 0),
+    completedAt:
+      typeof raw.completedAt === "string" && !Number.isNaN(Date.parse(raw.completedAt))
+        ? raw.completedAt
+        : null,
+    completedLocale: FLOW_LOCALES.includes(raw.completedLocale as Locale)
+      ? (raw.completedLocale as Locale)
+      : null,
   };
 }

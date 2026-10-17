@@ -419,6 +419,51 @@ describe("new screening and clearing data", () => {
   });
 });
 
+describe("completion details for the report (PRD 12)", () => {
+  it("records when and in which language the screening finished", () => {
+    const state = flowReducer(completedState(), {
+      type: "ANSWER_SAFETY",
+      value: 0,
+      at: "2026-10-17T05:30:00.000Z",
+      locale: "en",
+    });
+    expect(state.completedAt).toBe("2026-10-17T05:30:00.000Z");
+    expect(state.completedLocale).toBe("en");
+  });
+
+  it("records completion even when the safety answer opens the crisis screen", () => {
+    const state = flowReducer(completedState(), {
+      type: "ANSWER_SAFETY",
+      value: 2,
+      at: "2026-10-17T05:30:00.000Z",
+      locale: "id",
+    });
+    expect(state.crisis).toBe("crisis_pending");
+    expect(state.completedAt).toBe("2026-10-17T05:30:00.000Z");
+  });
+
+  it("starting a new screening clears the completion details", () => {
+    let state = flowReducer(completedState(), {
+      type: "ANSWER_SAFETY",
+      value: 0,
+      at: "2026-10-17T05:30:00.000Z",
+      locale: "id",
+    });
+    state = flowReducer(state, { type: "BEGIN_SCREENING" });
+    expect(state.completedAt).toBeNull();
+    expect(state.completedLocale).toBeNull();
+  });
+
+  it("sanitizes stored completion details", () => {
+    const restored = sanitizeFlowState({ completedAt: "not a date", completedLocale: "fr" });
+    expect(restored.completedAt).toBeNull();
+    expect(restored.completedLocale).toBeNull();
+    const valid = sanitizeFlowState({ completedAt: "2026-10-17T05:30:00.000Z", completedLocale: "id" });
+    expect(valid.completedAt).toBe("2026-10-17T05:30:00.000Z");
+    expect(valid.completedLocale).toBe("id");
+  });
+});
+
 describe("sanitizeFlowState", () => {
   it("falls back to the initial state for garbage", () => {
     expect(sanitizeFlowState(null)).toEqual(createInitialFlowState());
