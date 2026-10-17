@@ -1,9 +1,11 @@
 "use client";
 
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { m } from "framer-motion";
+import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { AnswerOptions } from "@/components/answer-options";
+import { fadeUp } from "@/components/motion/tokens";
 import { Button } from "@/components/ui/button";
 import { useAnswerKeys } from "@/hooks/use-answer-keys";
 import { useRouter } from "@/i18n/navigation";
@@ -60,24 +62,36 @@ export function SafetyQuestion({
   useAnswerKeys({ onSelect: setSelected, onSubmit: submit });
 
   return (
-    <div className="space-y-6" data-testid="safety-question">
-      <header className="space-y-3">
-        <h1 ref={headingRef} tabIndex={-1} className="text-3xl outline-none sm:text-4xl">
+    <div className="mx-auto max-w-2xl space-y-8" data-testid="safety-question">
+      <header className="space-y-4">
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="text-4xl leading-tight outline-none sm:text-5xl"
+        >
           {t("title")}
         </h1>
-        <p id="safety-intro">{t("intro")}</p>
-        <p className="text-sm font-semibold tracking-wide text-primary uppercase">
-          {t("period")}
+        <p id="safety-intro" className="flex items-start gap-3 rounded-2xl bg-sky-soft p-4 sm:p-5">
+          <ShieldCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-primary" />
+          <span>{t("intro")}</span>
         </p>
       </header>
 
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">{stem}</p>
-        <p id="safety-text" data-testid="safety-text" className="text-xl leading-snug font-medium sm:text-2xl">
+      <div className="space-y-4">
+        <p className="text-sm font-semibold text-sage-ink">{t("period")}</p>
+        <p className="text-muted-foreground">{stem}</p>
+        <p
+          id="safety-text"
+          data-testid="safety-text"
+          className="font-heading text-[1.6rem] leading-snug sm:text-3xl"
+        >
           {text}
         </p>
         {isPlaceholder ? (
-          <p className="rounded-lg bg-sun-soft p-3 text-xs" data-testid="placeholder-notice">
+          <p
+            className="rounded-xl border border-sun-edge/60 bg-sun-soft p-3 text-xs"
+            data-testid="placeholder-notice"
+          >
             {screening("placeholderNotice")}
           </p>
         ) : null}
@@ -93,20 +107,23 @@ export function SafetyQuestion({
       />
 
       {showWithdrawNote ? (
-        <div
+        <m.div
           role="status"
           data-testid="safety-withdraw-note"
-          className="space-y-1 rounded-xl border bg-sky-soft p-4"
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          className="space-y-1.5 rounded-2xl border border-sky bg-sky-soft p-5"
         >
           <p className="font-semibold">{t("withdrawTitle")}</p>
           <p className="text-sm">{t("withdrawBody")}</p>
-        </div>
+        </m.div>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-6">
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           data-testid="prev-question"
           onClick={() => router.push(PATHS.question(21))}
         >

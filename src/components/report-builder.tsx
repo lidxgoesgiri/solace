@@ -109,18 +109,18 @@ export function ReportBuilder() {
   };
 
   return (
-    <div className="space-y-8" data-testid="report-page">
-      <header className="space-y-3">
-        <h1 className="text-3xl sm:text-4xl">{t("title")}</h1>
+    <div className="mx-auto max-w-3xl space-y-10" data-testid="report-page">
+      <header className="space-y-4">
+        <h1 className="text-4xl leading-tight sm:text-5xl">{t("title")}</h1>
         <p>{t("intro")}</p>
         <p className="flex gap-2 text-sm text-muted-foreground">
-          <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+          <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
           <span>{t("privacy")}</span>
         </p>
       </header>
 
-      <section aria-labelledby="report-options" className="space-y-5 rounded-2xl border bg-card p-5">
-        <h2 id="report-options" className="text-xl">
+      <section aria-labelledby="report-options" className="surface space-y-6 p-6 sm:p-8">
+        <h2 id="report-options" className="text-2xl">
           {t("optionsTitle")}
         </h2>
         <div className="space-y-1.5">
@@ -136,7 +136,7 @@ export function ReportBuilder() {
             value={nickname}
             onChange={(event) => setNickname(event.target.value)}
             aria-describedby={`${nicknameId}-hint`}
-            className="block min-h-11 w-full max-w-sm rounded-lg border border-input bg-background px-3 text-base"
+            className="block min-h-11 w-full max-w-sm rounded-xl border border-input bg-background px-3.5 text-base transition-colors hover:border-ink/60"
           />
           <p id={`${nicknameId}-hint`} className="text-sm text-muted-foreground">
             {t("nicknameHint")}
@@ -165,7 +165,7 @@ export function ReportBuilder() {
       <section
         aria-labelledby="report-preview-title"
         data-testid="report-preview"
-        className="space-y-4 rounded-2xl border bg-white p-5 text-ink shadow-sm"
+        className="space-y-5 rounded-md border bg-white p-6 text-ink shadow-(--shadow-lift) sm:p-10"
       >
         <h2 id="report-preview-title" className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
           {t("previewTitle")}
@@ -245,7 +245,7 @@ export function ReportBuilder() {
         </div>
 
         <p className="flex gap-2 text-sm text-muted-foreground">
-          <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+          <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
           <span>{t("previewNote", { country: countries(country) })}</span>
         </p>
       </section>

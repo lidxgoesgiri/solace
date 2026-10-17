@@ -1,3 +1,4 @@
+import { Save } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeFromParams } from "@/i18n/locale";
@@ -19,11 +20,14 @@ export default async function StartPage({ params }: PageProps) {
   const t = await getTranslations("start");
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-3">
-        <h1 className="text-3xl sm:text-4xl">{t("title")}</h1>
-        <p className="text-base">{t("intro")}</p>
-        <p className="text-sm text-muted-foreground">{t("autosave")}</p>
+    <div className="mx-auto max-w-2xl space-y-10">
+      <header className="space-y-4">
+        <h1 className="text-4xl leading-tight sm:text-5xl">{t("title")}</h1>
+        <p className="text-lg leading-relaxed">{t("intro")}</p>
+        <p className="flex items-start gap-2.5 text-sm text-muted-foreground">
+          <Save aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
+          {t("autosave")}
+        </p>
       </header>
       <StartForm />
     </div>

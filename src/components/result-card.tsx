@@ -1,20 +1,23 @@
 "use client";
 
+import { m } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { DURATION, EASE_CALM, fadeUp } from "@/components/motion/tokens";
 import { SEVERITIES, type Severity, type Subscale, type SubscaleResult } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
 const SEVERITY_STYLES: Record<Severity, string> = {
-  normal: "bg-sev-normal border-l-sev-normal-edge",
-  mild: "bg-sev-mild border-l-sev-mild-edge",
-  moderate: "bg-sev-moderate border-l-sev-moderate-edge",
-  severe: "bg-sev-severe border-l-sev-severe-edge",
-  extremely_severe: "bg-sev-extreme border-l-sev-extreme-edge",
+  normal: "bg-sev-normal border-sev-normal-edge",
+  mild: "bg-sev-mild border-sev-mild-edge",
+  moderate: "bg-sev-moderate border-sev-moderate-edge",
+  severe: "bg-sev-severe border-sev-severe-edge",
+  extremely_severe: "bg-sev-extreme border-sev-extreme-edge",
 };
 
 /**
- * Five ascending bars, filled up to the category level. Severity is always
- * shown as text too, so the meter is decorative for screen readers.
+ * Five ascending bars, filled up to the category level one after another.
+ * Severity is always shown as text too, so the meter is decorative for
+ * screen readers.
  */
 export function SeverityMeter({ severity }: { severity: Severity }) {
   const level = SEVERITIES.indexOf(severity) + 1;
@@ -37,7 +40,25 @@ export function SeverityMeter({ severity }: { severity: Severity }) {
             width="7"
             height={height}
             rx="1.5"
-            className={i < level ? "fill-ink" : "fill-ink/15"}
+            className="fill-ink/15"
+          />
+        );
+      })}
+      {SEVERITIES.slice(0, level).map((_, i) => {
+        const height = (i + 1) * 4.8;
+        return (
+          <m.rect
+            key={i}
+            x={i * 9}
+            y={24 - height}
+            width="7"
+            height={height}
+            rx="1.5"
+            className="fill-ink"
+            style={{ transformBox: "fill-box", originY: 1 }}
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ duration: DURATION.base, ease: EASE_CALM, delay: 0.35 + i * 0.08 }}
           />
         );
       })}
@@ -65,32 +86,38 @@ export function ResultCard({ subscale, result }: ResultCardProps) {
         });
 
   return (
-    <article
+    <m.article
+      variants={fadeUp}
       aria-labelledby={titleId}
       data-testid={`result-card-${subscale}`}
       data-severity={severity}
       data-score={score}
-      className={cn(
-        "flex flex-col gap-3 rounded-2xl border border-l-8 p-5 text-ink",
-        SEVERITY_STYLES[severity],
-      )}
+      className="surface grid gap-5 p-6 sm:p-8 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-10"
     >
-      <h2 id={titleId} className="text-xl">
-        {t(`subscale.${subscale}`)}
-      </h2>
-      <p
-        className="flex items-center gap-2 text-lg font-semibold"
-        data-testid={`result-severity-${subscale}`}
-      >
-        <SeverityMeter severity={severity} />
-        {t(`severity.${severity}`)}
-      </p>
-      <p className="text-sm font-medium" data-testid={`result-score-${subscale}`}>
-        {t("results.scoreLabel", { score })}
-      </p>
-      <p className="text-sm leading-relaxed">
+      <div className="space-y-3">
+        <h2 id={titleId} className="text-2xl sm:text-3xl">
+          {t(`subscale.${subscale}`)}
+        </h2>
+        <p
+          className={cn(
+            "inline-flex items-center gap-2.5 rounded-full border py-1.5 pr-4 pl-3 text-base font-semibold text-ink",
+            SEVERITY_STYLES[severity],
+          )}
+          data-testid={`result-severity-${subscale}`}
+        >
+          <SeverityMeter severity={severity} />
+          {t(`severity.${severity}`)}
+        </p>
+        <p
+          className="numeral text-lg text-muted-foreground"
+          data-testid={`result-score-${subscale}`}
+        >
+          {t("results.scoreLabel", { score })}
+        </p>
+      </div>
+      <p className="measure leading-relaxed md:border-l md:pl-10">
         {intro} {t(`explanation.${subscale}`)} {t(`explanation.advice.${severity}`)}
       </p>
-    </article>
+    </m.article>
   );
 }
