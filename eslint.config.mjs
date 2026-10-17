@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local tool state (e.g. agent worktrees with their own builds), not source.
+    ".claude/**",
   ]),
 ]);
 

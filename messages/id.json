@@ -53,7 +53,8 @@
     "howTime": "Sekitar 5 menit, tanpa batas waktu",
     "howPeriod": "Mengacu pada 7 hari terakhir",
     "howResult": "Hasil langsung muncul, lalu kamu bisa memilih: unduh laporan untuk psikolog, atau lanjut mendapatkan tips berbasis jurnal.",
-    "notDiagnosis": "Solace membantumu mengenali gejala, bukan memberi diagnosis."
+    "notDiagnosis": "Solace membantumu mengenali gejala, bukan memberi diagnosis.",
+    "resumeExpiry": "Jawabanmu disimpan di perangkat ini dan dihapus otomatis bila tidak dilanjutkan dalam 7 hari."
   },
   "start": {
     "title": "Sebelum mulai",
@@ -82,7 +83,8 @@
     "next": "Berikutnya",
     "toSafety": "Lanjut",
     "autosaved": "Tersimpan otomatis di perangkat ini.",
-    "placeholderNotice": "Teks pertanyaan versi Indonesia sedang menunggu izin penerjemah. Sementara ini yang tampil adalah penanda tempat."
+    "placeholderNotice": "Teks pertanyaan versi Indonesia sedang menunggu izin penerjemah. Sementara ini yang tampil adalah penanda tempat.",
+    "pause": "Jeda, lanjutkan nanti"
   },
   "safety": {
     "title": "Satu pertanyaan lagi",
@@ -216,7 +218,9 @@
     "languageName": {
       "id": "Bahasa Indonesia",
       "en": "English"
-    }
+    },
+    "languageLabel": "Bahasa laporan",
+    "languageHint": "Pilih bahasa yang paling mudah dibaca psikologmu. Pilihan ini tidak mengubah bahasa tampilan Solace."
   },
   "explanation": {
     "intro": "Hasilmu menunjukkan gejala {subscale} tingkat {severity}.",

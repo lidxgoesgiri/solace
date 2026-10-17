@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Phone } from "lucide-react";
+import { ExternalLink, Phone } from "@/components/icons";
 import { useFormatter, useTranslations } from "next-intl";
 import { useId } from "react";
 import { Button } from "@/components/ui/button";

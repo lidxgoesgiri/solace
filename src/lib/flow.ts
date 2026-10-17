@@ -54,13 +54,15 @@ export interface FlowState {
   completedAt: string | null;
   /** Interface language when the screening was finished ("bahasa instrumen"). */
   completedLocale: Locale | null;
+  /** Last change to the draft (ISO 8601), for the 7-day expiry (SK-06, PRD 13.4). */
+  updatedAt: string | null;
 }
 
 export type FlowEvent =
-  /** Age ≥ 18 confirmed and consent given on /mulai. */
-  | { type: "BEGIN_SCREENING" }
-  /** `item` is 1-based. */
-  | { type: "ANSWER_ITEM"; item: number; value: AnswerValue }
+  /** Age ≥ 18 confirmed and consent given on /mulai. `at` is ISO 8601. */
+  | { type: "BEGIN_SCREENING"; at?: string }
+  /** `item` is 1-based. `at` (ISO 8601) keeps the reducer pure. */
+  | { type: "ANSWER_ITEM"; item: number; value: AnswerValue; at?: string }
   /** `at` (ISO 8601) and `locale` are passed in so the reducer stays pure. */
   | { type: "ANSWER_SAFETY"; value: AnswerValue; at?: string; locale?: Locale }
   /** "Butuh bantuan sekarang". `from` is the app path the user was on. */
@@ -82,6 +84,7 @@ export function createInitialFlowState(): FlowState {
     safetyEverPositive: false,
     completedAt: null,
     completedLocale: null,
+    updatedAt: null,
   };
 }
 
@@ -99,6 +102,11 @@ export const PATHS = {
   laporan: "/laporan",
   tips: "/tips",
   riwayat: "/riwayat",
+  rencana: "/rencana-keselamatan",
+  akun: "/akun",
+  daftar: "/akun/daftar",
+  masuk: "/akun/masuk",
+  pulihkan: "/akun/pulihkan",
 } as const;
 
 export type RouteName =
@@ -111,6 +119,8 @@ export type RouteName =
   | "laporan"
   | "tips"
   | "riwayat"
+  | "rencana-keselamatan"
+  | "akun"
   | "other";
 
 export interface ParsedRoute {
@@ -166,6 +176,8 @@ export function parseRoute(pathname: string): ParsedRoute {
     case "laporan":
     case "tips":
     case "riwayat":
+    case "rencana-keselamatan":
+    case "akun":
       return { name: first };
     default:
       return { name: "other" };
@@ -323,6 +335,10 @@ export function guardRoute(state: FlowState, pathname: string): string | null {
 /* Reducer                                                                  */
 /* ------------------------------------------------------------------------ */
 
+function validTimestamp(value: unknown): string | null {
+  return typeof value === "string" && !Number.isNaN(Date.parse(value)) ? value : null;
+}
+
 /** Accepts only internal app paths, never the crisis screen itself. */
 function sanitizeReturnPath(from: string | null): string | null {
   if (!from || !from.startsWith("/") || from.startsWith("//")) return null;
@@ -349,7 +365,12 @@ export function flowReducer(state: FlowState, event: FlowEvent): FlowState {
       const base = isScreeningFinished(state)
         ? preservePendingCrisis(state, createInitialFlowState())
         : state;
-      return { ...base, ageConfirmed: true, consentGiven: true };
+      return {
+        ...base,
+        ageConfirmed: true,
+        consentGiven: true,
+        updatedAt: validTimestamp(event.at) ?? base.updatedAt,
+      };
     }
 
     case "ANSWER_ITEM": {
@@ -364,7 +385,7 @@ export function flowReducer(state: FlowState, event: FlowEvent): FlowState {
       }
       const answers = [...state.answers];
       answers[event.item - 1] = event.value;
-      return { ...state, answers };
+      return { ...state, answers, updatedAt: validTimestamp(event.at) ?? state.updatedAt };
     }
 
     case "ANSWER_SAFETY": {
@@ -468,5 +489,28 @@ export function sanitizeFlowState(input: unknown): FlowState {
     completedLocale: FLOW_LOCALES.includes(raw.completedLocale as Locale)
       ? (raw.completedLocale as Locale)
       : null,
+    updatedAt: validTimestamp(raw.updatedAt),
   };
+}
+
+/* ------------------------------------------------------------------------ */
+/* Draft expiry (SK-06, PRD 13.4)                                           */
+/* ------------------------------------------------------------------------ */
+
+/** An unfinished screening is kept on the device for 7 days. */
+export const DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** True when a draft has not changed for longer than DRAFT_TTL_MS. */
+export function isDraftExpired(state: FlowState, now: Date): boolean {
+  if (!hasDraft(state) || state.updatedAt === null) return false;
+  return now.getTime() - Date.parse(state.updatedAt) > DRAFT_TTL_MS;
+}
+
+/**
+ * Drops an expired draft. Like every reset, it never clears a pending
+ * crisis: only acknowledging the crisis screen does (K3).
+ */
+export function expireStaleDraft(state: FlowState, now: Date): FlowState {
+  if (!isDraftExpired(state, now)) return state;
+  return preservePendingCrisis(state, createInitialFlowState());
 }

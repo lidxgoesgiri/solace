@@ -1,32 +1,41 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "cn"
-import { Checkbox as CheckboxPrimitive } from "radix-ui"
-import { CheckIcon } from "lucide-react"
+import { Check } from "@/components/icons";
+import type { ComponentProps } from "react";
+import { cn } from "@/lib/utils";
 
-function Checkbox({
-  className,
-  ...props
-}: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
+interface CheckboxProps extends Omit<
+  ComponentProps<"button">,
+  "type" | "role" | "onClick" | "value"
+> {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}
+
+/**
+ * Accessible checkbox: a button with role="checkbox" and aria-checked, the
+ * same contract (and data-state) as the Radix checkbox it replaces, without
+ * its JavaScript. A <label htmlFor> pointing at its id toggles it too.
+ */
+export function Checkbox({ checked, onCheckedChange, className, ...props }: CheckboxProps) {
   return (
-    <CheckboxPrimitive.Root
-      data-slot="checkbox"
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      data-state={checked ? "checked" : "unchecked"}
+      onClick={() => onCheckedChange(!checked)}
       className={cn(
-        "peer relative flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-md border-2 border-input bg-card transition-colors duration-(--duration-quick) outline-none group-has-disabled/field:opacity-50 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-data-checked:border-input after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 aria-invalid:aria-checked:border-primary dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground group-has-[:focus-visible]/field-label:data-checked:border-primary dark:data-checked:bg-primary",
-        className
+        "peer relative flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-md border-2 border-input bg-card text-primary-foreground transition-colors duration-(--duration-quick)",
+        "after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50",
+        "data-[state=checked]:border-primary data-[state=checked]:bg-primary",
+        className,
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator
-        data-slot="checkbox-indicator"
-        className="grid place-content-center text-current transition-none [&>svg]:size-3.5"
-      >
-        <CheckIcon
-        />
-      </CheckboxPrimitive.Indicator>
-    </CheckboxPrimitive.Root>
-  )
+      {checked ? (
+        <Check aria-hidden="true" className="size-3.5 animate-check-in" strokeWidth={3} />
+      ) : null}
+    </button>
+  );
 }
-
-export { Checkbox }

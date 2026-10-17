@@ -1,17 +1,15 @@
 "use client";
 
-import { m } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Pause } from "@/components/icons";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnswerOptions } from "@/components/answer-options";
-import { EASE_CALM } from "@/components/motion/tokens";
 import { Button } from "@/components/ui/button";
 import { useAnswerKeys } from "@/hooks/use-answer-keys";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import type { AnswerOption } from "@/lib/content";
 import { PATHS } from "@/lib/flow";
-import { DASS21_ITEM_COUNT } from "@/lib/scoring";
+import { DASS21_ITEM_COUNT, type AnswerValue } from "@/lib/scoring";
 import { useFlow, useFlowDispatch } from "@/store/flow-store";
 
 // Where the bar stood on the previous question, so it grows from there.
@@ -61,8 +59,12 @@ export function ScreeningQuestion({
     router.push(n > 1 ? PATHS.question(n - 1) : PATHS.mulai);
   };
 
+  // The timestamp drives the 7-day draft expiry (SK-06).
+  const answer = (value: AnswerValue) =>
+    dispatch({ type: "ANSWER_ITEM", item: n, value, at: new Date().toISOString() });
+
   useAnswerKeys({
-    onSelect: (value) => dispatch({ type: "ANSWER_ITEM", item: n, value }),
+    onSelect: (value) => answer(value),
     onSubmit: goNext,
   });
 
@@ -96,11 +98,9 @@ export function ScreeningQuestion({
           aria-valuenow={n}
           className="h-1.5 overflow-hidden rounded-full bg-ink/10"
         >
-          <m.div
-            className="h-full origin-left rounded-full bg-primary"
-            initial={{ scaleX: progressFrom }}
-            animate={{ scaleX: progress }}
-            transition={{ duration: 0.5, ease: EASE_CALM }}
+          <div
+            className="h-full origin-left animate-grow rounded-full bg-primary"
+            style={{ "--grow-from": progressFrom, "--grow-to": progress } as CSSProperties}
           />
         </div>
       </div>
@@ -135,7 +135,7 @@ export function ScreeningQuestion({
       <AnswerOptions
         options={options}
         value={selected}
-        onChange={(value) => dispatch({ type: "ANSWER_ITEM", item: n, value })}
+        onChange={answer}
         testIdPrefix="answer-option"
         aria-labelledby="question-text"
         aria-describedby="question-instructions"
@@ -162,9 +162,17 @@ export function ScreeningQuestion({
           <ArrowRight aria-hidden="true" />
         </Button>
       </div>
-      <p className="hidden text-center text-sm text-muted-foreground sm:block">
-        {t("keyboardHint")}
-      </p>
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+        <Link
+          href={PATHS.landing}
+          data-testid="pause-screening"
+          className="inline-flex min-h-11 items-center gap-2 rounded-full px-2 underline decoration-ink/30 underline-offset-4 hover:text-foreground hover:decoration-ink"
+        >
+          <Pause aria-hidden="true" className="size-4" />
+          {t("pause")}
+        </Link>
+        <p className="hidden sm:block">{t("keyboardHint")}</p>
+      </div>
     </div>
   );
 }
