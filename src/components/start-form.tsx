@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight } from "@/components/icons";
+import { ArrowRight } from "@/components/icons/arrow-right";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { HelpDirectory } from "@/components/help-directory";

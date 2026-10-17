@@ -11,6 +11,8 @@ const withNextIntl = createNextIntlPlugin({
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Postgres in-process for local development and tests only (src/server/db.ts).
+  serverExternalPackages: ["@electric-sql/pglite"],
   turbopack: {
     rules: {
       "*.css": {

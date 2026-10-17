@@ -1,6 +1,9 @@
 "use client";
 
-import { ArrowLeft, Download, Info, Lock } from "@/components/icons";
+import { ArrowLeft } from "@/components/icons/arrow-left";
+import { Download } from "@/components/icons/download";
+import { Info } from "@/components/icons/info";
+import { Lock } from "@/components/icons/lock";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useId, useMemo, useState } from "react";
 import { useSelectedCountry } from "@/components/help-directory";
@@ -9,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@/i18n/navigation";
 import { LOCALES, isLocale, type Locale } from "@/lib/content";
-import { PATHS, resultsView } from "@/lib/flow";
+import { PATHS } from "@/lib/flow";
+import { resultsView } from "@/lib/results";
 import {
   NICKNAME_MAX_LENGTH,
   buildReportModel,

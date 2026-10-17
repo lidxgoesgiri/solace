@@ -1,6 +1,8 @@
 "use client";
 
-import { Download, Info, Sparkles } from "@/components/icons";
+import { Download } from "@/components/icons/download";
+import { Info } from "@/components/icons/info";
+import { Sparkles } from "@/components/icons/sparkles";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { HelpDirectory } from "@/components/help-directory";
@@ -9,7 +11,8 @@ import { Stagger } from "@/components/motion/reveal";
 import { ResultCard } from "@/components/result-card";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
-import { PATHS, resultsView } from "@/lib/flow";
+import { PATHS } from "@/lib/flow";
+import { resultsView } from "@/lib/results";
 import { SUBSCALES } from "@/lib/scoring";
 import { useFlow, useFlowDispatch } from "@/store/flow-store";
 

@@ -5,21 +5,31 @@
  * must all call `scoreDass21` so every surface shows the same numbers.
  */
 
-export const DASS21_ITEM_COUNT = 21;
+import {
+  ANSWER_VALUES,
+  DASS21_ITEM_COUNT,
+  isAnswerValue,
+  isComplete,
+  type AnswerValue,
+  type Dass21Answers,
+} from "./answers";
 
-export const ANSWER_VALUES = [0, 1, 2, 3] as const;
-export type AnswerValue = (typeof ANSWER_VALUES)[number];
+// The answer helpers live in ./answers so the router guard can use them
+// without bundling the cutoffs and scoring (PRD 14). Re-exported here so
+// scoring keeps one public module.
+export {
+  ANSWER_VALUES,
+  DASS21_ITEM_COUNT,
+  isAnswerValue,
+  isComplete,
+  type AnswerValue,
+  type Dass21Answers,
+};
 
 export const SUBSCALES = ["depression", "anxiety", "stress"] as const;
 export type Subscale = (typeof SUBSCALES)[number];
 
-export const SEVERITIES = [
-  "normal",
-  "mild",
-  "moderate",
-  "severe",
-  "extremely_severe",
-] as const;
+export const SEVERITIES = ["normal", "mild", "moderate", "severe", "extremely_severe"] as const;
 export type Severity = (typeof SEVERITIES)[number];
 
 /** 1-based item numbers per subscale, in the original DASS-21 order (PRD 10.1). */
@@ -54,15 +64,6 @@ export interface SubscaleResult {
 
 export type Dass21Result = Readonly<Record<Subscale, SubscaleResult>>;
 
-export type Dass21Answers = readonly (AnswerValue | null | undefined)[];
-
-export function isAnswerValue(value: unknown): value is AnswerValue {
-  return (
-    typeof value === "number" &&
-    (ANSWER_VALUES as readonly number[]).includes(value)
-  );
-}
-
 /** Maps a ×2 subscale score to its category using `CUTOFFS`. */
 export function categorize(subscale: Subscale, score: number): Severity {
   if (!Number.isInteger(score) || score < 0 || score > MAX_SUBSCALE_SCORE) {
@@ -76,14 +77,6 @@ export function categorize(subscale: Subscale, score: number): Severity {
   return "normal";
 }
 
-/** True when all 21 items have a valid answer. */
-export function isComplete(answers: Dass21Answers): boolean {
-  return (
-    answers.length === DASS21_ITEM_COUNT &&
-    answers.every((answer) => isAnswerValue(answer))
-  );
-}
-
 /**
  * Scores a full DASS-21 response.
  *
@@ -92,9 +85,7 @@ export function isComplete(answers: Dass21Answers): boolean {
  */
 export function scoreDass21(answers: Dass21Answers): Dass21Result | null {
   if (answers.length !== DASS21_ITEM_COUNT) {
-    throw new RangeError(
-      `Expected ${DASS21_ITEM_COUNT} answers, received ${answers.length}`,
-    );
+    throw new RangeError(`Expected ${DASS21_ITEM_COUNT} answers, received ${answers.length}`);
   }
   for (const answer of answers) {
     if (answer !== null && answer !== undefined && !isAnswerValue(answer)) {

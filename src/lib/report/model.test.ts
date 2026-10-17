@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createInitialFlowState, flowReducer, resultsView, type FlowEvent, type FlowState } from "@/lib/flow";
+import { createInitialFlowState, flowReducer, type FlowEvent, type FlowState } from "@/lib/flow";
+import { resultsView } from "@/lib/results";
 import type { AnswerValue } from "@/lib/scoring";
 import {
   buildReportModel,

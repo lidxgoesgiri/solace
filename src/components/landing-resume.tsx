@@ -12,7 +12,7 @@ import {
   isScreeningFinished,
   resumePath,
 } from "@/lib/flow";
-import { DASS21_ITEM_COUNT } from "@/lib/scoring";
+import { DASS21_ITEM_COUNT } from "@/lib/answers";
 import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
 
 const RING_RADIUS = 26;

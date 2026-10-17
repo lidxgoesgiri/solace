@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "@/components/icons";
+import { Check } from "@/components/icons/check";
 import { RadioGroup, RadioItem } from "@/components/ui/radio-cards";
 import type { AnswerOption } from "@/lib/content";
 import type { AnswerValue } from "@/lib/scoring";

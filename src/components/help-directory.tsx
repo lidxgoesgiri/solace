@@ -1,6 +1,7 @@
 "use client";
 
-import { ExternalLink, Phone } from "@/components/icons";
+import { ExternalLink } from "@/components/icons/external-link";
+import { Phone } from "@/components/icons/phone";
 import { useFormatter, useTranslations } from "next-intl";
 import { useId } from "react";
 import { Button } from "@/components/ui/button";

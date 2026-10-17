@@ -1,4 +1,8 @@
-import { ArrowRight, Info, Lock, MailX, UserRoundX } from "@/components/icons";
+import { ArrowRight } from "@/components/icons/arrow-right";
+import { Info } from "@/components/icons/info";
+import { Lock } from "@/components/icons/lock";
+import { MailX } from "@/components/icons/mail-x";
+import { UserRoundX } from "@/components/icons/user-round-x";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeFromParams } from "@/i18n/locale";
 import { LandingResume } from "@/components/landing-resume";

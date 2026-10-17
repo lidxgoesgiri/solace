@@ -1,4 +1,4 @@
-import { ArrowLeft } from "@/components/icons";
+import { ArrowLeft } from "@/components/icons/arrow-left";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";

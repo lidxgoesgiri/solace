@@ -1,4 +1,4 @@
-import { Save } from "@/components/icons";
+import { Save } from "@/components/icons/save";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeFromParams } from "@/i18n/locale";

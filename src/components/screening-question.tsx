@@ -1,6 +1,9 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Check, Pause } from "@/components/icons";
+import { ArrowLeft } from "@/components/icons/arrow-left";
+import { ArrowRight } from "@/components/icons/arrow-right";
+import { Check } from "@/components/icons/check";
+import { Pause } from "@/components/icons/pause";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnswerOptions } from "@/components/answer-options";
@@ -9,7 +12,7 @@ import { useAnswerKeys } from "@/hooks/use-answer-keys";
 import { Link, useRouter } from "@/i18n/navigation";
 import type { AnswerOption } from "@/lib/content";
 import { PATHS } from "@/lib/flow";
-import { DASS21_ITEM_COUNT, type AnswerValue } from "@/lib/scoring";
+import { DASS21_ITEM_COUNT, type AnswerValue } from "@/lib/answers";
 import { useFlow, useFlowDispatch } from "@/store/flow-store";
 
 // Where the bar stood on the previous question, so it grows from there.
