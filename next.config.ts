@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const withNextIntl = createNextIntlPlugin();
+// Messages are compiled at build time, so the ICU parser is not shipped to
+// the browser (PRD 14: initial JS budget).
+const withNextIntl = createNextIntlPlugin({
+  experimental: {
+    messages: { format: "json", path: "./messages", locales: "infer", precompile: true },
+  },
+});
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,

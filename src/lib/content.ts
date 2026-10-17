@@ -5,10 +5,25 @@
 
 import dass21En from "@/data/dass21.en.json";
 import dass21Id from "@/data/dass21.id.json";
-import hotlinesJson from "@/data/hotlines.json";
 import safetyEn from "@/data/safety-question.en.json";
 import safetyId from "@/data/safety-question.id.json";
 import type { AnswerValue } from "./scoring";
+
+// The help directory lives in its own module so that client pages that only
+// need hotlines do not also bundle the DASS-21 and PHQ-9 text.
+export {
+  COUNTRIES,
+  SERVICE_TYPES,
+  helpDirectory,
+  isCountry,
+  servicesFor,
+  type Country,
+  type HelpDirectory,
+  type HelpService,
+  type ServiceCategory,
+  type ServiceChannel,
+  type ServiceType,
+} from "./hotlines";
 
 export const LOCALES = ["id", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
@@ -39,35 +54,6 @@ export interface SafetyQuestionContent {
   options: AnswerOption[];
 }
 
-export const COUNTRIES = ["ID", "US", "GB"] as const;
-export type Country = (typeof COUNTRIES)[number];
-
-export const SERVICE_TYPES = ["public", "government", "nonprofit"] as const;
-export type ServiceType = (typeof SERVICE_TYPES)[number];
-
-export type ServiceCategory = "emergency" | "support";
-
-export type ServiceChannel =
-  | { kind: "phone"; number: string; label: string }
-  | { kind: "web"; url: string; label: string };
-
-export interface HelpService {
-  id: string;
-  country: Country;
-  category: ServiceCategory;
-  name: string;
-  type: ServiceType;
-  channels: ServiceChannel[];
-  sourceUrl: string;
-  verifiedAt: string | null;
-}
-
-export interface HelpDirectory {
-  defaultCountry: Country;
-  countries: Country[];
-  services: HelpService[];
-}
-
 const DASS21: Record<Locale, Dass21Content> = {
   en: dass21En as Dass21Content,
   id: dass21Id as Dass21Content,
@@ -78,14 +64,8 @@ const SAFETY_QUESTION: Record<Locale, SafetyQuestionContent> = {
   id: safetyId as SafetyQuestionContent,
 };
 
-export const helpDirectory = hotlinesJson as HelpDirectory;
-
 export function isLocale(value: unknown): value is Locale {
   return LOCALES.includes(value as Locale);
-}
-
-export function isCountry(value: unknown): value is Country {
-  return COUNTRIES.includes(value as Country);
 }
 
 export function getDass21(locale: Locale): Dass21Content {
@@ -94,13 +74,6 @@ export function getDass21(locale: Locale): Dass21Content {
 
 export function getSafetyQuestion(locale: Locale): SafetyQuestionContent {
   return SAFETY_QUESTION[locale];
-}
-
-/** Services for one country and category, in the order of the data file. */
-export function servicesFor(country: Country, category: ServiceCategory): HelpService[] {
-  return helpDirectory.services.filter(
-    (service) => service.country === country && service.category === category,
-  );
 }
 
 /** Placeholder text that is waiting for verified clinical content. */

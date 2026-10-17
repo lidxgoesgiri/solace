@@ -1,13 +1,13 @@
 "use client";
 
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { AnswerOptions } from "@/components/answer-options";
 import { Button } from "@/components/ui/button";
 import { useAnswerKeys } from "@/hooks/use-answer-keys";
 import { useRouter } from "@/i18n/navigation";
-import { getSafetyQuestion, isLocale, isTodoPlaceholder } from "@/lib/content";
+import type { AnswerOption, Locale } from "@/lib/content";
 import { PATHS, pathAfterSafety } from "@/lib/flow";
 import type { AnswerValue } from "@/lib/scoring";
 import { useFlow, useFlowDispatch, useFlowStore } from "@/store/flow-store";
@@ -16,17 +16,29 @@ import { useFlow, useFlowDispatch, useFlowStore } from "@/store/flow-store";
  * PHQ-9 item 9 after item 21 (SK-08, PRD 9.1). Cannot be skipped: the results
  * route requires an answer, and any answer above 0 opens the crisis screen.
  */
-export function SafetyQuestion() {
+export function SafetyQuestion({
+  locale,
+  stem,
+  text,
+  isPlaceholder,
+  options,
+}: {
+  /** Language of the question text, saved with the answer. */
+  locale: Locale;
+  stem: string;
+  text: string;
+  /** True while the text is a TODO(verify) placeholder. */
+  isPlaceholder: boolean;
+  options: AnswerOption[];
+}) {
   const t = useTranslations("safety");
   const screening = useTranslations("screening");
-  const locale = useLocale();
   const router = useRouter();
   const flow = useFlow();
   const dispatch = useFlowDispatch();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [selected, setSelected] = useState<AnswerValue | null>(flow.safetyAnswer);
 
-  const content = getSafetyQuestion(isLocale(locale) ? locale : "id");
   // PRD 9.5: a gentle check when a positive answer is changed to 0.
   const showWithdrawNote = flow.safetyEverPositive && selected === 0;
 
@@ -40,7 +52,7 @@ export function SafetyQuestion() {
       type: "ANSWER_SAFETY",
       value: selected,
       at: new Date().toISOString(),
-      locale: isLocale(locale) ? locale : undefined,
+      locale,
     });
     router.push(pathAfterSafety(useFlowStore.getState().flow));
   };
@@ -60,11 +72,11 @@ export function SafetyQuestion() {
       </header>
 
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">{content.stem}</p>
+        <p className="text-sm text-muted-foreground">{stem}</p>
         <p id="safety-text" data-testid="safety-text" className="text-xl leading-snug font-medium sm:text-2xl">
-          {content.text}
+          {text}
         </p>
-        {isTodoPlaceholder(content.text) ? (
+        {isPlaceholder ? (
           <p className="rounded-lg bg-sun-soft p-3 text-xs" data-testid="placeholder-notice">
             {screening("placeholderNotice")}
           </p>
@@ -72,7 +84,7 @@ export function SafetyQuestion() {
       </div>
 
       <AnswerOptions
-        options={content.options}
+        options={options}
         value={selected}
         onChange={setSelected}
         testIdPrefix="safety-answer"
