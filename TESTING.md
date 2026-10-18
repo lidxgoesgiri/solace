@@ -16,9 +16,10 @@ This file is the scenario plan for the TestSprite suite. Each scenario maps to a
 ## Ground rules for every test
 
 - **Start from a clean state.** Screening answers live in `localStorage` (`solace-flow`, `solace-prefs`), so use a fresh browser context or clear storage first.
-- **Use `data-testid`, never item text.** The Indonesian DASS-21 items are `TODO(verify)` placeholders until the translator's permission arrives, so their wording will change.
+- **Use `data-testid`, never item text.** Item wording belongs to the instrument data files and may still change after clinical review.
 - **Indonesian is the default** at unprefixed URLs (`/hasil`). English lives under `/en/...`. The browser language is ignored.
 - **Keyboard works too.** Keys `1`–`4` select answers 0–3, and `Enter` moves on.
+- **Badges show 1–4, values are 0–3.** Each answer button has a number badge that matches its key, so `answer-option-N` and `safety-answer-N` (value N) are the buttons whose badge reads N+1. A test step that picks an answer names all of it, for example "`safety-answer-1` (value 1; the second button, badge "2")". "Safety answer 1" on its own is ambiguous: a test agent may click the button whose badge reads 1, the no-risk answer.
 
 ## Shared steps
 
@@ -29,11 +30,11 @@ This file is the scenario plan for the TestSprite suite. Each scenario maps to a
 4. Click `begin-screening` → URL is `/skrining/1`.
 
 **Answer all 21 items with value N** (pattern `all-N`)
-- For questions 1 to 21: click `answer-option-N`, then `next-question`.
+- For questions 1 to 21: click `answer-option-N` (badge N+1), then `next-question`.
 - After question 21 the URL is `/keamanan`.
 
 **Answer the safety question with value S**
-- Click `safety-answer-S`, then `safety-submit`.
+- Click `safety-answer-S` (badge S+1), then `safety-submit`.
 - S = 0 leads to `/hasil`; S = 1, 2, or 3 leads to `/krisis`.
 
 ## Answer patterns and expected results
@@ -132,17 +133,18 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 
 ## The suite in the TestSprite portal
 
-The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added. **34 tests** remain.
+The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Seven tests were then written by hand for features added later, for **41 tests**.
 
 | Use case | TestSprite IDs | Covers |
 | --- | --- | --- |
-| Home & language | HOME-001 to HOME-003 | Landing start button, K9 language switch at question 10, help from the landing page |
+| Home & language | HOME-001 to HOME-005 | Landing start button, K9 language switch at question 10, help from the landing page, `robots.txt`, light and dark mode |
 | Start & eligibility | STAR-001 to STAR-005 | LO-04 under 18, LO-05 consent, SK-05 resume card |
-| Question flow | QST-001 to QST-005 | All-0 and all-3 runs, SK-08 safety question before results, SK-04 back, SK-05 reload |
-| Safety & crisis | SAFE-001 to SAFE-008 | K2 safety answers 1–3, K3 URL/back/refresh gate, K4 both branches, K6 directory by country |
+| Question flow | QST-001 to QST-006 | All-0 and all-3 runs, SK-08 safety question before results, SK-04 back, SK-05 reload, SK-06 pause and continue |
+| Safety & crisis | SAFE-001 to SAFE-009 | K2 safety answers 1–3, K3 URL/back/refresh gate, K4 both branches, K6 directory by country, SP-01 safety plan without an account |
 | Results | RESU-001 to RESU-005 | K1 scores (all-0, all-1, all-3), K5 priority panel, K6 in English, K7 disclaimer |
+| Report | RPT-001 | K8 report numbers match the result cards, PDF-03 report language |
 | Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
-| Tips | TIPS-001 | Tips branch (needs a database on the preview, see below) |
+| Tips & account | TIPS-001 to TIPS-003 | K10-a tips by category, AK-01 sign-up and P3 account deletion, RW-04 history and daily check-in. Each signs up a `demo-…` account and deletes it at the end |
 
 Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
 
@@ -157,11 +159,25 @@ Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{
 
 33 of 34 passed, 1 blocked. The Help & exit test "Help link opens crisis support from the safety page" opened `/keamanan` directly in a clean session, and the router guard correctly sent it back to `/mulai`, so the safety page was never reached. The app was right and the test was wrong: the test now starts a screening and answers all 21 items before checking `help-now` on `/keamanan`.
 
+### PR #11, #12 and #13 runs (2026-10-18, previews)
+
+#11 had 28 of 34 passed, 4 failed and 2 blocked. #12 and #13 each had 32 passed, 1 failed and 1 blocked. Every failure came from tests that choose an answer by number:
+
+- **#11, failed:** RESU-002 (`all-1`) and RESU-003 (`all-3`) got scores 0 and 28. SAFE-001 and SAFE-004 ("safety answer 1") showed results instead of the crisis screen.
+- **#11, blocked:** SAFE-007, which never reached the crisis screen for the same reason.
+- **#12 and #13, failed:** HOME-002 (K9) saw the third button selected after switching to English and expected "option 2". The third button is `answer-option-2`, so the answer had been kept.
+
+RESU-002's run log and the scores show the cause. The agent clicked the button whose badge reads "1" (value 0) for "answer 1", and the badge "3" (value 2) for "option 3". Before #11 the Indonesian answer labels were placeholders with the value in the text ("label jawaban 1"), which hid the problem everywhere except the English page that K9 checks.
+
+The app was right; checked by hand on the #11 preview, `safety-answer-1` opens `/krisis`. The steps were rewritten to name the test id, value, position and badge (see the ground rules). After that, all 10 affected tests passed on production.
+
+The other blocked test, TIPS-001, met the account gate on `/tips`. It now signs up first and deletes its account at the end.
+
 ## Not yet covered
 
-The account, tips, and history scenarios above, and TIPS-001, need a database on the preview (`DATABASE_URL`); without one, `/tips` shows `tips-coming-soon`. Once it is set, TIPS-001 should sign in first and then follow K10-a.
+With `DATABASE_URL` set for Production and Preview, TIPS-001 to TIPS-003 cover K10-a, AK-01, P3 and RW-04 in TestSprite.
 
 | Invariant | Waiting for |
 | --- | --- |
-| P1, P3, P4, K10 in TestSprite | A database on the preview (Vitest already covers them) |
+| P1, P4, K10-b/c in TestSprite | Not written yet (Vitest covers them) |
 | A1–A3 (AI off by default, risk check, no AI during a crisis) | AI features (P2) |

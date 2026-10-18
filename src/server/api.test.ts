@@ -178,7 +178,9 @@ describe("register and sign in (AK-01, AK-05)", () => {
     const stored = await db.execute(sql`SELECT key FROM rate_limits WHERE key LIKE '%203.0.113%'`);
     const rows = Array.isArray(stored) ? stored : (stored as { rows: unknown[] }).rows;
     expect(rows).toHaveLength(0);
-  });
+    // 31 sign-ins, each with a deliberately slow Argon2 check, can pass the
+    // default 5 s when the whole suite runs in parallel.
+  }, 30_000);
 
   it("AK-05: a session ends after 30 minutes without activity", async () => {
     const { client } = await registerUser("idle.user", "menunggu bus kampus terakhir");

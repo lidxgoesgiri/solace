@@ -310,10 +310,12 @@ function drawDisclaimer(w: Writer, labels: ReportLabels) {
 
 function drawItems(w: Writer, model: ReportModel, labels: ReportLabels) {
   w.heading(labels.itemsTitle);
-  const col = { number: MARGIN, statement: MARGIN + 30, subscale: MARGIN + 362, answer: MARGIN + 448 };
-  const statementWidth = 320;
+  // The statement column takes the width the dimension and answer columns
+  // do not need, so the longer Indonesian items keep page 2 on one page.
+  const col = { number: MARGIN, statement: MARGIN + 30, subscale: MARGIN + 392, answer: MARGIN + 452 };
+  const statementWidth = 352;
   const size = 8.5;
-  const lineHeight = 10.5;
+  const lineHeight = 10;
 
   const drawTableHeader = () => {
     w.text(labels.colNumber, col.number, w.y - 9, w.fonts.semibold, 9, MUTED);
@@ -327,7 +329,7 @@ function drawItems(w: Writer, model: ReportModel, labels: ReportLabels) {
 
   for (const item of model.items) {
     const lines = w.wrap(item.text, w.fonts.regular, size, statementWidth);
-    const rowHeight = lines.length * lineHeight + 4;
+    const rowHeight = lines.length * lineHeight + 3;
     if (w.ensure(rowHeight)) drawTableHeader();
     const top = w.y - 3 - size;
     w.text(String(item.number), col.number, top, w.fonts.semibold, size);
