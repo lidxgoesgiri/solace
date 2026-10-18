@@ -23,7 +23,7 @@ import {
   generateReportCode,
   type ReportModel,
 } from "@/lib/report/model";
-import { preloadReportRenderer, renderReport, saveFile } from "@/lib/report/client";
+import { loadRendererOnIntent, preloadReportRenderer, renderReport, saveFile, scheduleReportRenderer } from "@/lib/report/client";
 import { trackEvent } from "@/lib/metrics-client";
 import { buildReportLabels } from "@/lib/report/labels";
 import { useFlow, useFlowDispatch } from "@/store/flow-store";
@@ -79,8 +79,9 @@ export function ReportBuilder({ ai }: { ai: { available: boolean; model: string 
 
   // Fetch the PDF engine while the user reads the page (PDF-01). The page
   // view is counted now, never while a PDF is being built.
+  const [engineReady, setEngineReady] = useState(false);
+  useEffect(() => scheduleReportRenderer(() => setEngineReady(true)), []);
   useEffect(() => {
-    void preloadReportRenderer();
     trackEvent("report_opened");
   }, []);
 
@@ -111,6 +112,12 @@ export function ReportBuilder({ ai }: { ai: { available: boolean; model: string 
     if (reportNotes && notes.some((note) => containsRiskPhrase(note))) {
       dispatch({ type: "REQUEST_HELP", from: pathname });
       router.push(PATHS.krisis);
+      return;
+    }
+    // Until the PDF engine has arrived, a click only starts loading it, so
+    // building the PDF never fetches anything (PDF-01).
+    if (!engineReady) {
+      void preloadReportRenderer().catch(() => {});
       return;
     }
     setStatus({ kind: "working" });
@@ -329,11 +336,13 @@ export function ReportBuilder({ ai }: { ai: { available: boolean; model: string 
           size="lg"
           data-testid="download-pdf"
           disabled={status.kind === "working" || !ready}
+          aria-disabled={!engineReady || undefined}
           onClick={download}
-          className="w-full sm:w-auto"
+          {...loadRendererOnIntent}
+          className="w-full aria-disabled:cursor-progress aria-disabled:opacity-60 sm:w-auto"
         >
           <Download aria-hidden="true" />
-          {status.kind === "working" ? t("downloading") : t("download")}
+          {status.kind === "working" ? t("downloading") : engineReady ? t("download") : t("preparing")}
         </Button>
         <p role="status" aria-live="polite" data-testid="report-status" className="text-sm">
           {status.kind === "done"

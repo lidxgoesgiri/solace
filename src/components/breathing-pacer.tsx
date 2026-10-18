@@ -49,7 +49,7 @@ export function BreathingPacer() {
         <div aria-hidden="true" className="relative flex size-40 items-center justify-center">
           <div className="absolute inset-0 rounded-full border border-sage" />
           <div
-            className="absolute inset-2 rounded-full bg-sky/60 transition-transform ease-in-out"
+            className="absolute inset-2 rounded-full bg-(--pacer-fill) transition-transform ease-in-out"
             style={{
               transform: `scale(${phase === "in" ? 1 : 0.6})`,
               transitionDuration: `${phase === "in" ? INHALE_MS : EXHALE_MS}ms`,
