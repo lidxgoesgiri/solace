@@ -1,0 +1,13 @@
+{
+  "status": "TODO(verify): daftar frasa risiko berbahasa Indonesia dan Inggris disusun dan ditinjau psikolog (PRD 20.3, AI-02). Selama status ini belum \"verified\", fitur AI tetap mati.",
+  "reviewedBy": null,
+  "reviewedAt": null,
+  "phrases": {
+    "id": [],
+    "en": []
+  },
+  "neutralExamples": {
+    "id": [],
+    "en": []
+  }
+}
