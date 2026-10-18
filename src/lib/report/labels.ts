@@ -66,6 +66,16 @@ export function buildReportLabels({ t, country, formatDateTime, formatDate, now 
     notVerified: pdf("notVerified"),
     footer: pdf("footer", { date: formatDateTime(now.toISOString()) }),
     page: (page, total) => pdf("page", { page, total }),
+    notesTitle: pdf("notesTitle"),
+    notesByUser: pdf("notesByUser"),
+    notesByAi: pdf("notesByAi"),
+    notesQuestion: {
+      since: t("report.notes.questions.since"),
+      hardest: t("report.notes.questions.hardest"),
+      tried: t("report.notes.questions.tried"),
+      ask: t("report.notes.questions.ask"),
+      hope: t("report.notes.questions.hope"),
+    },
     severity: {
       normal: t("severity.normal"),
       mild: t("severity.mild"),

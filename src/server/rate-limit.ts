@@ -26,6 +26,8 @@ export const LIMITS = {
   recoverPerIp: { limit: 10, windowMs: 60 * 60_000 },
   recoverPerUsername: { limit: 5, windowMs: 60 * 60_000 },
   metricsPerIp: { limit: 120, windowMs: 60_000 },
+  /** AI requests cost money and are never needed often (PRD 20.3). */
+  aiNotesPerUser: { limit: 10, windowMs: 24 * 60 * 60_000 },
 } satisfies Record<string, Limit>;
 
 export class MemoryLimiter {

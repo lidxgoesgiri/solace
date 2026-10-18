@@ -10,6 +10,7 @@ import {
   wrapForPassphrase,
   type KdfParams,
 } from "@/lib/crypto/keys";
+import { NOTES_SYSTEM_PROMPT, makeTidyNotes, type AiDeps } from "./api/ai";
 import * as auth from "./api/auth";
 import * as metrics from "./api/metrics";
 import * as recordsApi from "./api/records";
@@ -17,7 +18,7 @@ import { testReset, testResetAllowed } from "./api/test-reset";
 import type { ApiContext } from "./context";
 import { accountsEnabled, createPgliteDb, databaseMode, type Db } from "./db";
 import { isSameOrigin } from "./http";
-import { MemoryLimiter } from "./rate-limit";
+import { LIMITS, MemoryLimiter } from "./rate-limit";
 import { route } from "./route";
 
 const FAST: KdfParams = { alg: "argon2id13", opslimit: 1, memlimit: 8 * 1024 * 1024 };
@@ -375,5 +376,99 @@ describe("metrics (PRD 4) and test reset (PRD 16.3)", () => {
     } finally {
       delete process.env.SOLACE_TEST_RESET_TOKEN;
     }
+  });
+});
+
+describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
+  const NOTES = ["sejak awal semester", "susah tidur", "", "apa yang bisa saya lakukan", "lebih tenang"];
+  const RISKY = "kalimat-uji-berisiko";
+
+  function fakeAi(reply: unknown = { answers: ["Sejak awal semester.", "Susah tidur.", "diisi model", "Apa yang bisa saya lakukan?", "Lebih tenang."] }) {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const deps: AiDeps = {
+      config: () => ({ apiKey: "sk-test", model: "provider/model-x" }),
+      isRisky: (text) => text.includes(RISKY),
+      fetch: (async (url: string, init: RequestInit) => {
+        calls.push({ url, init });
+        return Response.json({ choices: [{ message: { content: typeof reply === "string" ? reply : JSON.stringify(reply) } }] });
+      }) as unknown as typeof fetch,
+    };
+    return { calls, deps, handler: makeTidyNotes(deps) };
+  }
+
+  async function signedIn(username: string) {
+    const { client } = await registerUser(username, "teh hangat sebelum ujian akhir");
+    return client;
+  }
+
+  it("needs an account and the server switch", async () => {
+    const { handler } = fakeAi();
+    expect((await new Client().call(handler, { answers: NOTES })).status).toBe(401);
+    const client = await signedIn("rani.notes");
+    const off = makeTidyNotes({ ...fakeAi().deps, config: () => null });
+    expect((await client.call(off, { answers: NOTES })).body).toEqual({ error: "ai_disabled" });
+    expect((await client.call(handler, { answers: ["", "", "", "", ""] })).status).toBe(400);
+  });
+
+  it("A2: risky words never reach the AI", async () => {
+    const { handler, calls } = fakeAi();
+    const client = await signedIn("rani.risk");
+    const response = await client.call(handler, { answers: [...NOTES.slice(0, 4), `aku ${RISKY}`] });
+    expect(response.status).toBe(422);
+    expect(response.body).toEqual({ error: "risk_detected" });
+    expect(calls).toHaveLength(0);
+  });
+
+  it("AI-07: sends only the typed answers, to providers that keep no data", async () => {
+    const { handler, calls } = fakeAi();
+    const client = await signedIn("rani.data");
+    const response = await client.call(handler, { answers: NOTES, username: "rani.data", scores: [28, 14, 14] });
+    expect(response.status).toBe(200);
+    expect(calls).toHaveLength(1);
+    const call = calls[0]!;
+    expect(call.url).toBe("https://openrouter.ai/api/v1/chat/completions");
+    expect(new Headers(call.init.headers).get("authorization")).toBe("Bearer sk-test");
+    const body = JSON.parse(String(call.init.body)) as Record<string, unknown>;
+    expect(body.model).toBe("provider/model-x");
+    expect(body.provider).toEqual({ data_collection: "deny", zdr: true });
+    expect(body.messages).toEqual([
+      { role: "system", content: NOTES_SYSTEM_PROMPT },
+      { role: "user", content: JSON.stringify(NOTES) },
+    ]);
+    expect(String(call.init.body)).not.toContain("rani.data");
+    expect(String(call.init.body)).not.toContain("28");
+  });
+
+  it("returns the tidied text, and an unanswered question stays empty", async () => {
+    const { handler } = fakeAi();
+    const client = await signedIn("rani.tidy");
+    const response = await client.call(handler, { answers: NOTES });
+    expect(response.body).toEqual({
+      answers: ["Sejak awal semester.", "Susah tidur.", "", "Apa yang bisa saya lakukan?", "Lebih tenang."],
+    });
+  });
+
+  it("an unusable or risky reply keeps the user's own text", async () => {
+    const client = await signedIn("rani.reply");
+    expect((await client.call(fakeAi("not json").handler, { answers: NOTES })).status).toBe(502);
+    expect((await client.call(fakeAi({ answers: ["a", "b"] }).handler, { answers: NOTES })).status).toBe(502);
+    const risky = fakeAi({ answers: ["a", `b ${RISKY}`, "", "d", "e"] });
+    expect((await client.call(risky.handler, { answers: NOTES })).body).toEqual({ error: "ai_unavailable" });
+    const failing = makeTidyNotes({
+      ...fakeAi().deps,
+      fetch: (async () => {
+        throw new Error("offline");
+      }) as unknown as typeof fetch,
+    });
+    expect((await client.call(failing, { answers: NOTES })).status).toBe(502);
+  });
+
+  it("limits AI requests per user per day", async () => {
+    const { handler } = fakeAi();
+    const client = await signedIn("rani.limit");
+    for (let i = 0; i < LIMITS.aiNotesPerUser.limit; i += 1) {
+      expect((await client.call(handler, { answers: NOTES })).status).toBe(200);
+    }
+    expect((await client.call(handler, { answers: NOTES })).status).toBe(429);
   });
 });

@@ -7,10 +7,11 @@
 
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb, type PDFFont, type PDFImage, type PDFPage, type RGB } from "pdf-lib";
+import type { NoteQuestion } from "@/lib/ai/notes";
 import type { HelpService, Locale, ServiceType } from "@/lib/content";
 import type { Severity, Subscale } from "@/lib/scoring";
 import { INTER_REGULAR, INTER_SEMIBOLD, LOGO_PNG, LORA_SEMIBOLD } from "./assets";
-import type { ReportModel } from "./model";
+import type { ReportModel, ReportNotes } from "./model";
 
 /** Every string the PDF needs, already translated by the caller. */
 export interface ReportLabels {
@@ -60,6 +61,10 @@ export interface ReportLabels {
   notVerified: string;
   footer: string;
   page: (page: number, total: number) => string;
+  notesTitle: string;
+  notesByUser: string;
+  notesByAi: string;
+  notesQuestion: Record<NoteQuestion, string>;
   severity: Record<Severity, string>;
   subscale: Record<Subscale, string>;
   serviceType: Record<ServiceType, string>;
@@ -433,6 +438,21 @@ function drawDirectory(w: Writer, model: ReportModel, labels: ReportLabels) {
   drawServiceList(w, model.services, labels);
 }
 
+/** Page 3: the user's own notes for the psychologist (AI-04, AI-06). */
+function drawNotes(w: Writer, notes: ReportNotes, labels: ReportLabels) {
+  w.heading(labels.notesTitle);
+  w.paragraph(notes.aiAssisted ? labels.notesByAi : labels.notesByUser, MARGIN, CONTENT_WIDTH, w.fonts.regular, 8.5, MUTED);
+  for (const { question, answer } of notes.entries) {
+    w.y -= 8;
+    w.ensure(30);
+    w.paragraph(labels.notesQuestion[question], MARGIN, CONTENT_WIDTH, w.fonts.semibold, 9.5);
+    w.y -= 2;
+    for (const part of answer.split("\n")) {
+      if (part.trim()) w.paragraph(part.trim(), MARGIN, CONTENT_WIDTH, w.fonts.regular, 9.5);
+    }
+  }
+}
+
 function drawFooters(w: Writer, labels: Pick<ReportLabels, "footer" | "page">) {
   const total = w.pages.length;
   w.pages.forEach((page, index) => {
@@ -497,6 +517,12 @@ export async function renderReportPdf(
   drawItems(w, model, labels);
   drawInstrument(w, model, labels);
   drawDirectory(w, model, labels);
+
+  // Page 3, only with notes.
+  if (model.notes) {
+    w.addPage();
+    drawNotes(w, model.notes, labels);
+  }
 
   drawFooters(w, labels);
 

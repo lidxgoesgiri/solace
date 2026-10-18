@@ -164,7 +164,7 @@
   },
   "report": {
     "title": "Laporan untuk psikolog",
-    "intro": "Laporan PDF dua halaman ini merangkum hasil skriningmu agar mudah dibaca psikolog: skor, jawaban per butir, informasi instrumen, dan daftar layanan bantuan.",
+    "intro": "Laporan PDF dua halaman ini merangkum hasil skriningmu agar mudah dibaca psikolog: skor, jawaban per butir, informasi instrumen, dan daftar layanan bantuan. Kalau kamu menulis catatan untuk psikolog, catatan itu menjadi halaman ketiga.",
     "privacy": "Laporan dibuat langsung di perangkatmu. Tidak ada data yang dikirim ke server, dan nama file tidak memuat namamu.",
     "optionsTitle": "Sebelum mengunduh",
     "nicknameLabel": "Nama panggilan (opsional)",
@@ -219,14 +219,54 @@
       "source": "Sumber",
       "notVerified": "Belum diverifikasi ulang",
       "footer": "Dibuat dengan Solace pada {date}. Skrining, bukan diagnosis.",
-      "page": "Halaman {page} dari {total}"
+      "page": "Halaman {page} dari {total}",
+      "notesTitle": "Catatan untuk psikolog",
+      "notesByUser": "Ditulis pengguna dengan kata-katanya sendiri.",
+      "notesByAi": "Dirapikan dengan bantuan AI dari tulisan pengguna dan diperiksa pengguna sebelum diunduh. Bukan nasihat profesional."
     },
     "languageName": {
       "id": "Bahasa Indonesia",
       "en": "English"
     },
     "languageLabel": "Bahasa laporan",
-    "languageHint": "Pilih bahasa yang paling mudah dibaca psikologmu. Pilihan ini tidak mengubah bahasa tampilan Solace."
+    "languageHint": "Pilih bahasa yang paling mudah dibaca psikologmu. Pilihan ini tidak mengubah bahasa tampilan Solace.",
+    "notes": {
+      "title": "Catatan untuk psikolog (opsional)",
+      "intro": "Jawab dengan kata-katamu sendiri, dan lewati pertanyaan yang tidak ingin kamu jawab. Catatan hanya ada di halaman ini selama terbuka dan dicetak di halaman 3 laporan.",
+      "open": "Tulis catatan",
+      "questions": {
+        "since": "Sejak kapan kamu merasa seperti ini?",
+        "hardest": "Apa yang paling mengganggu keseharianmu?",
+        "tried": "Apa yang sudah kamu coba?",
+        "ask": "Apa yang ingin kamu tanyakan ke psikolog?",
+        "hope": "Apa harapanmu dari sesi pertama?"
+      },
+      "count": "{count}/{max} karakter",
+      "include": "Sertakan catatan di laporan",
+      "includeHint": "Catatan dicetak di halaman 3, supaya psikolog lebih cepat memahami ceritamu.",
+      "previewIncluded": "Catatan untuk psikolog disertakan di halaman 3.",
+      "ai": {
+        "button": "Rapikan dengan AI",
+        "hint": "AI hanya merapikan susunan kata-katamu. AI tidak menilai, tidak mendiagnosis, dan tidak menambahkan saran.",
+        "signIn": "Masuk ke akunmu untuk merapikan catatan dengan AI. Catatan di halaman ini tidak disimpan, jadi masuklah sebelum mulai menulis.",
+        "signInLink": "Masuk",
+        "consentTitle": "Sebelum memakai AI",
+        "consentSent": "Yang dikirim: hanya teks yang kamu tulis di kelima kolom ini.",
+        "consentNotSent": "Yang tidak dikirim: jawaban skrining, skor, nama pengguna, dan data akunmu.",
+        "consentProvider": "Penerima: OpenRouter, yang meneruskannya ke model {model}.",
+        "consentRetention": "Permintaan dikirim dengan pengaturan agar hanya diproses penyedia yang tidak menyimpan datamu dan tidak memakainya untuk melatih model.",
+        "consentPolicy": "Baca kebijakan privasi OpenRouter",
+        "consentLabel": "Hasilnya dibuat AI dan bukan nasihat profesional. Kamu tetap bisa mengubahnya sebelum mengunduh.",
+        "accept": "Saya mengerti, rapikan",
+        "cancel": "Batal",
+        "working": "Merapikan…",
+        "done": "Dirapikan AI dari kata-katamu, bukan nasihat profesional. Periksa dan ubah sebelum mengunduh.",
+        "revert": "Kembalikan ke tulisanku",
+        "limited": "Batas memakai AI untuk hari ini sudah tercapai. Catatanmu tetap bisa diunduh apa adanya.",
+        "error": "AI sedang tidak bisa dipakai. Catatanmu tetap bisa diunduh apa adanya.",
+        "empty": "Tulis setidaknya satu jawaban dulu."
+      }
+    }
   },
   "explanation": {
     "intro": "Hasilmu menunjukkan gejala {subscale} tingkat {severity}.",
