@@ -16,7 +16,7 @@ This file is the scenario plan for the TestSprite suite. Each scenario maps to a
 ## Ground rules for every test
 
 - **Start from a clean state.** Screening answers live in `localStorage` (`solace-flow`, `solace-prefs`), so use a fresh browser context or clear storage first.
-- **Use `data-testid`, never item text.** The Indonesian DASS-21 items are `TODO(verify)` placeholders until the translator's permission arrives, so their wording will change.
+- **Use `data-testid`, never item text.** Item wording belongs to the instrument data files and may still change after clinical review.
 - **Indonesian is the default** at unprefixed URLs (`/hasil`). English lives under `/en/...`. The browser language is ignored.
 - **Keyboard works too.** Keys `1`–`4` select answers 0–3, and `Enter` moves on.
 
