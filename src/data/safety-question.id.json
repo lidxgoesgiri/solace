@@ -2,19 +2,31 @@
   "instrument": "PHQ-9",
   "item": 9,
   "language": "id",
-  "status": "TODO(verify): isi dengan teks PHQ-9 versi Indonesia yang tervalidasi dan tinjau bersama psikolog (PRD 9.1)",
-  "attribution": "TODO(verify): atribusi PHQ-9 versi Indonesia",
+  "status": "verified",
+  "attribution": "Dikembangkan oleh Dr. Robert L. Spitzer, Janet B.W. Williams, Kurt Kroenke, dan rekan, dengan penghargaan di bidang pendidikan dari Pfizer Inc. Anda bebas memperbanyak, menerjemahkan, menampilkan, atau menyeberluaskan lembar ini.",
   "textSource": {
-    "url": null,
-    "checkedAt": null,
-    "note": "TODO(verify): sumber teks PHQ-9 versi Indonesia tervalidasi (lihat Marvianto, 2025, JP3I, doi:10.15408/jp3i.v14i2.46525)."
+    "url": "https://www.phqscreeners.com/images/sites/g/files/g10060481/f/201412/PHQ9_Indonesian%20for%20Indonesia.pdf",
+    "checkedAt": "2026-10-18",
+    "note": "Kalimat pengantar, butir 9, dan label jawaban disalin apa adanya dari formulir resmi PHQ-9 \"Indonesian for Indonesia\" (phqscreeners.com), yang menyatakan bebas diperbanyak, diterjemahkan, ditampilkan, atau disebarluaskan. Tinjauan klinis alur tetap diperlukan (PRD 9.1)."
   },
-  "stem": "TODO(verify): kalimat pengantar PHQ-9 versi Indonesia (periode 2 minggu terakhir)",
-  "text": "TODO(verify): teks item 9 PHQ-9 versi Indonesia",
+  "stem": "Selama 2 minggu terakhir, seberapa sering Anda terganggu oleh masalah-masalah berikut?",
+  "text": "Merasa lebih baik mati atau ingin melukai diri sendiri dengan cara apapun.",
   "options": [
-    { "value": 0, "label": "TODO(verify): label jawaban 0 PHQ-9 versi Indonesia" },
-    { "value": 1, "label": "TODO(verify): label jawaban 1 PHQ-9 versi Indonesia" },
-    { "value": 2, "label": "TODO(verify): label jawaban 2 PHQ-9 versi Indonesia" },
-    { "value": 3, "label": "TODO(verify): label jawaban 3 PHQ-9 versi Indonesia" }
+    {
+      "value": 0,
+      "label": "Tidak pernah"
+    },
+    {
+      "value": 1,
+      "label": "Beberapa hari"
+    },
+    {
+      "value": 2,
+      "label": "Lebih dari separuh waktu yang dimaksud"
+    },
+    {
+      "value": 3,
+      "label": "Hampir setiap hari"
+    }
   ]
 }

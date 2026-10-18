@@ -131,9 +131,9 @@ The crisis decision happens only in the browser. A client-side router guard (`sr
 | Content | Source | Status |
 | --- | --- | --- |
 | DASS-21, English | Lovibond & Lovibond (1995), [doi:10.1016/0005-7967(94)00075-U](https://doi.org/10.1016/0005-7967(94)00075-U); wording checked against the [official UNSW form](https://www2.psy.unsw.edu.au/dass/) | ✅ Verbatim |
-| DASS-21, Indonesian | Ifdil et al. (2022), [doi:10.23916/0020200536840](https://doi.org/10.23916/0020200536840) | ⏳ Waiting for the translator's written permission (placeholders shown) |
+| DASS-21, Indonesian | Damanik, Faculty of Psychology, Universitas Indonesia: the Indonesian DASS-42 listed on the [official DASS translations page](https://www2.psy.unsw.edu.au/dass/Indonesian/Damanik.htm) (the DASS is public domain). The 21 DASS-21 items are taken from it by matching the official English DASS21 and DASS42 wording item by item | ✅ Verbatim · ⏳ no separate validation of this 21-item selection; clinical review pending |
 | Safety question, English | PHQ-9 item 9, [official form](https://www.phqscreeners.com/) | ✅ Verbatim |
-| Safety question, Indonesian | Validated Indonesian PHQ-9 | ⏳ Placeholder |
+| Safety question, Indonesian | PHQ-9 item 9, official [Indonesian for Indonesia form](https://www.phqscreeners.com/select-screener) ("free to reproduce, translate, display or distribute") | ✅ Verbatim |
 | Help directory | Indonesia, United States, United Kingdom (`src/data/hotlines.json`) | ⏳ Every entry must be re-verified (`verifiedAt` is empty) |
 | Tips (`src/data/tips.json`) | Each tip cites a DOI or a WHO/NICE guideline, checked against Crossref and the publishers' pages | ⏳ Evidence summaries and the reviewer are `TODO(verify)`; the app shows "review pending" until they are filled |
 | Toolkit and safety-plan prompts | Breathing, grounding, muscle relaxation, and the six safety-plan sections | ⏳ Wording to be reviewed by a psychologist |

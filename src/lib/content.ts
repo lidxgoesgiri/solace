@@ -37,7 +37,7 @@ export interface Dass21Content {
   instrument: string;
   language: Locale;
   status: string;
-  citation: { text: string; doi: string; url: string };
+  citation: { text: string; doi?: string; url: string };
   textSource?: { url: string | null; checkedAt: string | null; note: string };
   instructions: string;
   options: AnswerOption[];

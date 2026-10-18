@@ -89,7 +89,7 @@
     "next": "Berikutnya",
     "toSafety": "Lanjut",
     "autosaved": "Tersimpan otomatis di perangkat ini.",
-    "placeholderNotice": "Teks pertanyaan versi Indonesia sedang menunggu izin penerjemah. Sementara ini yang tampil adalah penanda tempat.",
+    "placeholderNotice": "Teks pertanyaan versi Indonesia belum final. Sementara ini yang tampil adalah penanda tempat.",
     "pause": "Jeda, lanjutkan nanti"
   },
   "safety": {
@@ -203,7 +203,7 @@
       "colNumber": "No.",
       "colStatement": "Pernyataan",
       "colAnswer": "Jawaban",
-      "englishItemsNote": "Teks butir ditampilkan dalam bahasa Inggris (versi resmi) karena teks versi Indonesia masih menunggu izin penerjemah.",
+      "englishItemsNote": "Teks butir ditampilkan dalam bahasa Inggris (versi resmi) karena teks versi Indonesia belum tersedia.",
       "answerScale": "Skala jawaban",
       "aboutTitle": "Tentang instrumen",
       "aboutInstrument": "Instrumen",

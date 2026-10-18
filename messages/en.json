@@ -89,7 +89,7 @@
     "next": "Next",
     "toSafety": "Continue",
     "autosaved": "Saved automatically on this device.",
-    "placeholderNotice": "The Indonesian question text is waiting for the translator's permission. Placeholder text is shown for now.",
+    "placeholderNotice": "The Indonesian question text is not final yet. Placeholder text is shown for now.",
     "pause": "Pause and continue later"
   },
   "safety": {
@@ -203,7 +203,7 @@
       "colNumber": "No.",
       "colStatement": "Statement",
       "colAnswer": "Answer",
-      "englishItemsNote": "Item text is shown in English (the official version) because the Indonesian text is still waiting for the translator's permission.",
+      "englishItemsNote": "Item text is shown in English (the official version) because the Indonesian text is not available yet.",
       "answerScale": "Answer scale",
       "aboutTitle": "About the instrument",
       "aboutInstrument": "Instrument",
