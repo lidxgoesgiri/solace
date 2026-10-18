@@ -23,10 +23,11 @@ describe("DASS-21 data (SK-01, SK-02)", () => {
     expect(getDass21(locale).options.map((o) => o.value)).toEqual([0, 1, 2, 3]);
   });
 
-  it("English text is final (no placeholders)", () => {
-    const en = getDass21("en");
-    expect(en.status).toBe("verified");
-    for (const text of [en.instructions, ...en.items.map((i) => i.text), ...en.options.map((o) => o.label)]) {
+  it.each(LOCALES)("%s text is final (no placeholders), with its source", (locale) => {
+    const dass = getDass21(locale);
+    expect(dass.status).toBe("verified");
+    expect(dass.textSource?.url).toMatch(/^https:\/\/www2\.psy\.unsw\.edu\.au\/dass\//);
+    for (const text of [dass.instructions, ...dass.items.map((i) => i.text), ...dass.options.map((o) => o.label)]) {
       expect(isTodoPlaceholder(text)).toBe(false);
     }
   });
@@ -52,10 +53,12 @@ describe("safety question data (PRD 9.1)", () => {
     expect(question.options.map((o) => o.value)).toEqual([0, 1, 2, 3]);
   });
 
-  it("English text is final", () => {
-    const en = getSafetyQuestion("en");
-    expect(en.status).toBe("verified");
-    expect(isTodoPlaceholder(en.text)).toBe(false);
+  it.each(LOCALES)("%s text is final", (locale) => {
+    const question = getSafetyQuestion(locale);
+    expect(question.status).toBe("verified");
+    for (const text of [question.stem, question.text, ...question.options.map((o) => o.label)]) {
+      expect(isTodoPlaceholder(text)).toBe(false);
+    }
   });
 });
 

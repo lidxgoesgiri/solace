@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeFromParams } from "@/i18n/locale";
 import { ReportBuilder } from "@/components/report-builder";
+import { aiClientInfo } from "@/server/ai";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -16,5 +17,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ReportPage({ params }: PageProps) {
   const locale = await localeFromParams(params);
   setRequestLocale(locale);
-  return <ReportBuilder />;
+  // Whether the AI step is switched on, and its model; never the key.
+  return <ReportBuilder ai={aiClientInfo()} />;
 }

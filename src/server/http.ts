@@ -10,6 +10,9 @@ export type ErrorCode =
   | "accounts_disabled"
   | "forbidden_origin"
   | "too_large"
+  | "ai_disabled"
+  | "ai_unavailable"
+  | "risk_detected"
   | "server_error";
 
 const NO_STORE = { "Cache-Control": "no-store" };

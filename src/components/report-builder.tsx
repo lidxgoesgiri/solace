@@ -4,13 +4,16 @@ import { ArrowLeft } from "@/components/icons/arrow-left";
 import { Download } from "@/components/icons/download";
 import { Info } from "@/components/icons/info";
 import { Lock } from "@/components/icons/lock";
+import { NotebookPen } from "@/components/icons/notebook-pen";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useId, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useId, useMemo, useState } from "react";
 import { useSelectedCountry } from "@/components/help-directory";
 import { reportDateFormatters, useReportTranslator } from "@/components/use-report-translator";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { EMPTY_NOTES, hasNotes } from "@/lib/ai/notes";
+import { containsRiskPhrase } from "@/lib/ai/risk-check";
 import { LOCALES, isLocale, type Locale } from "@/lib/content";
 import { PATHS } from "@/lib/flow";
 import { resultsView } from "@/lib/results";
@@ -23,7 +26,13 @@ import {
 import { loadRendererOnIntent, preloadReportRenderer, renderReport, saveFile, scheduleReportRenderer } from "@/lib/report/client";
 import { trackEvent } from "@/lib/metrics-client";
 import { buildReportLabels } from "@/lib/report/labels";
-import { useFlow } from "@/store/flow-store";
+import { useFlow, useFlowDispatch } from "@/store/flow-store";
+
+// The notes form loads only when the user opens it, so the report page's
+// own JavaScript stays as it was.
+const LazyPsychNotes = lazy(() =>
+  import("@/components/report/psych-notes").then((mod) => ({ default: mod.PsychNotes })),
+);
 
 type Status =
   | { kind: "idle" }
@@ -36,7 +45,7 @@ type Status =
  * and the PDF are built from the same model, which takes its scores from
  * the same `resultsView` the results page uses (K8).
  */
-export function ReportBuilder() {
+export function ReportBuilder({ ai }: { ai: { available: boolean; model: string | null } }) {
   const t = useTranslations("report");
   const all = useTranslations();
   const countries = useTranslations("countries");
@@ -53,8 +62,20 @@ export function ReportBuilder() {
   const [nickname, setNickname] = useState("");
   const [includeSafety, setIncludeSafety] = useState(true);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  // Notes for the psychologist live in this page's memory only (AI-04).
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [notes, setNotes] = useState<string[]>([...EMPTY_NOTES]);
+  const [aiAssisted, setAiAssisted] = useState(false);
+  const [includeNotes, setIncludeNotes] = useState(true);
+  const dispatch = useFlowDispatch();
+  const pathname = usePathname();
+  const router = useRouter();
 
   const view = resultsView(flow);
+  const reportNotes = useMemo(
+    () => (notesOpen && includeNotes && hasNotes(notes) ? { answers: notes, aiAssisted } : null),
+    [notesOpen, includeNotes, notes, aiAssisted],
+  );
 
   // Fetch the PDF engine while the user reads the page (PDF-01). The page
   // view is counted now, never while a PDF is being built.
@@ -73,9 +94,10 @@ export function ReportBuilder() {
             nickname,
             includeSafety,
             code: "",
+            notes: reportNotes,
           })
         : null,
-    [flow, view, locale, country, nickname, includeSafety],
+    [flow, view, locale, country, nickname, includeSafety, reportNotes],
   );
 
   if (!view || !preview) return null;
@@ -86,6 +108,12 @@ export function ReportBuilder() {
     buildReportLabels({ t: rt, country, formatDateTime, formatDate, now: new Date() });
 
   const download = async () => {
+    // Safety first: notes with risk phrases open the crisis screen (A2).
+    if (reportNotes && notes.some((note) => containsRiskPhrase(note))) {
+      dispatch({ type: "REQUEST_HELP", from: pathname });
+      router.push(PATHS.krisis);
+      return;
+    }
     // Until the PDF engine has arrived, a click only starts loading it, so
     // building the PDF never fetches anything (PDF-01).
     if (!engineReady) {
@@ -101,6 +129,7 @@ export function ReportBuilder() {
         nickname,
         includeSafety,
         code,
+        notes: reportNotes,
       });
       const { bytes } = await renderReport(model, labels());
       saveFile(bytes, model.fileName);
@@ -270,11 +299,36 @@ export function ReportBuilder() {
           <p>{rt("report.pdf.disclaimer")}</p>
         </div>
 
+        {preview.notes ? (
+          <p className="text-sm font-medium" data-testid="report-notes-preview">
+            {t("notes.previewIncluded")}
+          </p>
+        ) : null}
+
         <p className="flex gap-2 text-sm text-muted-foreground">
           <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
           <span>{t("previewNote", { country: countries(country) })}</span>
         </p>
       </section>
+
+      {notesOpen ? (
+        <Suspense fallback={null}>
+          <LazyPsychNotes
+            notes={notes}
+            onNotesChange={setNotes}
+            aiAssisted={aiAssisted}
+            onAiAssistedChange={setAiAssisted}
+            include={includeNotes}
+            onIncludeChange={setIncludeNotes}
+            ai={ai}
+          />
+        </Suspense>
+      ) : (
+        <Button type="button" variant="outline" onClick={() => setNotesOpen(true)} data-testid="notes-open">
+          <NotebookPen aria-hidden="true" />
+          {t("notes.open")}
+        </Button>
+      )}
 
       <div className="space-y-3">
         <Button

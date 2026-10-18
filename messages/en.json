@@ -89,7 +89,7 @@
     "next": "Next",
     "toSafety": "Continue",
     "autosaved": "Saved automatically on this device.",
-    "placeholderNotice": "The Indonesian question text is waiting for the translator's permission. Placeholder text is shown for now.",
+    "placeholderNotice": "The Indonesian question text is not final yet. Placeholder text is shown for now.",
     "pause": "Pause and continue later"
   },
   "safety": {
@@ -164,7 +164,7 @@
   },
   "report": {
     "title": "Report for a psychologist",
-    "intro": "This two-page PDF summarises your screening so a psychologist can read it quickly: scores, answers by item, details about the instrument, and support services.",
+    "intro": "This two-page PDF summarises your screening so a psychologist can read it quickly: scores, answers by item, details about the instrument, and support services. If you write notes for your psychologist, they become a third page.",
     "privacy": "The report is created on your device. Nothing is sent to a server, and the file name does not include your name.",
     "optionsTitle": "Before you download",
     "nicknameLabel": "Nickname (optional)",
@@ -204,7 +204,7 @@
       "colNumber": "No.",
       "colStatement": "Statement",
       "colAnswer": "Answer",
-      "englishItemsNote": "Item text is shown in English (the official version) because the Indonesian text is still waiting for the translator's permission.",
+      "englishItemsNote": "Item text is shown in English (the official version) because the Indonesian text is not available yet.",
       "answerScale": "Answer scale",
       "aboutTitle": "About the instrument",
       "aboutInstrument": "Instrument",
@@ -220,14 +220,54 @@
       "source": "Source",
       "notVerified": "Not yet re-verified",
       "footer": "Made with Solace on {date}. A screening, not a diagnosis.",
-      "page": "Page {page} of {total}"
+      "page": "Page {page} of {total}",
+      "notesTitle": "Notes for the psychologist",
+      "notesByUser": "Written by the user in their own words.",
+      "notesByAi": "Tidied with AI from the user's own writing and checked by the user before download. Not professional advice."
     },
     "languageName": {
       "id": "Bahasa Indonesia",
       "en": "English"
     },
     "languageLabel": "Report language",
-    "languageHint": "Choose the language your psychologist reads most easily. This does not change the language of Solace."
+    "languageHint": "Choose the language your psychologist reads most easily. This does not change the language of Solace.",
+    "notes": {
+      "title": "Notes for your psychologist (optional)",
+      "intro": "Answer in your own words, and skip any question you prefer not to answer. The notes only live on this page while it is open and are printed on page 3 of the report.",
+      "open": "Write notes",
+      "questions": {
+        "since": "Since when have you felt this way?",
+        "hardest": "What troubles you most in your daily life?",
+        "tried": "What have you already tried?",
+        "ask": "What would you like to ask the psychologist?",
+        "hope": "What do you hope for from the first session?"
+      },
+      "count": "{count}/{max} characters",
+      "include": "Include the notes in the report",
+      "includeHint": "The notes are printed on page 3, so the psychologist can understand your story sooner.",
+      "previewIncluded": "Notes for your psychologist are included on page 3.",
+      "ai": {
+        "button": "Tidy up with AI",
+        "hint": "The AI only tidies your own words. It does not judge, diagnose, or add advice.",
+        "signIn": "Sign in to your account to tidy your notes with AI. Notes on this page are not saved, so sign in before you start writing.",
+        "signInLink": "Sign in",
+        "consentTitle": "Before you use AI",
+        "consentSent": "What is sent: only the text you typed in these five boxes.",
+        "consentNotSent": "What is not sent: your screening answers, scores, username, and account data.",
+        "consentProvider": "Recipient: OpenRouter, which passes it to the model {model}.",
+        "consentRetention": "Requests are sent with settings that only allow providers that do not keep your data or use it to train models.",
+        "consentPolicy": "Read OpenRouter's privacy policy",
+        "consentLabel": "The result is made by AI and is not professional advice. You can still edit it before downloading.",
+        "accept": "I understand, tidy it",
+        "cancel": "Cancel",
+        "working": "Tidying…",
+        "done": "Tidied by AI from your words; not professional advice. Check and edit before downloading.",
+        "revert": "Go back to my own text",
+        "limited": "You have reached today's AI limit. Your notes can still be downloaded as they are.",
+        "error": "The AI is not available right now. Your notes can still be downloaded as they are.",
+        "empty": "Write at least one answer first."
+      }
+    }
   },
   "explanation": {
     "intro": "Your result shows {severity} symptoms of {subscale}.",

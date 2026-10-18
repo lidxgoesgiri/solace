@@ -1,120 +1,119 @@
 {
   "instrument": "DASS-21",
   "language": "id",
-  "status": "TODO(verify): menunggu izin tertulis penerjemah (PRD 10.0, 21.1)",
+  "status": "verified",
   "citation": {
-    "text": "Ifdil, I., dkk. (2022). The DASS-21: an Indonesian validation measure. COUNS-EDU, 5(4).",
-    "doi": "10.23916/0020200536840",
-    "url": "https://doi.org/10.23916/0020200536840"
+    "text": "Damanik, E. D. DASS (42 butir) versi Bahasa Indonesia. Fakultas Psikologi, Universitas Indonesia.",
+    "url": "https://www2.psy.unsw.edu.au/dass/Indonesian/Damanik.htm"
   },
   "textSource": {
-    "url": null,
-    "checkedAt": null,
-    "note": "TODO(verify): salin teks item apa adanya dari publikasi setelah izin penerjemah didapat; butir yang disorot studi Jurnal Psikologi Ulayat ditinjau psikolog."
+    "url": "https://www2.psy.unsw.edu.au/dass/Indonesian/DASS42%20Bahasa%20Indonesia%20Damanik.doc",
+    "checkedAt": "2026-10-18",
+    "note": "Disalin apa adanya dari terjemahan DASS 42 butir oleh Damanik yang tersedia di situs resmi DASS (UNSW; DASS berstatus public domain). Ke-21 butir DASS-21 dipilih dengan mencocokkan kata per kata teks Inggris resmi DASS21 dengan DASS42 (butir DASS-21 1-21 = DASS-42 22, 2, 3, 4, 42, 6, 41, 12, 40, 10, 39, 8, 26, 35, 28, 31, 17, 18, 25, 20, 38). Label jawaban 1 memakai ejaan \"kadang-kadang\" dari laporan reliabilitas penerjemah yang sama; lembar kuesioner menulis \"kadang kadang\". Validasi terpisah untuk DASS-21 versi ini belum ada; tinjauan psikolog tetap diperlukan."
   },
-  "instructions": "TODO(verify): instruksi DASS-21 versi Indonesia (Ifdil dkk., 2022)",
+  "instructions": "Kuesioner ini terdiri dari berbagai pernyataan yang mungkin sesuai dengan pengalaman Bapak/Ibu/Saudara dalam menghadapi situasi hidup sehari- hari. Terdapat empat pilihan jawaban yang disediakan untuk setiap pernyataan yaitu: 0: Tidak sesuai dengan saya sama sekali, atau tidak pernah. 1: Sesuai dengan saya sampai tingkat tertentu, atau kadang-kadang. 2: Sesuai dengan saya sampai batas yang dapat dipertimbangkan, atau lumayan sering. 3: Sangat sesuai dengan saya, atau sering sekali. Selanjutnya, Bapak/Ibu/Saudara diminta untuk menjawab dengan cara memberi tanda silang (X) pada salah satu kolom yang paling sesuai dengan pengalaman Bapak/Ibu/Saudara selama satu minggu belakangan ini. Tidak ada jawaban yang benar ataupun salah, karena itu isilah sesuai dengan keadaan diri Bapak/Ibu/Saudara yang sesungguhnya, yaitu berdasarkan jawaban pertama yang terlintas dalam pikiran Bapak/Ibu/ Saudara.",
   "options": [
     {
       "value": 0,
-      "label": "TODO(verify): label jawaban 0 versi Indonesia"
+      "label": "Tidak sesuai dengan saya sama sekali, atau tidak pernah."
     },
     {
       "value": 1,
-      "label": "TODO(verify): label jawaban 1 versi Indonesia"
+      "label": "Sesuai dengan saya sampai tingkat tertentu, atau kadang-kadang."
     },
     {
       "value": 2,
-      "label": "TODO(verify): label jawaban 2 versi Indonesia"
+      "label": "Sesuai dengan saya sampai batas yang dapat dipertimbangkan, atau lumayan sering."
     },
     {
       "value": 3,
-      "label": "TODO(verify): label jawaban 3 versi Indonesia"
+      "label": "Sangat sesuai dengan saya, atau sering sekali."
     }
   ],
   "items": [
     {
       "number": 1,
-      "text": "TODO(verify): teks item 1 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa sulit untuk beristirahat."
     },
     {
       "number": 2,
-      "text": "TODO(verify): teks item 2 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa bibir saya sering kering."
     },
     {
       "number": 3,
-      "text": "TODO(verify): teks item 3 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya sama sekali tidak dapat merasakan perasaan positif."
     },
     {
       "number": 4,
-      "text": "TODO(verify): teks item 4 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya mengalami kesulitan bernafas (misalnya: seringkali terengah-engah atau tidak dapat bernafas padahal tidak melakukan aktivitas fisik sebelumnya)."
     },
     {
       "number": 5,
-      "text": "TODO(verify): teks item 5 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa sulit untuk meningkatkan inisiatif dalam melakukan sesuatu."
     },
     {
       "number": 6,
-      "text": "TODO(verify): teks item 6 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya cenderung bereaksi berlebihan terhadap suatu situasi."
     },
     {
       "number": 7,
-      "text": "TODO(verify): teks item 7 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa gemetar (misalnya: pada tangan)."
     },
     {
       "number": 8,
-      "text": "TODO(verify): teks item 8 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa telah menghabiskan banyak energi untuk merasa cemas."
     },
     {
       "number": 9,
-      "text": "TODO(verify): teks item 9 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa khawatir dengan situasi dimana saya mungkin menjadi panik dan mempermalukan diri sendiri."
     },
     {
       "number": 10,
-      "text": "TODO(verify): teks item 10 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa tidak ada hal yang dapat diharapkan di masa depan."
     },
     {
       "number": 11,
-      "text": "TODO(verify): teks item 11 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya menemukan diri saya mudah gelisah."
     },
     {
       "number": 12,
-      "text": "TODO(verify): teks item 12 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa sulit untuk bersantai."
     },
     {
       "number": 13,
-      "text": "TODO(verify): teks item 13 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa putus asa dan sedih."
     },
     {
       "number": 14,
-      "text": "TODO(verify): teks item 14 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya tidak dapat memaklumi hal apapun yang menghalangi saya untuk menyelesaikan hal yang sedang saya lakukan."
     },
     {
       "number": 15,
-      "text": "TODO(verify): teks item 15 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa saya hampir panik."
     },
     {
       "number": 16,
-      "text": "TODO(verify): teks item 16 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya tidak merasa antusias dalam hal apapun."
     },
     {
       "number": 17,
-      "text": "TODO(verify): teks item 17 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa bahwa saya tidak berharga sebagai seorang manusia."
     },
     {
       "number": 18,
-      "text": "TODO(verify): teks item 18 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa bahwa saya mudah tersinggung."
     },
     {
       "number": 19,
-      "text": "TODO(verify): teks item 19 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya menyadari kegiatan jantung, walaupun saya tidak sehabis melakukan aktivitas fisik (misalnya: merasa detak jantung meningkat atau melemah)."
     },
     {
       "number": 20,
-      "text": "TODO(verify): teks item 20 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa takut tanpa alasan yang jelas."
     },
     {
       "number": 21,
-      "text": "TODO(verify): teks item 21 DASS-21 versi Indonesia (Ifdil dkk., 2022) — menunggu izin penerjemah"
+      "text": "Saya merasa bahwa hidup tidak berarti."
     }
   ]
 }

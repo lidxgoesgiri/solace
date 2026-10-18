@@ -69,4 +69,29 @@ describe.each([
     expect(rendered.pages[0]?.join(" ")).toContain(labels.disclaimer);
     expect(rendered.pages[0]).toContain(labels.severity.extremely_severe);
   }, 30_000);
+
+  it("notes for the psychologist add page 3, in the user's own words (AI-04, AI-06)", async () => {
+    const view = resultsView(finished)!;
+    const answers = ["Sejak awal semester ini.", "", "Jalan pagi.\nMengurangi kopi.", "", "Bisa tidur lebih nyenyak."];
+    for (const aiAssisted of [false, true]) {
+      const model = buildReportModel(finished, view.result, {
+        locale,
+        country: "ID",
+        nickname: "",
+        includeSafety: true,
+        code: "SOL-TEST-0003",
+        notes: { answers, aiAssisted },
+      });
+      const rendered = await renderReportPdf(model, labels, new Date("2026-10-17T06:00:00.000Z"));
+      expect(rendered.pages).toHaveLength(3);
+      const page3 = rendered.pages[2]!.join(" ");
+      expect(page3).toContain(labels.notesTitle);
+      expect(page3).toContain(aiAssisted ? labels.notesByAi : labels.notesByUser);
+      expect(page3).toContain(labels.notesQuestion.since);
+      expect(page3).toContain("Mengurangi kopi.");
+      // Unanswered questions are left out.
+      expect(page3).not.toContain(labels.notesQuestion.hardest);
+      expect(rendered.pages.flat().filter((run) => run.includes("?") && !run.endsWith("?"))).toEqual([]);
+    }
+  }, 30_000);
 });

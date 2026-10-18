@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { getDass21 } from "@/lib/content";
 import { createInitialFlowState, flowReducer, type FlowEvent, type FlowState } from "@/lib/flow";
 import { resultsView } from "@/lib/results";
 import type { AnswerValue } from "@/lib/scoring";
@@ -67,12 +68,27 @@ describe("report content (PRD 12)", () => {
     expect(report.items[0]?.text).toBe("I found it hard to wind down");
   });
 
-  it("falls back to the official English item text while the Indonesian text is a placeholder", () => {
+  it("an Indonesian report uses the Indonesian items and answer scale, in the original order", () => {
     const { report } = model(finished(1), { locale: "id" });
-    expect(report.usesEnglishItemText).toBe(true);
-    expect(report.items[0]?.text).toBe("I found it hard to wind down");
-    expect(report.answerScale[0]?.label).toBe("Did not apply to me at all");
+    const id = getDass21("id");
+    expect(report.usesEnglishItemText).toBe(false);
+    expect(report.items.map((item) => item.text)).toEqual(id.items.map((item) => item.text));
+    expect(report.answerScale.map((option) => option.label)).toEqual(id.options.map((o) => o.label));
     for (const item of report.items) expect(item.text).not.toMatch(/TODO/);
+  });
+
+  it("notes are optional, keep their order, and leave out unanswered questions (AI-04)", () => {
+    expect(model(finished(1)).report.notes).toBeNull();
+    expect(model(finished(1), { notes: { answers: ["", " ", "", "", ""], aiAssisted: false } }).report.notes).toBeNull();
+    const { report } = model(finished(1), { notes: { answers: ["satu", "", "tiga", "", "lima"], aiAssisted: true } });
+    expect(report.notes).toEqual({
+      entries: [
+        { question: "since", answer: "satu" },
+        { question: "tried", answer: "tiga" },
+        { question: "hope", answer: "lima" },
+      ],
+      aiAssisted: true,
+    });
   });
 
   it("records when and in which language the screening was finished", () => {
