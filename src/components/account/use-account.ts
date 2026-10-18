@@ -39,7 +39,7 @@ export function errorCode(error: unknown): AccountErrorCode {
   return error instanceof AccountError ? error.code : "unknown";
 }
 
-const NEXT_PATHS = [PATHS.akun, PATHS.tips, PATHS.riwayat, PATHS.rencana] as const;
+const NEXT_PATHS = [PATHS.akun, PATHS.tips, PATHS.riwayat, PATHS.rencana, PATHS.laporan] as const;
 
 /** Where to go after signing in: an allowed app path from ?next=, else the account home. */
 export function nextPathFromLocation(): string {

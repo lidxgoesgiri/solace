@@ -49,6 +49,16 @@ export const TEST_LABELS: ReportLabels = {
   notVerified: "Not yet re-verified",
   footer: "Made with Solace. A screening, not a diagnosis.",
   page: (page, total) => `Page ${page} of ${total}`,
+  notesTitle: "Notes for the psychologist",
+  notesByUser: "Written by the user in their own words.",
+  notesByAi: "Tidied with AI from the user's own writing. Not professional advice.",
+  notesQuestion: {
+    since: "Since when have you felt this way?",
+    hardest: "What troubles you most in your daily life?",
+    tried: "What have you already tried?",
+    ask: "What would you like to ask the psychologist?",
+    hope: "What do you hope for from the first session?",
+  },
   severity: {
     normal: "Normal",
     mild: "Mild",

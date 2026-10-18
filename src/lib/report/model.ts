@@ -6,6 +6,13 @@
  */
 
 import {
+  NOTE_OUTPUT_MAX_CHARS,
+  NOTE_QUESTIONS,
+  cleanNote,
+  type NoteAnswers,
+  type NoteQuestion,
+} from "@/lib/ai/notes";
+import {
   getDass21,
   getSafetyQuestion,
   isTodoPlaceholder,
@@ -40,6 +47,15 @@ export interface ReportOptions {
   includeSafety: boolean;
   /** Random report code, not an identity. */
   code: string;
+  /** Optional notes for the psychologist, one per guided question (AI-04). */
+  notes?: { answers: NoteAnswers; aiAssisted: boolean } | null;
+}
+
+export interface ReportNotes {
+  /** Answered questions only, in order. */
+  entries: { question: NoteQuestion; answer: string }[];
+  /** The text was tidied with AI and checked by the user (AI-06). */
+  aiAssisted: boolean;
 }
 
 export interface ReportScore {
@@ -90,6 +106,8 @@ export interface ReportModel {
   cutoffs: { severity: Severity; ranges: Record<Subscale, string> }[];
   country: Country;
   services: HelpService[];
+  /** Page 3, only when the user wrote notes and chose to include them. */
+  notes: ReportNotes | null;
   fileName: string;
 }
 
@@ -144,6 +162,15 @@ export function generateReportCode(
   const bytes = random(new Uint8Array(8));
   const chars = Array.from(bytes, (byte) => CODE_ALPHABET[byte % CODE_ALPHABET.length]);
   return `SOL-${chars.slice(0, 4).join("")}-${chars.slice(4, 8).join("")}`;
+}
+
+function reportNotes(notes: ReportOptions["notes"]): ReportNotes | null {
+  if (!notes) return null;
+  const entries = NOTE_QUESTIONS.flatMap((question, index) => {
+    const answer = cleanNote(notes.answers[index] ?? "", NOTE_OUTPUT_MAX_CHARS);
+    return answer ? [{ question, answer }] : [];
+  });
+  return entries.length > 0 ? { entries, aiAssisted: notes.aiAssisted } : null;
 }
 
 /** Text in the report language, or the official English text for placeholders. */
@@ -216,6 +243,7 @@ export function buildReportModel(
     cutoffs: cutoffRanges(),
     country: options.country,
     services: [...servicesFor(options.country, "emergency"), ...servicesFor(options.country, "support")],
+    notes: reportNotes(options.notes),
     fileName: reportFileName(flow.completedAt, now),
   };
 }

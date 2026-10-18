@@ -36,6 +36,7 @@ const ICONS = [
   "log-in",
   "log-out",
   "mail-x",
+  "notebook-pen",
   "moon",
   "pause",
   "phone",

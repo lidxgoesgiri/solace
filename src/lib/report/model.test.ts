@@ -75,6 +75,20 @@ describe("report content (PRD 12)", () => {
     for (const item of report.items) expect(item.text).not.toMatch(/TODO/);
   });
 
+  it("notes are optional, keep their order, and leave out unanswered questions (AI-04)", () => {
+    expect(model(finished(1)).report.notes).toBeNull();
+    expect(model(finished(1), { notes: { answers: ["", " ", "", "", ""], aiAssisted: false } }).report.notes).toBeNull();
+    const { report } = model(finished(1), { notes: { answers: ["satu", "", "tiga", "", "lima"], aiAssisted: true } });
+    expect(report.notes).toEqual({
+      entries: [
+        { question: "since", answer: "satu" },
+        { question: "tried", answer: "tiga" },
+        { question: "hope", answer: "lima" },
+      ],
+      aiAssisted: true,
+    });
+  });
+
   it("records when and in which language the screening was finished", () => {
     const { report } = model(finished(1, 0, "id"));
     expect(report.completedAt).toBe(AT);
