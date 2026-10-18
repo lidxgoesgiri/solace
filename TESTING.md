@@ -116,6 +116,15 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 | P3 | Deleting an account deletes everything | On `/akun` type the username in `delete-confirm-username` · `delete-account-confirm` | `delete-account-confirm` stays disabled until the username matches; afterwards `go-sign-up` shows, `GET /api/auth/session` is `401`, and signing in again shows `account-error` |
 | P4 | Recovery kit restores data | Sign up and note `recovery-code` · finish a screening · sign out · `/akun/pulihkan` · `recover-username`, `recover-code`, `recover-passphrase`, `recover-passphrase-confirm` · `recover-submit` | Signed in with the new passphrase; `/riwayat` still lists the screening; the old passphrase no longer works |
 
+### Notes for the psychologist and AI (AI-04, A1–A3)
+
+| ID | Requirement | Steps | Expected |
+| --- | --- | --- | --- |
+| AI-04 | Notes on page 3 | Reach `/laporan` · `notes-open` · type in `notes-since` and `notes-tried` · `download-pdf` | `report-notes-preview` says the notes are on page 3; `report-status` names the PDF; no request is sent while it is built |
+| AI-04-off | Notes can be left out | After AI-04, untick `notes-include` | `report-notes-preview` disappears; the PDF is two pages |
+| A1 | AI off by default | Reach `/laporan` · `notes-open` | No `notes-ai` button while the AI is switched off (the case on previews); when it is on, `ai-consent` appears before anything is sent |
+| A3 | No AI during a crisis | Start · `all-0` · safety 1 (crisis pending) · open `/laporan` | Redirected to `/krisis`; the notes and AI controls are never shown |
+
 ### Tips, safety plan, and history
 
 | ID | Requirement | Steps | Expected |
@@ -164,4 +173,4 @@ The account, tips, and history scenarios above, and TIPS-001, need a database on
 | Invariant | Waiting for |
 | --- | --- |
 | P1, P3, P4, K10 in TestSprite | A database on the preview (Vitest already covers them) |
-| A1–A3 (AI off by default, risk check, no AI during a crisis) | AI features (P2) |
+| A1–A3 with the AI switched on | A reviewed risk-phrase list and an OpenRouter key (Vitest already covers the guards) |
