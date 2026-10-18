@@ -176,6 +176,7 @@
     "codeLater": "Created when you download",
     "download": "Download PDF report",
     "downloading": "Preparing the report…",
+    "preparing": "Preparing…",
     "downloaded": "Report saved as {fileName} (code {code}).",
     "error": "The report could not be created. Please try again.",
     "pdf": {
@@ -462,6 +463,7 @@
     "saveError": "Your plan was not saved. Please try again.",
     "download": "Download PDF",
     "downloading": "Preparing the PDF…",
+    "preparing": "Preparing…",
     "downloaded": "Plan saved as {fileName}.",
     "downloadError": "The PDF could not be made. Please try again.",
     "loading": "Opening your plan…",
@@ -507,6 +509,7 @@
     "listTitle": "Saved screenings",
     "download": "Download report",
     "downloading": "Preparing…",
+    "preparing": "Preparing…",
     "downloaded": "Report saved as {fileName}.",
     "downloadError": "The report could not be made. Please try again.",
     "checkinTitle": "Mood check-in",

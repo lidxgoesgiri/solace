@@ -176,6 +176,7 @@
     "codeLater": "Dibuat saat kamu mengunduh",
     "download": "Unduh laporan PDF",
     "downloading": "Menyiapkan laporan…",
+    "preparing": "Menyiapkan…",
     "downloaded": "Laporan tersimpan sebagai {fileName} (kode {code}).",
     "error": "Laporan gagal dibuat. Coba lagi.",
     "pdf": {
@@ -462,6 +463,7 @@
     "saveError": "Rencana belum tersimpan. Coba lagi.",
     "download": "Unduh PDF",
     "downloading": "Menyiapkan PDF…",
+    "preparing": "Menyiapkan…",
     "downloaded": "Rencana tersimpan sebagai {fileName}.",
     "downloadError": "PDF belum bisa dibuat. Coba lagi.",
     "loading": "Membuka rencanamu…",
@@ -507,6 +509,7 @@
     "listTitle": "Skrining tersimpan",
     "download": "Unduh laporan",
     "downloading": "Menyiapkan…",
+    "preparing": "Menyiapkan…",
     "downloaded": "Laporan tersimpan sebagai {fileName}.",
     "downloadError": "Laporan belum bisa dibuat. Coba lagi.",
     "checkinTitle": "Check-in suasana hati",

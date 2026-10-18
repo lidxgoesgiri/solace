@@ -20,7 +20,7 @@ import {
 } from "@/lib/account/types";
 import { isLocale, servicesFor } from "@/lib/content";
 import { PATHS } from "@/lib/flow";
-import { preloadReportRenderer, renderSafetyPlan, saveFile } from "@/lib/report/client";
+import { loadRendererOnIntent, preloadReportRenderer, renderSafetyPlan, saveFile, scheduleReportRenderer } from "@/lib/report/client";
 import { useAccountRecords } from "@/store/account-store";
 import { useFlowDispatch } from "@/store/flow-store";
 
@@ -67,9 +67,8 @@ export function SafetyPlanEditor({ accountsAvailable }: { accountsAvailable: boo
   }, [username]);
 
   // The PDF engine arrives while the plan is being written, not on download.
-  useEffect(() => {
-    void preloadReportRenderer();
-  }, []);
+  const [engineReady, setEngineReady] = useState(false);
+  useEffect(() => scheduleReportRenderer(() => setEngineReady(true)), []);
 
   useEffect(() => {
     if (saved && !prefilled.current) {
@@ -224,13 +223,18 @@ export function SafetyPlanEditor({ accountsAvailable }: { accountsAvailable: boo
               size="lg"
               variant={username ? "outline" : "default"}
               disabled={busy}
-              onClick={download}
+              aria-disabled={!engineReady || undefined}
+              onClick={() => (engineReady ? download() : void preloadReportRenderer().catch(() => {}))}
               data-testid="plan-download"
+              className="aria-disabled:cursor-progress aria-disabled:opacity-60"
+              {...loadRendererOnIntent}
             >
               <Download aria-hidden="true" />
               {status.kind === "busy" && status.action === "download"
                 ? t("downloading")
-                : t("download")}
+                : engineReady
+                  ? t("download")
+                  : t("preparing")}
             </Button>
           </div>
           <p role="status" aria-live="polite" className="min-h-6 text-sm" data-testid="plan-status">

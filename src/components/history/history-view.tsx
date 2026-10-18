@@ -21,7 +21,7 @@ import { isLocale } from "@/lib/content";
 import { PATHS } from "@/lib/flow";
 import { resultsView } from "@/lib/results";
 import { newlySevere, reminderDue, snoozeUntil, trendBetween } from "@/lib/history";
-import { preloadReportRenderer, renderReport, saveFile } from "@/lib/report/client";
+import { loadRendererOnIntent, preloadReportRenderer, renderReport, saveFile, scheduleReportRenderer } from "@/lib/report/client";
 import { buildReportLabels } from "@/lib/report/labels";
 import { buildReportModel, generateReportCode } from "@/lib/report/model";
 import { SUBSCALES, type Dass21Result } from "@/lib/scoring";
@@ -64,9 +64,8 @@ function History({ username }: { username: string }) {
   const records = useAccountRecords();
   const snoozed = useSyncExternalStore(snoozeStore.subscribe, snoozeStore.get, () => null);
 
-  useEffect(() => {
-    void preloadReportRenderer();
-  }, []);
+  const [engineReady, setEngineReady] = useState(false);
+  useEffect(() => scheduleReportRenderer(() => setEngineReady(true)), []);
 
   // Only screenings whose results may be shown (a saved positive safety
   // answer without a confirmed crisis screen never is, K3).
@@ -249,7 +248,7 @@ function History({ username }: { username: string }) {
                 </thead>
                 <tbody>
                   {[...scored].reverse().map((entry) => (
-                    <HistoryRow key={entry.record.id} entry={entry} />
+                    <HistoryRow key={entry.record.id} entry={entry} engineReady={engineReady} />
                   ))}
                 </tbody>
               </table>
@@ -263,7 +262,7 @@ function History({ username }: { username: string }) {
   );
 }
 
-function HistoryRow({ entry }: { entry: Scored }) {
+function HistoryRow({ entry, engineReady }: { entry: Scored; engineReady: boolean }) {
   const t = useTranslations("history");
   const all = useTranslations();
   const format = useFormatter();
@@ -326,11 +325,14 @@ function HistoryRow({ entry }: { entry: Scored }) {
           size="sm"
           variant="outline"
           disabled={status === "busy"}
-          onClick={download}
+          aria-disabled={!engineReady || undefined}
+          onClick={() => (engineReady ? download() : void preloadReportRenderer().catch(() => {}))}
           data-testid="history-download"
+          className="aria-disabled:cursor-progress aria-disabled:opacity-60"
+          {...loadRendererOnIntent}
         >
           <Download aria-hidden="true" />
-          {status === "busy" ? t("downloading") : t("download")}
+          {status === "busy" ? t("downloading") : engineReady ? t("download") : t("preparing")}
         </Button>
         <p role="status" aria-live="polite" className="mt-1 text-xs text-muted-foreground">
           {typeof status === "object"
