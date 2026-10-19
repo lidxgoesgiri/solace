@@ -8,7 +8,7 @@
 
 Solace is a mental health screening web app for university students. It runs the 21-item **DASS-21** plus one separate **safety question**, shows results instantly, and then offers two paths: download a report to bring to a psychologist, or sign in (no email) for research-based tips. Available in **Bahasa Indonesia** (default) and **English**.
 
-Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Vercel preview, and the TestSprite GitHub App runs the 41-test suite against that preview; every push to `main` runs it again against production. Blocking PRs (the merge gate) stays off for the first PRs while the suite settles, then gets switched on.
+Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Vercel preview, and the TestSprite GitHub App runs the 42-test suite against that preview; every push to `main` runs it again against production. Blocking PRs (the merge gate) stays off for the first PRs while the suite settles, then gets switched on.
 
 - **Live URL:** https://solace-sc.vercel.app
 - **Health check:** https://solace-sc.vercel.app/api/health
@@ -64,7 +64,7 @@ These invariants must never break. Each one gets an automated test (Vitest, Test
 | K7 | A disclaimer is always shown before results | TestSprite | Present on the results page and in the PDF | ✅ Results page (TestSprite RESU-005) · ✅ PDF page 1 (Vitest `pdf.test.ts`, `labels.test.ts`) |
 | K8 | The PDF shows the same numbers as the results screen | TestSprite | Compare scores and categories on screen vs PDF text | ✅ Vitest (`model.test.ts`, `pdf.test.ts` read the PDF text) · report preview has the same testids for TestSprite |
 | K9 | Switching language keeps answers | TestSprite | Switch ID → EN at question 10; answers 1–9 kept | ✅ TestSprite (HOME-002) |
-| K10 | Tips match category and severity, each with a DOI source | Vitest (`selectTips`) + TestSprite | Multi-dimension, all normal, severe; every tip card links its source | ✅ Vitest (`tips.test.ts`: all 125 category combinations, and every "try another tip" swap in each of them stays in its section and can be undone; every tip links a DOI or WHO/NICE guideline) · ✅ TestSprite (TIPS-001) |
+| K10 | Tips match category and severity, each with a DOI source | Vitest (`selectTips`) + TestSprite | Multi-dimension, all normal, severe; every tip card links its source | ✅ Vitest (`tips.test.ts`: all 125 category combinations, and every "try another tip" swap in each of them stays in its section and can be undone; every tip links a DOI or WHO/NICE guideline) · ✅ TestSprite (TIPS-001; swapping and bringing a tip back in TIPS-006) |
 | K11 | "I need help now" is on every page | TestSprite | Landing, screening, results, tips, history | ✅ TestSprite (HELP-001 to HELP-005) · tips, history, account, and safety-plan pages share the same header |
 | P1 | The server only receives ciphertext | TestSprite (API) | `records` payloads and responses contain no answer text or scores | ✅ Vitest (`api.test.ts`: stored rows hold only ciphertext; `keys.test.ts`) · ⏳ TestSprite |
 | P2 | No trackers, no commercial referrals | TestSprite | No analytics/ad requests; no CSP violations; every directory entry is public, government, or nonprofit | ✅ Vitest (`security-headers.test.ts`: CSP allows only Solace's origin, no tracker code; directory types in `content.test.ts`) · ⏳ TestSprite |
