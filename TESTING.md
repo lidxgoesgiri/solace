@@ -103,6 +103,7 @@ Scores are shown ×2 (0–42). Each `result-card-{subscale}` carries `data-score
 | PDF-03 | Report language | Reach `/hasil` in Indonesian · `download-report` · choose English in `report-language` | The `report-preview` content (title, labels, disclaimer) switches to English while the page around it stays Indonesian; `download-pdf` makes an English PDF |
 | P2-csp | Only Solace's own origin | Open any page and check the response headers; run a full `all-1` flow | `Content-Security-Policy` has `connect-src 'self'`; no CSP violation in the console; no request leaves the Solace origin |
 | Theme | Light and dark mode | Clean session, system in light mode · click `theme-switch` · reload · open `/mulai` · click `theme-switch` again | Dark after the first click and still dark after the reload and on `/mulai` (`<html data-theme="dark">`); the button then reads "Mode terang" / "Light mode". The second click returns to light and to following the system. With the system in dark mode, the page starts dark with no click |
+| Privacy | Privacy policy on every page | Click `footer-privacy` | `/privasi` shows `privacy-page` with its sections (`privacy-summary` … `privacy-contact`); the English version is `/en/privasi`. Vitest (`privacy.test.ts`) ties its numbers to the code |
 | PWA | Works offline after the first visit | Visit `/` once and wait a few seconds · go offline · Start · `all-0` · safety 0 | Every step loads; `/hasil` shows the three cards. Manual check: TestSprite cannot switch the network off |
 
 ### Accounts (needs `DATABASE_URL` on the preview)
@@ -185,6 +186,12 @@ RESU-002's run log and the scores show the cause. The agent clicked the button w
 The app was right; checked by hand on the #11 preview, `safety-answer-1` opens `/krisis`. The steps were rewritten to name the test id, value, position and badge (see the ground rules). After that, all 10 affected tests passed on production.
 
 The other blocked test, TIPS-001, met the account gate on `/tips`. It now signs up first and deletes its account at the end.
+
+### Production after #13, and PR #14 (2026-10-18 and 19)
+
+- **Production:** before #13, the robots test failed on production because `/robots.txt` answered with the HTML "page not found" screen; a real gap, fixed in #13. After #13 merged, production passed 41 of 41.
+- **#11 rerun:** 39 of 41. One failure was the robots test above (#11 did not have the fix yet). The other was the theme test: the agent saw the light and dark modes switch but could not read the `data-theme` attribute. Its re-added version (HOME-007) checks the visible button label instead.
+- **#14:** 49 of 49, including TIPS-006 for swapping a tip and the seven hidden originals described above.
 
 ## Not yet covered
 
