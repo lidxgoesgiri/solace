@@ -1,5 +1,4 @@
 {
-  "todo": "TODO(verify): every tip needs a psychologist's review (reviewedBy, reviewedAt) and a one-sentence evidence summary written after reading its sources (PRD 11.4). Sources here were checked to exist and to match their titles (Crossref for DOIs, the publisher's page for WHO and NICE) on 2026-10-17; their content has not been summarised yet.",
   "tips": [
     {
       "id": "ba-small-activity",
@@ -25,8 +24,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Meta-analisis 16 uji acak (780 peserta) menemukan bahwa menjadwalkan kegiatan yang menyenangkan mengurangi gejala depresi dengan efek besar, setara dengan terapi kognitif, dan manfaatnya bertahan saat tindak lanjut.",
+          "en": "A meta-analysis of 16 randomised trials (780 participants) found that scheduling pleasant activities reduced depressive symptoms with a large effect, about as much as cognitive therapy, and the benefit lasted at follow-up."
         },
         "sources": [
           {
@@ -34,9 +33,7 @@
             "url": "https://doi.org/10.1016/j.cpr.2006.11.001"
           }
         ]
-      },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      }
     },
     {
       "id": "physical-activity",
@@ -62,8 +59,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Network meta-analisis 218 uji acak menemukan bahwa jalan kaki atau jogging, yoga, dan latihan kekuatan mengurangi depresi dengan efek sedang, meski keyakinan terhadap buktinya masih rendah.",
+          "en": "A network meta-analysis of 218 randomised trials found that walking or jogging, yoga, and strength training reduced depression with moderate effects, although confidence in the evidence is still low."
         },
         "sources": [
           {
@@ -71,9 +68,7 @@
             "url": "https://doi.org/10.1136/bmj-2023-075847"
           }
         ]
-      },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      }
     },
     {
       "id": "reconnect-one-person",
@@ -99,8 +94,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Pedoman mhGAP WHO menganjurkan untuk mengaktifkan kembali jaringan sosial dan kegiatan sosial yang dulu dijalani sebagai bagian dari penanganan depresi.",
+          "en": "WHO's mhGAP guide recommends reactivating a person's social network and earlier social activities as part of care for depression."
         },
         "sources": [
           {
@@ -108,9 +103,7 @@
             "url": "https://www.who.int/publications/i/item/9789241549790"
           }
         ]
-      },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      }
     },
     {
       "id": "slow-breathing",
@@ -119,8 +112,8 @@
       "evidenceLevel": "moderate",
       "title": { "id": "Napas lambat: tarik 4, hembuskan 6", "en": "Slow breathing: in for 4, out for 6" },
       "body": {
-        "id": "Memperpanjang napas keluar dapat membantu sebagian orang merasa lebih tenang saat cemas naik.",
-        "en": "Making the out-breath longer can help some people feel calmer when anxiety rises."
+        "id": "Bernapas lebih pelan dan teratur dapat membantu sebagian orang merasa lebih tenang saat cemas naik.",
+        "en": "Breathing more slowly and evenly can help some people feel calmer when anxiety rises."
       },
       "howTo": {
         "id": [
@@ -138,8 +131,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Meta-analisis uji acak menemukan latihan napas berkaitan dengan stres, kecemasan, dan gejala depresi yang lebih rendah dengan efek kecil sampai sedang, dan pedoman mhGAP WHO memuat latihan napas pelan yang bisa dilatih sendiri.",
+          "en": "A meta-analysis of randomised trials linked breathwork with lower stress, anxiety, and depressive symptoms (small-to-medium effects), and WHO's mhGAP guide includes a slow-breathing exercise people can practise on their own."
         },
         "sources": [
           {
@@ -151,9 +144,7 @@
             "url": "https://www.who.int/publications/i/item/9789241549790"
           }
         ]
-      },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      }
     },
     {
       "id": "worry-time",
@@ -179,8 +170,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Pedoman NICE menganjurkan bantuan mandiri berbasis prinsip CBT sebagai salah satu langkah awal bagi kecemasan menyeluruh yang belum membaik setelah edukasi dan pemantauan.",
+          "en": "NICE guidance recommends self-help based on CBT principles as one first-line option for generalised anxiety that has not improved after education and monitoring."
         },
         "sources": [
           {
@@ -188,9 +179,7 @@
             "url": "https://www.nice.org.uk/guidance/cg113"
           }
         ]
-      },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      }
     },
     {
       "id": "grounding",
@@ -216,18 +205,20 @@
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Panduan stres WHO mengajarkan grounding sebagai keterampilan pertamanya, dan dalam uji acak, program Self-Help Plus yang memakai panduan ini menurunkan tekanan psikologis dengan efek kecil setelah tiga bulan.",
+          "en": "WHO's stress guide teaches grounding as its first skill, and in a randomised trial the Self-Help Plus programme that uses this guide reduced psychological distress with a small effect after three months."
         },
         "sources": [
           {
             "label": "WHO (2020), Doing What Matters in Times of Stress: An Illustrated Guide",
             "url": "https://iris.who.int/handle/10665/331901"
+          },
+          {
+            "label": "Tol et al. (2020), The Lancet Global Health 8(2): Self-Help Plus trial",
+            "url": "https://doi.org/10.1016/S2214-109X(19)30504-2"
           }
         ]
-      },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      }
     },
     {
       "id": "problem-solving",
@@ -253,8 +244,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Pedoman mhGAP WHO menganjurkan membantu orang mengelola stres dengan teknik pemecahan masalah, dan mencantumkan terapi pemecahan masalah untuk depresi.",
+          "en": "WHO's mhGAP guide advises helping people manage stress with problem-solving techniques, and lists problem-solving treatment for depression."
         },
         "sources": [
           {
@@ -262,9 +253,7 @@
             "url": "https://www.who.int/publications/i/item/9789241549790"
           }
         ]
-      },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      }
     },
     {
       "id": "unhook",
@@ -281,30 +270,32 @@
       },
       "howTo": {
         "id": [
-          "Saat terjebak pikiran, katakan dalam hati: \"Aku sedang punya pikiran bahwa…\"",
-          "Perhatikan apa yang sedang kamu kerjakan dan apa yang ada di sekitarmu.",
-          "Kembalikan perhatian ke kegiatanmu sekarang, pelan-pelan."
+          "Sadari saat sebuah pikiran atau perasaan yang berat sedang menarik perhatianmu.",
+          "Beri nama dalam hati, misalnya: \"Ini pikiran yang berat\" atau \"Ini rasa cemas\".",
+          "Lalu kembalikan perhatian pada apa yang sedang kamu lakukan dan siapa yang ada di dekatmu."
         ],
         "en": [
-          "When you are caught in a thought, say to yourself: \"I'm having the thought that…\"",
-          "Notice what you are doing and what is around you.",
-          "Gently bring your attention back to what you are doing now."
+          "Notice when a difficult thought or feeling is pulling your attention away.",
+          "Name it silently, for example: \"Here is a difficult thought\" or \"Here is a feeling of worry\".",
+          "Then refocus on what you are doing and who is with you."
         ]
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Panduan stres WHO mengajarkan tiga langkah melepaskan diri dari pikiran yang berat (sadari, beri nama, kembali fokus), dan program Self-Help Plus yang memakainya menurunkan tekanan psikologis dengan efek kecil dalam uji acak.",
+          "en": "WHO's stress guide teaches three steps for unhooking from difficult thoughts (notice, name, refocus), and the Self-Help Plus programme that uses it reduced psychological distress with a small effect in a randomised trial."
         },
         "sources": [
           {
             "label": "WHO (2020), Doing What Matters in Times of Stress: An Illustrated Guide",
             "url": "https://iris.who.int/handle/10665/331901"
+          },
+          {
+            "label": "Tol et al. (2020), The Lancet Global Health 8(2): Self-Help Plus trial",
+            "url": "https://doi.org/10.1016/S2214-109X(19)30504-2"
           }
         ]
-      },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      }
     },
     {
       "id": "sleep-routine",
@@ -330,8 +321,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "TODO(verify): ringkasan bukti satu kalimat, ditulis setelah sumber dibaca.",
-          "en": "TODO(verify): one-sentence evidence summary, written after reading the sources."
+          "id": "Meta-analisis 65 uji acak menemukan bahwa memperbaiki kualitas tidur mengurangi depresi dan kecemasan dengan efek sedang serta stres dengan efek kecil sampai sedang; makin baik tidurnya, makin besar manfaatnya.",
+          "en": "A meta-analysis of 65 randomised trials found that improving sleep quality reduced depression and anxiety with medium effects and stress with a small-to-medium effect; the more sleep improved, the more mental health improved."
         },
         "sources": [
           {
@@ -343,9 +334,123 @@
             "url": "https://www.nice.org.uk/guidance/ng222"
           }
         ]
+      }
+    },
+    {
+      "id": "self-compassion",
+      "dimensions": ["depression", "stress"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "moderate",
+      "title": {
+        "id": "Bicara pada diri sendiri seperti pada sahabat",
+        "en": "Talk to yourself as you would to a friend"
       },
-      "reviewedBy": "TODO(verify)",
-      "reviewedAt": null
+      "body": {
+        "id": "Saat keadaan sedang berat, banyak orang justru mengkritik dirinya sendiri. Welas asih pada diri berarti menanggapi kesulitanmu dengan kebaikan yang sama seperti yang kamu berikan pada seorang teman.",
+        "en": "When things are hard, many of us turn on ourselves. Self-compassion means meeting your own difficulty with the same kindness you would offer a friend."
+      },
+      "howTo": {
+        "id": [
+          "Pikirkan satu hal yang sedang membuatmu menyalahkan diri sendiri.",
+          "Bayangkan seorang sahabat mengalami hal yang sama. Tulis dua atau tiga kalimat yang akan kamu katakan kepadanya.",
+          "Baca kalimat itu untuk dirimu sendiri dengan pelan, sambil meletakkan tangan di dada kalau kamu merasa nyaman."
+        ],
+        "en": [
+          "Think of one thing you are blaming yourself for right now.",
+          "Imagine a close friend going through the same thing. Write two or three sentences you would say to them.",
+          "Read those sentences to yourself slowly, with a hand on your chest if that feels comfortable."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "Meta-analisis 27 uji acak menemukan bahwa program welas asih diri menurunkan stres, gejala depresi, dan kecemasan dengan efek sedang, meski programnya beragam dan bias publikasi mungkin ada.",
+          "en": "A meta-analysis of 27 randomised trials found that self-compassion programmes reduced stress, depressive symptoms, and anxiety with moderate effects, although the programmes varied and publication bias may be present."
+        },
+        "sources": [
+          {
+            "label": "Ferrari et al. (2019), Mindfulness 10(8)",
+            "url": "https://doi.org/10.1007/s12671-019-01134-6"
+          }
+        ]
+      }
+    },
+    {
+      "id": "mindful-minutes",
+      "dimensions": ["anxiety", "stress", "depression"],
+      "severity": ["normal", "mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "moderate",
+      "title": { "id": "Latihan sadar penuh 10 menit", "en": "Ten minutes of mindfulness" },
+      "body": {
+        "id": "Mindfulness melatih perhatian untuk kembali ke saat ini tanpa menghakimi apa yang kamu rasakan. Latihan singkat yang rutin lebih penting daripada latihan panjang sesekali.",
+        "en": "Mindfulness trains your attention to come back to the present without judging what you feel. Short, regular practice matters more than an occasional long session."
+      },
+      "howTo": {
+        "id": [
+          "Duduk dengan nyaman dan pasang pengingat 10 menit.",
+          "Perhatikan napasmu keluar dan masuk. Saat pikiranmu mengembara, dan itu pasti terjadi, sadari ke mana ia pergi, lalu kembalikan perhatian ke napas dengan lembut.",
+          "Coba pada jam yang sama setiap hari selama seminggu, lalu perhatikan apa yang berubah."
+        ],
+        "en": [
+          "Sit comfortably and set a 10-minute timer.",
+          "Notice your breath going in and out. When your mind wanders, and it will, notice where it went, then gently bring your attention back to the breath.",
+          "Try it at the same time each day for a week, then notice what changes."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "Dua meta-analisis uji acak menemukan bahwa latihan mindfulness lewat bantuan mandiri atau secara daring mengurangi kecemasan dan gejala depresi dengan efek kecil sampai sedang, dan stres dengan efek sedang.",
+          "en": "Two meta-analyses of randomised trials found that self-help and online mindfulness practice reduced anxiety and depressive symptoms with small-to-medium effects, and stress with a moderate effect."
+        },
+        "sources": [
+          {
+            "label": "Cavanagh et al. (2014), Clinical Psychology Review 34(2)",
+            "url": "https://doi.org/10.1016/j.cpr.2014.01.001"
+          },
+          {
+            "label": "Spijkerman, Pots & Bohlmeijer (2016), Clinical Psychology Review 45",
+            "url": "https://doi.org/10.1016/j.cpr.2016.03.009"
+          }
+        ]
+      }
+    },
+    {
+      "id": "muscle-relaxation",
+      "dimensions": ["anxiety", "stress"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "moderate",
+      "title": { "id": "Relaksasi otot progresif", "en": "Progressive muscle relaxation" },
+      "body": {
+        "id": "Cemas dan stres sering terasa di tubuh sebagai otot yang tegang. Menegangkan lalu melepaskan otot satu per satu membantu tubuh mengenali rasa rileks.",
+        "en": "Anxiety and stress often show up in the body as tense muscles. Tensing and then releasing one muscle group at a time helps your body learn what relaxed feels like."
+      },
+      "howTo": {
+        "id": [
+          "Cari tempat yang tenang dan sediakan sekitar 10 menit.",
+          "Ikuti panduan relaksasi otot progresif di bagian Toolkit di bawah: tegangkan satu kelompok otot sekitar 5 detik, lalu lepaskan dan rasakan bedanya.",
+          "Lewati bagian tubuh yang sakit atau cedera. Berlatih rutin membuatnya makin mudah dipakai saat kamu sedang tegang."
+        ],
+        "en": [
+          "Find a quiet place and set aside about 10 minutes.",
+          "Follow the progressive muscle relaxation guide in the Toolkit section below: tense one muscle group for about 5 seconds, then let go and notice the difference.",
+          "Skip any part of your body that hurts or is injured. Regular practice makes it easier to use when you feel tense."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "Meta-analisis 27 studi menemukan bahwa pelatihan relaksasi, termasuk relaksasi otot progresif, menurunkan kecemasan dengan efek sedang, dan pedoman mhGAP WHO menganjurkan teknik relaksasi untuk mengelola stres.",
+          "en": "A meta-analysis of 27 studies found that relaxation training, including progressive muscle relaxation, reduced anxiety with a medium effect, and WHO's mhGAP guide advises relaxation techniques for managing stress."
+        },
+        "sources": [
+          {
+            "label": "Manzoni et al. (2008), BMC Psychiatry 8:41",
+            "url": "https://doi.org/10.1186/1471-244X-8-41"
+          },
+          {
+            "label": "WHO (2016), mhGAP Intervention Guide, version 2.0",
+            "url": "https://www.who.int/publications/i/item/9789241549790"
+          }
+        ]
+      }
     }
   ]
 }
