@@ -146,7 +146,7 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 
 ## The suite in the TestSprite portal
 
-The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Eight tests were then written by hand for features added later, for **42 tests**. Seven of them were removed from the project once (after the 41/41 production run on 2026-10-18) and added again with the same steps; the portal gave them new IDs, which are the ones below.
+The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Eight tests were then written by hand for features added later, for **42 tests**. Seven of them stopped showing in the portal's test list after the 41/41 production run on 2026-10-18, so they were added again with the same steps and new IDs (the ones below). The originals turned out to still run in GitHub-triggered runs (PR #14 ran 49 tests: those seven twice), but they can no longer be opened or edited in the portal. Until TestSprite removes them, a run can include both copies.
 
 | Use case | TestSprite IDs | Covers |
 | --- | --- | --- |
