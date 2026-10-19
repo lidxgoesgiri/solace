@@ -1,7 +1,7 @@
 {
-  "status": "TODO(verify): draft from published instruments (PHQ-9 item 9, the C-SSRS screener, the Kemenkes list of suicide warning signs), waiting for the project owner's approval. Until the status is \"verified\", the AI features stay off.",
-  "reviewedBy": null,
-  "reviewedAt": null,
+  "status": "verified",
+  "reviewedBy": "Pemilik proyek Solace (bukan klinisi), dari sumber yang tercantum di bawah",
+  "reviewedAt": "2026-10-19",
   "note": "Phrases are matched as whole words after lower-casing and removing punctuation (src/lib/ai/risk-check.ts). The list leans towards catching too much: a false match only opens the help screen instead of the AI. It is a guard in front of the AI, not a screening tool, and it has not been reviewed by a clinician.",
   "sources": [
     {
