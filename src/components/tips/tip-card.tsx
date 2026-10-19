@@ -1,34 +1,39 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { BookOpen } from "@/components/icons/book-open";
 import { Check } from "@/components/icons/check";
 import { ExternalLink } from "@/components/icons/external-link";
-import { isLocale, isTodoPlaceholder } from "@/lib/content";
-import type { Tip } from "@/lib/tips";
+import { Button } from "@/components/ui/button";
+import { isLocale } from "@/lib/content";
+import type { Tip, TipProgressEntry } from "@/lib/tips";
 import { cn } from "@/lib/utils";
 
-export interface TipProgress {
-  tried: boolean;
-  helpful: "yes" | "no" | null;
-}
+export type TipProgress = TipProgressEntry;
 
 interface TipCardProps {
   tip: Tip;
   progress: TipProgress;
   onProgress: (next: TipProgress) => void;
+  /** Swaps the tip for another one from the library; absent when there is none. */
+  onReplace?: () => void;
+  /** Shown with the swap offer once the tip is marked as not helpful (the AI pick). */
+  children?: ReactNode;
 }
 
 const toggleClass =
   "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors aria-pressed:border-primary aria-pressed:bg-secondary";
 
-/** One tip with its steps, its sources (TP-02), and the tried/helpful note (TP-04). */
-export function TipCard({ tip, progress, onProgress }: TipCardProps) {
+/**
+ * One tip with its steps, its sources (TP-02), and the tried/helpful note
+ * (TP-04). A tip marked as not helpful offers another one in its place.
+ */
+export function TipCard({ tip, progress, onProgress, onReplace, children }: TipCardProps) {
   const t = useTranslations("tips");
   const common = useTranslations("common");
   const appLocale = useLocale();
   const locale = isLocale(appLocale) ? appLocale : "id";
-  const summary = tip.evidence.summary[locale];
   const titleId = `tip-${tip.id}-title`;
 
   return (
@@ -38,18 +43,10 @@ export function TipCard({ tip, progress, onProgress }: TipCardProps) {
       className="surface space-y-5 p-6 sm:p-7"
     >
       <header className="space-y-2">
-        <h3 id={titleId} className="text-2xl">
+        <h3 id={titleId} tabIndex={-1} className="text-2xl outline-none">
           {tip.title[locale]}
         </h3>
         <p className="measure leading-relaxed text-muted-foreground">{tip.body[locale]}</p>
-        {tip.reviewedAt === null ? (
-          <p
-            className="inline-flex rounded-full border border-sun-edge/60 bg-sun-soft px-3 py-0.5 text-xs font-medium"
-            data-testid={`tip-review-pending-${tip.id}`}
-          >
-            {t("reviewPending")}
-          </p>
-        ) : null}
       </header>
 
       <section aria-label={t("howToTitle")} className="space-y-2">
@@ -75,8 +72,8 @@ export function TipCard({ tip, progress, onProgress }: TipCardProps) {
           {t("evidenceTitle")}
         </h4>
         <p>{t(`evidenceLevel.${tip.evidenceLevel}`)}</p>
-        <p className="text-muted-foreground">
-          {isTodoPlaceholder(summary) ? t("summaryPending") : summary}
+        <p className="text-muted-foreground" data-testid={`tip-summary-${tip.id}`}>
+          {tip.evidence.summary[locale]}
         </p>
         <p className="font-medium">{t("sourcesTitle")}</p>
         <ul className="space-y-1">
@@ -109,6 +106,7 @@ export function TipCard({ tip, progress, onProgress }: TipCardProps) {
           data-testid={`tip-tried-${tip.id}`}
           onClick={() =>
             onProgress({
+              ...progress,
               tried: !progress.tried,
               helpful: progress.tried ? null : progress.helpful,
             })
@@ -128,7 +126,11 @@ export function TipCard({ tip, progress, onProgress }: TipCardProps) {
                 aria-pressed={progress.helpful === answer}
                 data-testid={`tip-helpful-${tip.id}-${answer}`}
                 onClick={() =>
-                  onProgress({ tried: true, helpful: progress.helpful === answer ? null : answer })
+                  onProgress({
+                    ...progress,
+                    tried: true,
+                    helpful: progress.helpful === answer ? null : answer,
+                  })
                 }
                 className={cn(toggleClass)}
               >
@@ -138,6 +140,31 @@ export function TipCard({ tip, progress, onProgress }: TipCardProps) {
           </>
         ) : null}
       </div>
+
+      {progress.tried && progress.helpful === "no" ? (
+        <div
+          className="space-y-3 rounded-2xl border border-sky/70 bg-sky-soft/50 p-4 text-sm"
+          data-testid={`tip-alternative-${tip.id}`}
+        >
+          <p className="leading-relaxed">{t("notHelpfulBody")}</p>
+          {onReplace ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onReplace}
+              data-testid={`tip-try-another-${tip.id}`}
+            >
+              {t("tryAnother")}
+            </Button>
+          ) : (
+            <p className="text-muted-foreground" data-testid={`tip-no-alternative-${tip.id}`}>
+              {t("noAlternative")}
+            </p>
+          )}
+          {children}
+        </div>
+      ) : null}
     </article>
   );
 }
