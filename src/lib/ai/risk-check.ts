@@ -3,8 +3,9 @@
  * types is matched against a list of risk phrases in Indonesian and English
  * before anything is sent to an AI provider; a match opens the crisis
  * screen instead. The list is clinical content: it comes from
- * src/data/risk-phrases.json and must be written and reviewed by a
- * psychologist. Until it is, the AI features stay off.
+ * src/data/risk-phrases.json, drafted from published instruments (PHQ-9
+ * item 9, the C-SSRS screener, the Kemenkes warning signs) and approved by
+ * the project owner. Until it is marked verified, the AI features stay off.
  */
 
 import riskPhrases from "@/data/risk-phrases.json";
