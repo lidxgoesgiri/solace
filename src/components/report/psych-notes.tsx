@@ -23,7 +23,7 @@ export interface PsychNotesProps {
   ai: { available: boolean; model: string | null };
 }
 
-type AiStatus = "idle" | "consent" | "working" | "limited" | "error" | "empty";
+type AiStatus = "idle" | "consent" | "working" | "limited" | "busy" | "error" | "empty";
 
 /**
  * Notes for the psychologist (AI-04): five guided questions answered in
@@ -91,7 +91,7 @@ export function PsychNotes({
       setStatus("idle");
       return;
     }
-    setStatus(result.kind === "limited" ? "limited" : "error");
+    setStatus(result.kind === "limited" || result.kind === "busy" ? result.kind : "error");
   };
 
   const startAi = () => {
@@ -241,7 +241,7 @@ export function PsychNotes({
             </>
           )}
           <p role="status" aria-live="polite" className="text-sm" data-testid="notes-ai-status">
-            {status === "limited" ? t("ai.limited") : status === "error" ? t("ai.error") : status === "empty" ? t("ai.empty") : null}
+            {status === "limited" ? t("ai.limited") : status === "busy" ? t("ai.busy") : status === "error" ? t("ai.error") : status === "empty" ? t("ai.empty") : null}
           </p>
         </div>
       ) : null}

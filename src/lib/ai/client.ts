@@ -30,6 +30,7 @@ export type TidyResult =
   | { kind: "ok"; answers: string[] }
   | { kind: "risk" }
   | { kind: "limited" }
+  | { kind: "busy" }
   | { kind: "signed_out" }
   | { kind: "error" };
 
@@ -48,6 +49,7 @@ export async function requestTidyNotes(answers: NoteAnswers): Promise<TidyResult
   if (response.status === 422) return { kind: "risk" };
   if (response.status === 429) return { kind: "limited" };
   if (response.status === 401) return { kind: "signed_out" };
+  if (response.status === 503 && await isProviderBusy(response)) return { kind: "busy" };
   if (!response.ok) return { kind: "error" };
   const body: unknown = await response.json().catch(() => null);
   const result = body && typeof body === "object" ? (body as { answers?: unknown }).answers : null;
@@ -59,6 +61,7 @@ export type TipPickResult =
   | { kind: "ok"; pick: TipPick }
   | { kind: "risk" }
   | { kind: "limited" }
+  | { kind: "busy" }
   | { kind: "signed_out" }
   | { kind: "error" };
 
@@ -78,7 +81,14 @@ export async function requestTipPick(request: TipPickRequest): Promise<TipPickRe
   if (response.status === 422) return { kind: "risk" };
   if (response.status === 429) return { kind: "limited" };
   if (response.status === 401) return { kind: "signed_out" };
+  if (response.status === 503 && await isProviderBusy(response)) return { kind: "busy" };
   if (!response.ok) return { kind: "error" };
   const pick = parseTipPick(await response.json().catch(() => null), request.candidates);
   return pick ? { kind: "ok", pick } : { kind: "error" };
+}
+
+/** A provider capacity limit is different from the account's daily limit. */
+async function isProviderBusy(response: Response): Promise<boolean> {
+  const body: unknown = await response.json().catch(() => null);
+  return typeof body === "object" && body !== null && "error" in body && body.error === "ai_busy";
 }

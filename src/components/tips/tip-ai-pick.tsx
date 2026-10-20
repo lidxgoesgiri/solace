@@ -25,7 +25,7 @@ interface TipAiPickProps {
   onUse: (replacement: Tip) => void;
 }
 
-type Status = "idle" | "consent" | "form" | "working" | "limited" | "error";
+type Status = "idle" | "consent" | "form" | "working" | "limited" | "busy" | "error";
 
 /**
  * "Choose with AI" for a tip that did not help (PRD 20.2, AI-05): the AI
@@ -99,7 +99,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
       setStatus("idle");
       return;
     }
-    setStatus(result.kind === "limited" ? "limited" : "error");
+    setStatus(result.kind === "limited" || result.kind === "busy" ? result.kind : "error");
   };
 
   const chosen = pick ? candidates.find((candidate) => candidate.id === pick.tipId) : undefined;
@@ -240,7 +240,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
         </div>
       )}
       <p role="status" aria-live="polite" data-testid={`tip-ai-status-${tip.id}`}>
-        {status === "limited" ? t("limited") : status === "error" ? t("error") : null}
+        {status === "limited" ? t("limited") : status === "busy" ? t("busy") : status === "error" ? t("error") : null}
       </p>
     </div>
   );

@@ -265,6 +265,7 @@
         "done": "Tidied by AI from your words; not professional advice. Check and edit before downloading.",
         "revert": "Go back to my own text",
         "limited": "You have reached today's AI limit. Your notes can still be downloaded as they are.",
+        "busy": "The AI provider is limiting requests right now. Try again later. Your notes can still be downloaded as they are.",
         "error": "The AI is not available right now. Your notes can still be downloaded as they are.",
         "empty": "Write at least one answer first."
       }
@@ -492,6 +493,7 @@
       "use": "Use this tip",
       "dismiss": "Close",
       "limited": "You have reached today's AI limit. \"Try another tip\" still works.",
+      "busy": "The AI provider is limiting requests right now. Try again later, or use \"Try another tip\".",
       "error": "The AI is not available right now. \"Try another tip\" still works."
     },
     "toolkitTitle": "Toolkit",

@@ -57,7 +57,7 @@ class Client {
       this.cookie = pair.endsWith("=") ? null : pair;
     }
     const text = await response.text();
-    return { status: response.status, body: text ? (JSON.parse(text) as Record<string, unknown>) : null, setCookie };
+    return { status: response.status, body: text ? (JSON.parse(text) as Record<string, unknown>) : null, setCookie, retryAfter: response.headers.get("retry-after") };
   }
 }
 
@@ -480,7 +480,6 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
     const privateText = "private-provider-error-with-key-and-user-notes";
     const cases = [
       { fetch: async () => Response.json({ error: { message: privateText } }, { status: 401 }), expected: { reason: "http", status: 401 } },
-      { fetch: async () => Response.json({ error: { message: privateText } }, { status: 429 }), expected: { reason: "http", status: 429 } },
       // A valid-looking object is still unusable if generation was cut short.
       { fetch: async () => Response.json({ choices: [{ finish_reason: "length", message: { content: JSON.stringify({ answers: NOTES }) } }] }), expected: { reason: "truncated" } },
       { fetch: async () => Response.json({ choices: [{ message: { content: "", reasoning: privateText } }] }), expected: { reason: "empty_reply" } },
@@ -495,6 +494,33 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
         expect(response.status).toBe(502);
         expect(response.body).toEqual({ error: "ai_unavailable" });
         expect(warn.mock.calls).toEqual([["AI provider unavailable", testCase.expected]]);
+      }
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("distinguishes provider capacity from the account daily limit in both AI features", async () => {
+    const client = await signedIn("rani.capacity");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      for (const [header, expected] of [["15", "15"], ["999999", "300"], ["not-a-delay", "60"]]) {
+        const fetch = vi.fn(async () => Response.json({ error: { message: "private provider detail" } }, {
+          status: 429, headers: { "Retry-After": header! },
+        }));
+        const deps = { ...fakeAi().deps, fetch };
+        for (const [handler, request] of [
+          [makeTidyNotes(deps), { answers: NOTES }],
+          [makePickTip(deps), { replacedId: "slow-breathing", candidates: ["grounding"], context: "", locale: "id" }],
+        ] as const) {
+          fetch.mockClear();
+          const response = await client.call(handler, request);
+          expect(response.status).toBe(503);
+          expect(response.body).toEqual({ error: "ai_busy" });
+          expect(response.retryAfter).toBe(expected);
+          expect(response.setCookie).toContain("HttpOnly");
+          expect(fetch).toHaveBeenCalledTimes(1); // No retries or model fallback.
+        }
       }
     } finally {
       warn.mockRestore();

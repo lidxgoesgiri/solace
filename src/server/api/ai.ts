@@ -109,8 +109,9 @@ export function makeTidyNotes(deps: AiDeps) {
     const limit = await hitDbLimit(ctx.db, `ai-notes:${session.userId}`, LIMITS.aiNotesPerUser, ctx.now());
     if (!limit.ok) return fail(429, "rate_limited", { "Retry-After": String(limit.retryAfter) });
 
-    const content = await callModel(deps, config, NOTES_SYSTEM_PROMPT, JSON.stringify(answers), 1500);
-    const tidied = parseModelReply(content, answers);
+    const reply = await callModel(deps, config, NOTES_SYSTEM_PROMPT, JSON.stringify(answers), 1500);
+    if (reply.retryAfter) return fail(503, "ai_busy", { "Retry-After": String(reply.retryAfter), "Set-Cookie": session.cookie });
+    const tidied = parseModelReply(reply.content, answers);
     // The output is checked like the input; anything unusable keeps the user's own text.
     if (!tidied || tidied.some(isRisky)) {
       return fail(502, "ai_unavailable", { "Set-Cookie": session.cookie });
@@ -126,7 +127,7 @@ async function callModel(
   system: string,
   user: string,
   maxTokens: number,
-): Promise<unknown> {
+): Promise<{ content: unknown; retryAfter?: number }> {
   try {
     const response = await deps.fetch(OPENROUTER_URL, {
       method: "POST",
@@ -152,7 +153,12 @@ async function callModel(
       // Fixed metadata only: never the provider's error body, prompts, key,
       // or generated text (PRD 13.5, AI-07).
       console.warn("AI provider unavailable", { reason: "http", status: response.status });
-      return null;
+      if (response.status === 429) {
+        const seconds = Number(response.headers.get("retry-after"));
+        const retryAfter = Number.isFinite(seconds) && seconds > 0 ? Math.min(300, Math.ceil(seconds)) : 60;
+        return { content: null, retryAfter };
+      }
+      return { content: null };
     }
     const data: unknown = await response.json();
     const choices = isRecord(data) && Array.isArray(data.choices) ? data.choices : [];
@@ -160,17 +166,17 @@ async function callModel(
     const message = choice && isRecord(choice.message) ? choice.message : null;
     if (choice?.finish_reason === "length") {
       console.warn("AI provider unavailable", { reason: "truncated" });
-      return null;
+      return { content: null };
     }
     if (typeof message?.content !== "string" || !message.content.trim()) {
       console.warn("AI provider unavailable", { reason: "empty_reply" });
-      return null;
+      return { content: null };
     }
-    return message.content;
+    return { content: message.content };
   } catch (error) {
     const timedOut = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
     console.warn("AI provider unavailable", { reason: timedOut ? "timeout" : "request_failed" });
-    return null;
+    return { content: null };
   }
 }
 
@@ -205,7 +211,9 @@ export function makePickTip(deps: AiDeps) {
     if (!limit.ok) return fail(429, "rate_limited", { "Retry-After": String(limit.retryAfter) });
 
     const prompt = JSON.stringify(tipPickPrompt(pick, TIPS));
-    const result = parseTipPick(replyObject(await callModel(deps, config, TIPS_SYSTEM_PROMPT, prompt, 800)), pick.candidates);
+    const reply = await callModel(deps, config, TIPS_SYSTEM_PROMPT, prompt, 800);
+    if (reply.retryAfter) return fail(503, "ai_busy", { "Retry-After": String(reply.retryAfter), "Set-Cookie": session.cookie });
+    const result = parseTipPick(replyObject(reply.content), pick.candidates);
     // The reply is checked like the input; a refused reply leaves the library swap.
     if (!result || isRisky(result.reason) || result.steps.some(isRisky)) {
       return fail(502, "ai_unavailable", { "Set-Cookie": session.cookie });

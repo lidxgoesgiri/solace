@@ -265,6 +265,7 @@
         "done": "Dirapikan AI dari kata-katamu, bukan nasihat profesional. Periksa dan ubah sebelum mengunduh.",
         "revert": "Kembalikan ke tulisanku",
         "limited": "Batas memakai AI untuk hari ini sudah tercapai. Catatanmu tetap bisa diunduh apa adanya.",
+        "busy": "Penyedia AI sedang membatasi permintaan. Coba lagi nanti. Catatanmu tetap bisa diunduh apa adanya.",
         "error": "AI sedang tidak bisa dipakai. Catatanmu tetap bisa diunduh apa adanya.",
         "empty": "Tulis setidaknya satu jawaban dulu."
       }
@@ -492,6 +493,7 @@
       "use": "Pakai tips ini",
       "dismiss": "Tutup",
       "limited": "Batas memakai AI untuk hari ini sudah tercapai. Kamu tetap bisa memakai \"Coba tips lain\".",
+      "busy": "Penyedia AI sedang membatasi permintaan. Coba lagi nanti, atau pakai \"Coba tips lain\".",
       "error": "AI sedang tidak bisa dipakai. Kamu tetap bisa memakai \"Coba tips lain\"."
     },
     "toolkitTitle": "Toolkit",
