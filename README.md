@@ -118,6 +118,12 @@ The screening, results, PDF, and safety plan work without any server storage. Ac
 
 Account pages are prerendered, so set these before building; on Vercel, redeploy after changing them. Keep every value in Vercel's environment settings or a local `.env.local` (ignored by git).
 
+### AI verification and availability
+
+On 2026-10-20, PR #15 preview commit `b5782aa` completed a real OpenRouter notes request (HTTP 200), displayed the result, and restored the original notes on request. The tip pick encountered an upstream HTTP 429. Provider capacity is reported separately from the account's daily allowance; notes and manual library swaps remain available. Requests are not retried automatically and never fall back to a different model or weaker privacy settings.
+
+Both features request JSON with reasoning disabled for these short rewriting tasks. Server diagnostics contain only fixed failure categories and HTTP status codes, never keys, prompts, replies, or provider error bodies. Mocked integration tests and a configured key alone do not establish that a live provider request works.
+
 ## How it is built
 
 - **Next.js 16** (App Router, Turbopack) + TypeScript strict, **Tailwind CSS 4** with small in-house UI primitives (radio cards, checkbox, button) to stay inside the JavaScript budget
@@ -138,6 +144,8 @@ Account pages are prerendered, so set these before building; on Vercel, redeploy
 **JavaScript budget (PRD 14):** the screening pages (`/mulai`, `/skrining/*`, `/keamanan`, `/krisis`) load under 150 KB of gzipped JavaScript in modern browsers (147.5–149.7 KB; legacy polyfills for old browsers are separate). Encryption, PDF, and animation code load only on the pages that use them.
 
 **Measured (Lighthouse mobile, 2026-10-19, local production build):** layout shift 0 and performance 99–100 on `/skrining`, `/keamanan`, `/hasil` and `/laporan`; accessibility 100 on `/krisis` and `/privasi` in light and dark mode. No page scrolls sideways at 320, 360, 768, 1024 or 1440 px (23 pages, signed out and signed in).
+
+**Preview verification (2026-10-20, commit `1c37aba`):** Lighthouse mobile measured CLS 0 and accessibility 100 on `/skrining/1`, `/keamanan`, `/hasil` and `/laporan` (performance 88–94); `/privasi` scored 100 in both categories. The crisis-page performance audit hit Lighthouse's `NO_NAVSTART` error, so no performance score is claimed for that run. Viewport probes covered 95 signed-out and 20 signed-in page/width combinations without document overflow; the history table deliberately scrolls inside its container on narrow screens.
 
 The crisis decision happens only in the browser. A client-side router guard (`src/components/flow-guard.tsx`) asks `guardRoute()` on every navigation, so back, refresh, and typed URLs cannot reach results while a crisis is pending.
 

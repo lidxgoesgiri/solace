@@ -137,7 +137,7 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 | TP-02 | Evidence summary on every tip | On `/tips` from K10-a | Every `tip-card-*` has a `tip-summary-*` with one sentence (no "TODO") and a `tip-source-*` link |
 | TP-04-swap | A tip that did not help can be swapped | From K10-a: click `tip-tried-ba-small-activity`, then `tip-helpful-ba-small-activity-no`, then `tip-try-another-ba-small-activity` | `tip-card-ba-small-activity` is gone; `tip-card-sleep-routine` is now in `tips-group-depression`, which still has 3 cards; `tips-replaced` lists the old tip |
 | TP-04-back | A swapped tip can be brought back | After TP-04-swap click `tip-restore-ba-small-activity` | `tip-card-ba-small-activity` is back in `tips-group-depression`; `tip-card-sleep-routine` is gone; `tips-replaced` disappears |
-| A1-tips | AI pick off by default | After `tip-helpful-…-no` on any tip | `tip-try-another-…` is shown but no `tip-ai-pick-…` while the AI is switched off (the case on previews) |
+| A1-tips | AI requires opt-in | After `tip-helpful-…-no` on any tip | With AI disabled, there is no `tip-ai-pick-…`. With AI enabled, the button opens consent and sends nothing until acceptance; manual swaps still work |
 | TP-03 | Toolkit | On `/tips` click `pmr-start` | `pmr-status` counts through the steps; `pmr-stop` stops it |
 | SP-01 | Safety plan without an account | Clean session · `/rencana-keselamatan` · fill `plan-warningSigns` and `plan-people` · `plan-download` | `plan-local-only` says nothing is stored; there is no `plan-save`; `plan-status` names the PDF, and no request is made while it is built |
 | SP-02 | Saved plan on the crisis screen | Signed in · `/rencana-keselamatan` (`plan-in-account`) · fill `plan-coping` · `plan-save` → `plan-status` · Start · `all-0` · safety 1 | `/krisis` shows `crisis-own-plan` with the saved entry |
@@ -200,4 +200,12 @@ With `DATABASE_URL` set for Production and Preview, TIPS-001 and TIPS-004 to TIP
 | Invariant | Waiting for |
 | --- | --- |
 | P1, P4, K10-b/c in TestSprite | Not written yet (Vitest covers them) |
-| A1–A3 with the AI switched on | A reviewed risk-phrase list and an OpenRouter key (Vitest already covers the guards) |
+| A1–A3 in TestSprite with AI enabled | Update the portal's off-only assertion when the environment enables AI. Owner-approved phrases and a Vercel key are configured; live verification must be recorded separately from mocked Vitest tests |
+
+### OpenRouter verification (2026-10-20)
+
+- PR #15 preview initially returned HTTP 502 for the notes feature. Its server request now explicitly disables reasoning for the short rewriting task and requests JSON. On preview commit `b5782aa`, the actual notes request returned HTTP 200, displayed its result, and restored the original text on request.
+- The tip pick then met an upstream OpenRouter HTTP 429. Treat provider capacity separately from the account's daily limit: return `503 ai_busy` with a bounded `Retry-After`, retain the manual alternative, and do not retry automatically or change model/privacy settings.
+- `api.test.ts` checks ZDR, input/output risk checks, bounded JSON requests, provider failures, and sanitized logs. `src/lib/ai/client.test.ts` distinguishes provider capacity, daily limits, authentication, and risk responses for both features.
+- Browser verification confirmed consent before any AI request, a risky note opening the crisis screen without an AI request, and the crisis gate surviving reload/direct navigation. Temporary test accounts were deleted.
+- These checks do not replace the TestSprite run. Read the actual PR check result; an old credit error or a queued run is not a pass.
