@@ -124,7 +124,7 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 | --- | --- | --- | --- |
 | AI-04 | Notes on page 3 | Reach `/laporan` · `notes-open` · type in `notes-since` and `notes-tried` · `download-pdf` | `report-notes-preview` says the notes are on page 3; `report-status` names the PDF; no request is sent while it is built |
 | AI-04-off | Notes can be left out | After AI-04, untick `notes-include` | `report-notes-preview` disappears; the PDF is two pages |
-| A1 | AI off by default | Reach `/laporan` · `notes-open` | No `notes-ai` button while the AI is switched off (the case on previews); when it is on, `ai-consent` appears before anything is sent |
+| A1 | AI off by default | Reach `/laporan` · `notes-open` | No `notes-ai` button while the AI is switched off; when it is on, `ai-consent` appears before anything is sent |
 | A3 | No AI during a crisis | Start · `all-0` · safety 1 (crisis pending) · open `/laporan` | Redirected to `/krisis`; the notes and AI controls are never shown |
 
 ### Tips, safety plan, and history
@@ -209,3 +209,19 @@ With `DATABASE_URL` set for Production and Preview, TIPS-001 and TIPS-004 to TIP
 - `api.test.ts` checks ZDR, input/output risk checks, bounded JSON requests, provider failures, and sanitized logs. `src/lib/ai/client.test.ts` distinguishes provider capacity, daily limits, authentication, and risk responses for both features.
 - Browser verification confirmed consent before any AI request, a risky note opening the crisis screen without an AI request, and the crisis gate surviving reload/direct navigation. Temporary test accounts were deleted.
 - These checks do not replace the TestSprite run. Read the actual PR check result; an old credit error or a queued run is not a pass.
+
+### AI hardening: required remote scenarios (2026-10-21)
+
+Implementation and CI tests were updated for selection-only tips. **The following are scenario specifications, not a claim that portal tests were created or passed.** This agent's browser inventory reports `Local browser use is disabled in Work settings`; no TestSprite connector was available. Add these scenarios through the existing portal once access is enabled, preserving existing coverage. Use synthetic `demo-…` accounts and delete them afterwards. Do not put real notes or keys into test inputs or failure bundles.
+
+| Scenario | Remote steps and evidence required |
+| --- | --- |
+| Tips opt-in | Sign in, complete the screening with all-1/safety 0, mark a tip not helpful. Open `tip-ai-pick-*`: no `/api/ai/tips` request before `tip-ai-consent-accept-*`. Decline and verify manual swap still works. Notes consent must not grant tips consent. |
+| Actual AI success | Accept tips consent, use an innocuous synthetic context, submit once. Require HTTP 200 `{tipId}` and `tip-ai-result-*` with `data-source="ai"`; record the actual model, deployment SHA and Run ID. A fallback is **not** success. |
+| Canonical content | Read `data-tip-id` on the result. Match its title/body/steps/sources exactly to `src/data/tips.json` in the tested commit in ID and EN. Use the tip, then restore it; the plan still satisfies K10. |
+| Failures and fallback | In TestSprite's remote browser, if supported, intercept the **Solace API response** to simulate empty/malformed/out-of-candidate JSON, 502, 503 `ai_busy`, 429 `rate_limited`, and a delayed/network-failed response. Require a canonical alternative with `data-source="deterministic"`, a non-AI label, correct error message, working use/close/manual controls and no automatic retries. These simulations prove UI handling, not actual upstream provider behaviour. Do not add production test backdoors. |
+| Cancel and duplicate clicks | Submit twice rapidly: at most one request. Cancel through `tip-ai-cancel-*` or `notes-ai-cancel`; no late result replaces content. Navigate away or trigger `help-now` while waiting: no result shown after cancellation/crisis. |
+| Notes preserved | Submit synthetic notes after separate notes opt-in. During loading edits are disabled; on failure/cancel originals stay intact. On actual success check five answers, empty fields unchanged, then `notes-ai-revert`. |
+| Safety/privacy | Use existing approved risk fixtures: before opt-in no request; after opt-in risk opens `/krisis` without a provider call. Crisis URL/refresh guards remain. Inspect requests: no key, scores, answers, account identifiers in the provider payload; consent metadata stays at Solace. Server-side assertions in CI cover exact ZDR routing and refusing risky/malformed provider output. Never record secret values. |
+
+The expanded `src/server/api.test.ts`, `src/lib/ai/client.test.ts` and `src/lib/ai/tip-pick.test.ts` run only in GitHub Actions, alongside the unchanged Safety Contract suite. No local application tests were run for this change. Match CI, Vercel and bot results to the pushed SHA before reporting verification. Do not trigger duplicate runs while that SHA is pending.
