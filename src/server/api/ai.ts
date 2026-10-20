@@ -139,17 +139,37 @@ async function callModel(
         ],
         temperature: 0.2,
         max_tokens: maxTokens,
+        // These are short rewriting tasks. Reasoning models can otherwise
+        // spend the completion budget on reasoning and return no JSON.
+        reasoning: { enabled: false },
+        response_format: { type: "json_object" },
         // Only providers that do not collect data, with zero data retention.
         provider: { data_collection: "deny", zdr: true },
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
-    if (!response.ok) return null;
+    if (!response.ok) {
+      // Fixed metadata only: never the provider's error body, prompts, key,
+      // or generated text (PRD 13.5, AI-07).
+      console.warn("AI provider unavailable", { reason: "http", status: response.status });
+      return null;
+    }
     const data: unknown = await response.json();
     const choices = isRecord(data) && Array.isArray(data.choices) ? data.choices : [];
-    const message = isRecord(choices[0]) && isRecord(choices[0].message) ? choices[0].message : null;
-    return message?.content ?? null;
-  } catch {
+    const choice = isRecord(choices[0]) ? choices[0] : null;
+    const message = choice && isRecord(choice.message) ? choice.message : null;
+    if (choice?.finish_reason === "length") {
+      console.warn("AI provider unavailable", { reason: "truncated" });
+      return null;
+    }
+    if (typeof message?.content !== "string" || !message.content.trim()) {
+      console.warn("AI provider unavailable", { reason: "empty_reply" });
+      return null;
+    }
+    return message.content;
+  } catch (error) {
+    const timedOut = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
+    console.warn("AI provider unavailable", { reason: timedOut ? "timeout" : "request_failed" });
     return null;
   }
 }

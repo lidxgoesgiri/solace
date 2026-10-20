@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { sql } from "drizzle-orm";
 import {
   createAccountKeys,
@@ -430,6 +430,8 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
     expect(new Headers(call.init.headers).get("authorization")).toBe("Bearer sk-test");
     const body = JSON.parse(String(call.init.body)) as Record<string, unknown>;
     expect(body.model).toBe("provider/model-x");
+    expect(body.reasoning).toEqual({ enabled: false });
+    expect(body.response_format).toEqual({ type: "json_object" });
     expect(body.provider).toEqual({ data_collection: "deny", zdr: true });
     expect(body.messages).toEqual([
       { role: "system", content: NOTES_SYSTEM_PROMPT },
@@ -470,6 +472,33 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
       expect((await client.call(handler, { answers: NOTES })).status).toBe(200);
     }
     expect((await client.call(handler, { answers: NOTES })).status).toBe(429);
+  });
+
+  it("refuses provider failures without logging secrets, input, output, or error bodies", async () => {
+    const client = await signedIn("rani.provider");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const privateText = "private-provider-error-with-key-and-user-notes";
+    const cases = [
+      { fetch: async () => Response.json({ error: { message: privateText } }, { status: 401 }), expected: { reason: "http", status: 401 } },
+      { fetch: async () => Response.json({ error: { message: privateText } }, { status: 429 }), expected: { reason: "http", status: 429 } },
+      // A valid-looking object is still unusable if generation was cut short.
+      { fetch: async () => Response.json({ choices: [{ finish_reason: "length", message: { content: JSON.stringify({ answers: NOTES }) } }] }), expected: { reason: "truncated" } },
+      { fetch: async () => Response.json({ choices: [{ message: { content: "", reasoning: privateText } }] }), expected: { reason: "empty_reply" } },
+      { fetch: async () => { throw new DOMException(privateText, "TimeoutError"); }, expected: { reason: "timeout" } },
+      { fetch: async () => { throw new Error(privateText); }, expected: { reason: "request_failed" } },
+    ];
+    try {
+      for (const testCase of cases) {
+        warn.mockClear();
+        const handler = makeTidyNotes({ ...fakeAi().deps, fetch: testCase.fetch });
+        const response = await client.call(handler, { answers: NOTES });
+        expect(response.status).toBe(502);
+        expect(response.body).toEqual({ error: "ai_unavailable" });
+        expect(warn.mock.calls).toEqual([["AI provider unavailable", testCase.expected]]);
+      }
+    } finally {
+      warn.mockRestore();
+    }
   });
 });
 
@@ -536,6 +565,7 @@ describe("AI pick for a tip that did not help (AI-05, AI-07, A2)", () => {
     expect(response.status).toBe(200);
     const body = JSON.parse(String(calls[0]!.init.body)) as { messages: { content: string }[]; provider: unknown };
     expect(body.provider).toEqual({ data_collection: "deny", zdr: true });
+    expect(body).toMatchObject({ reasoning: { enabled: false }, response_format: { type: "json_object" } });
     expect(body.messages[0]!.content).toBe(TIPS_SYSTEM_PROMPT);
     const sent = JSON.parse(body.messages[1]!.content) as { candidates: { id: string }[]; context: string };
     expect(sent.candidates.map((tip) => tip.id)).toEqual(["worry-time", "grounding"]);
