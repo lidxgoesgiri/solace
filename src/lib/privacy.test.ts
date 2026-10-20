@@ -39,7 +39,7 @@ describe("privacy page (PRD 13)", () => {
 
   it("the AI statement matches the request Solace sends", () => {
     const ai = readFileSync("src/server/api/ai.ts", "utf8");
-    expect(ai).toContain('provider: { data_collection: "deny", zdr: true }');
+    expect(ai).toContain('provider: { data_collection: "deny", zdr: true, require_parameters: true }');
     expect(pages.en.ai4).toContain("zero data retention");
   });
 });
