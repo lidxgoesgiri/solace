@@ -16,7 +16,7 @@ interface AnswerOptionsProps {
 }
 
 const itemClass = [
-  "group flex min-h-15 w-full cursor-pointer items-center gap-4 rounded-2xl border bg-card px-4 py-3.5 text-left text-base sm:px-5",
+  "group flex min-h-15 w-full cursor-pointer items-center gap-3 rounded-2xl border bg-card px-3.5 py-3.5 text-left text-base sm:gap-4 sm:px-5",
   "transition-[border-color,background-color,box-shadow,transform] duration-(--duration-quick) ease-(--ease-calm)",
   "hover:border-input hover:shadow-(--shadow-soft) active:scale-[0.995]",
   "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
@@ -55,7 +55,7 @@ export function AnswerOptions({
           >
             {index + 1}
           </kbd>
-          <span className="flex-1 leading-snug">{option.label}</span>
+          <span className="min-w-0 flex-1 leading-relaxed">{option.label}</span>
           <span
             aria-hidden="true"
             className="flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-input transition-colors duration-(--duration-quick) group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary"

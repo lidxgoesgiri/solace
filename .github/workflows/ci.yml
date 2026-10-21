@@ -41,3 +41,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Screening JavaScript budget (modern gzip)
+        run: node scripts/check-screening-budget.mjs

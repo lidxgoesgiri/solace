@@ -100,13 +100,13 @@ export function ResultCard({ subscale, result }: ResultCardProps) {
         </h2>
         <p
           className={cn(
-            "inline-flex items-center gap-2.5 rounded-full border py-1.5 pr-4 pl-3 text-base font-semibold text-ink",
+            "inline-flex max-w-full items-center gap-2.5 rounded-2xl border py-1.5 pr-4 pl-3 text-base font-semibold text-ink",
             SEVERITY_STYLES[severity],
           )}
           data-testid={`result-severity-${subscale}`}
         >
           <SeverityMeter severity={severity} />
-          {t(`severity.${severity}`)}
+          <span className="min-w-0">{t(`severity.${severity}`)}</span>
         </p>
         <p
           className="numeral text-lg text-muted-foreground"

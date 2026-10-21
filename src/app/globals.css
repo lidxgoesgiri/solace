@@ -2,8 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Solace has no dark theme yet: dark: styles apply only under a .dark class,
-   never because the operating system is in dark mode. */
+/* Theme colours use semantic variables below; legacy dark: utilities remain
+   opt-in under .dark rather than overriding the header's theme switch. */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -308,6 +308,10 @@
   p,
   li {
     text-wrap: pretty;
+  }
+  /* Long translations and user-entered labels must not widen the page. */
+  h1, h2, h3, p, li, label, dd, a {
+    overflow-wrap: anywhere;
   }
   :focus-visible {
     outline: 3px solid var(--ring);

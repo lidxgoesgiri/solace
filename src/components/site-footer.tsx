@@ -23,7 +23,7 @@ export async function SiteFooter() {
           <p>{t("independence")}</p>
           <p className="hidden sm:block">{t("quickExitHint")}</p>
           <nav aria-label={t("navLabel")} className="pt-2">
-            <ul className="flex flex-wrap gap-x-5 gap-y-1">
+            <ul className="flex flex-wrap gap-x-5 gap-y-1 [&_a]:inline-flex [&_a]:min-h-11 [&_a]:items-center">
               <li>
                 <Link
                   href={PATHS.akun}

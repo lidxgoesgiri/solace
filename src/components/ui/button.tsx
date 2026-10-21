@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const BASE =
-  "group/button inline-flex shrink-0 items-center justify-center text-center rounded-full border bg-clip-padding font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-(--duration-quick) ease-(--ease-calm) select-none cursor-pointer active:not-aria-[haspopup]:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
+  "group/button inline-flex min-w-0 shrink-0 items-center justify-center text-center whitespace-normal rounded-full border bg-clip-padding font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-(--duration-quick) ease-(--ease-calm) select-none cursor-pointer active:not-aria-[haspopup]:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
 
 const VARIANTS = {
   default: "border-transparent bg-primary text-primary-foreground shadow-(--shadow-soft) hover:bg-primary-hover",
@@ -16,7 +16,7 @@ const VARIANTS = {
 
 const SIZES = {
   default: "min-h-11 gap-2 px-5 py-2 text-sm",
-  sm: "min-h-9 gap-1.5 px-3.5 py-1.5 text-sm",
+  sm: "min-h-11 gap-1.5 px-3.5 py-1.5 text-sm",
   lg: "min-h-12 gap-2.5 px-7 py-2.5 text-base",
 } as const;
 

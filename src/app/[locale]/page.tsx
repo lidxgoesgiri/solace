@@ -38,7 +38,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             <p className="kicker max-w-xs">{t("eyebrow")}</p>
             <h1
               id="hero-title"
-              className="text-[2.5rem] leading-[1.06] tracking-[-0.02em] sm:text-6xl md:text-5xl lg:text-[4.1rem]"
+              className="text-[2.15rem] leading-[1.12] tracking-[-0.02em] sm:text-6xl md:text-5xl lg:text-[4.1rem]"
             >
               {t("title")}
             </h1>
@@ -46,7 +46,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
               {common("tagline")}
             </p>
             <p className="measure text-lg leading-relaxed text-muted-foreground">{t("subtitle")}</p>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-1">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-1" data-testid="landing-primary-action">
               <Button asChild size="lg">
                 <Link href={PATHS.mulai} data-testid="start-screening">
                   {t("start")}
