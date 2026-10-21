@@ -496,8 +496,11 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
     const cases = [
       { fetch: async () => Response.json({ error: { message: privateText } }, { status: 401 }), expected: { reason: "http", status: 401 } },
       // A valid-looking object is still unusable if generation was cut short.
-      { fetch: async () => Response.json({ choices: [{ finish_reason: "length", message: { content: JSON.stringify({ answers: NOTES }) } }] }), expected: { reason: "truncated" } },
-      { fetch: async () => Response.json({ choices: [{ message: { content: "", reasoning: privateText } }] }), expected: { reason: "empty_reply" } },
+      { fetch: async () => Response.json({ choices: [{ finish_reason: "length", message: { content: JSON.stringify({ answers: NOTES }) } }] }), expected: { reason: "truncated", status: 200, finishReason: "length", contentType: "string", hasChoice: true, hasProviderError: false, hasReasoning: false, completionTokens: null, reasoningTokens: null } },
+      { fetch: async () => Response.json({ choices: [{ message: { content: "", reasoning: privateText } }] }), expected: { reason: "empty_reply", status: 200, finishReason: "missing", contentType: "string", hasChoice: true, hasProviderError: false, hasReasoning: true, completionTokens: null, reasoningTokens: null } },
+      // Neither an unknown finish reason nor a provider error body may leak.
+      { fetch: async () => Response.json({ error: { message: privateText }, choices: [{ finish_reason: privateText, message: { content: null, reasoning: privateText } }], usage: { completion_tokens: 1500, completion_tokens_details: { reasoning_tokens: 1500 } } }), expected: { reason: "empty_reply", status: 200, finishReason: "other", contentType: "null", hasChoice: true, hasProviderError: true, hasReasoning: true, completionTokens: 1500, reasoningTokens: 1500 } },
+      { fetch: async () => new Response(privateText, { status: 200 }), expected: { reason: "invalid_json", status: 200 } },
       { fetch: async () => { throw new DOMException(privateText, "TimeoutError"); }, expected: { reason: "timeout" } },
       { fetch: async () => { throw new Error(privateText); }, expected: { reason: "request_failed" } },
     ];

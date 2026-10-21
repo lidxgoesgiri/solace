@@ -162,16 +162,22 @@ async function callModel(
       }
       return { content: null };
     }
-    const data: unknown = await response.json();
+    let data: unknown;
+    try {
+      data = await response.json();
+    } catch {
+      console.warn("AI provider unavailable", { reason: "invalid_json", status: response.status });
+      return { content: null };
+    }
     const choices = isRecord(data) && Array.isArray(data.choices) ? data.choices : [];
     const choice = isRecord(choices[0]) ? choices[0] : null;
     const message = choice && isRecord(choice.message) ? choice.message : null;
     if (choice?.finish_reason === "length") {
-      console.warn("AI provider unavailable", { reason: "truncated" });
+      console.warn("AI provider unavailable", { reason: "truncated", ...replyMetadata(response.status, data, choice, message) });
       return { content: null };
     }
     if (typeof message?.content !== "string" || !message.content.trim()) {
-      console.warn("AI provider unavailable", { reason: "empty_reply" });
+      console.warn("AI provider unavailable", { reason: "empty_reply", ...replyMetadata(response.status, data, choice, message) });
       return { content: null };
     }
     return { content: message.content };
@@ -180,6 +186,32 @@ async function callModel(
     console.warn("AI provider unavailable", { reason: timedOut ? "timeout" : "request_failed" });
     return { content: null };
   }
+}
+
+/** Allowlisted shape/usage metadata only, never arbitrary provider strings. */
+function replyMetadata(
+  status: number,
+  data: unknown,
+  choice: Record<string, unknown> | null,
+  message: Record<string, unknown> | null,
+) {
+  const finish = choice?.finish_reason;
+  const finishReason = finish === undefined || finish === null ? "missing"
+    : typeof finish === "string" && ["stop", "length", "content_filter", "tool_calls", "error"].includes(finish) ? finish : "other";
+  const content = message?.content;
+  const contentType = content === undefined ? "missing" : content === null ? "null"
+    : typeof content === "string" ? "string" : Array.isArray(content) ? "array" : "other";
+  const usage = isRecord(data) && isRecord(data.usage) ? data.usage : null;
+  const details = usage && isRecord(usage.completion_tokens_details) ? usage.completion_tokens_details : null;
+  const count = (value: unknown) => typeof value === "number" && Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000 ? value : null;
+  return {
+    status, finishReason, contentType,
+    hasChoice: choice !== null,
+    hasProviderError: isRecord(data) && data.error !== undefined,
+    hasReasoning: typeof message?.reasoning === "string" && message.reasoning.length > 0,
+    completionTokens: count(usage?.completion_tokens),
+    reasoningTokens: count(details?.reasoning_tokens),
+  };
 }
 
 /**
