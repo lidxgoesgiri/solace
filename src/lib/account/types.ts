@@ -5,6 +5,7 @@
 
 import type { Locale } from "@/lib/content";
 import type { AnswerValue } from "@/lib/scoring";
+import type { TipProgressEntry } from "@/lib/tips";
 
 /** One finished screening (AK-04, RW-01, PDF-04). */
 export interface ScreeningRecord {
@@ -44,10 +45,10 @@ export interface CheckinRecord {
   at: string;
 }
 
-/** Tips the user tried (TP-04): no streaks, no scores. */
+/** Tips the user tried, and the ones they swapped for another (TP-04): no streaks, no scores. */
 export interface TipProgressRecord {
   v: 1;
-  tips: Record<string, { tried: boolean; helpful: "yes" | "no" | null }>;
+  tips: Record<string, TipProgressEntry>;
 }
 
 export interface RecordTypes {

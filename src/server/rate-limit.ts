@@ -28,6 +28,7 @@ export const LIMITS = {
   metricsPerIp: { limit: 120, windowMs: 60_000 },
   /** AI requests cost money and are never needed often (PRD 20.3). */
   aiNotesPerUser: { limit: 10, windowMs: 24 * 60 * 60_000 },
+  aiTipsPerUser: { limit: 20, windowMs: 24 * 60 * 60_000 },
 } satisfies Record<string, Limit>;
 
 export class MemoryLimiter {

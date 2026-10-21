@@ -63,7 +63,8 @@ export function ProfessionalHelp({
             </Link>
           </Button>
         ) : null}
-        <Button asChild variant="outline">
+        {/* The label is long; on a phone it wraps instead of widening the page. */}
+        <Button asChild variant="outline" className="max-w-full">
           <Link
             href={PATHS.krisis}
             data-testid="tips-help-now"

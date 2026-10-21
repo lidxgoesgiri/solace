@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeFromParams } from "@/i18n/locale";
 import { ComingSoon } from "@/components/coming-soon";
 import { TipsView } from "@/components/tips/tips-view";
+import { aiClientInfo } from "@/server/ai";
 import { accountsEnabled } from "@/server/db";
 
 interface PageProps {
@@ -22,7 +23,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function TipsPage({ params }: PageProps) {
   const locale = await localeFromParams(params);
   setRequestLocale(locale);
-  if (accountsEnabled()) return <TipsView />;
+  // Whether the AI pick is switched on, and its model; never the key.
+  if (accountsEnabled()) return <TipsView ai={aiClientInfo()} />;
   const t = await getTranslations("comingSoon");
   return <ComingSoon title={t("tipsTitle")} body={t("tipsBody")} testId="tips-coming-soon" />;
 }

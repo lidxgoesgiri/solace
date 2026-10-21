@@ -10,7 +10,7 @@ import {
   wrapForPassphrase,
   type KdfParams,
 } from "@/lib/crypto/keys";
-import { NOTES_SYSTEM_PROMPT, makeTidyNotes, type AiDeps } from "./api/ai";
+import { NOTES_SYSTEM_PROMPT, TIPS_SYSTEM_PROMPT, makePickTip, makeTidyNotes, type AiDeps } from "./api/ai";
 import * as auth from "./api/auth";
 import * as metrics from "./api/metrics";
 import * as recordsApi from "./api/records";
@@ -470,5 +470,102 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
       expect((await client.call(handler, { answers: NOTES })).status).toBe(200);
     }
     expect((await client.call(handler, { answers: NOTES })).status).toBe(429);
+  });
+});
+
+describe("AI pick for a tip that did not help (AI-05, AI-07, A2)", () => {
+  const RISKY = "kalimat-uji-berisiko";
+  const REQUEST = {
+    replacedId: "slow-breathing",
+    candidates: ["worry-time", "grounding"],
+    context: "lagi skripsi dan susah tidur",
+    locale: "id",
+  };
+  const REPLY = {
+    tipId: "grounding",
+    reason: "Cara ini bekerja lewat indra, bukan lewat napas.",
+    steps: ["Sebutkan lima hal yang kamu lihat di meja belajarmu.", "Lanjutkan dengan empat hal yang bisa kamu sentuh."],
+  };
+
+  function fakeAi(reply: unknown = REPLY) {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const deps: AiDeps = {
+      config: () => ({ apiKey: "sk-test", model: "provider/model-x" }),
+      isRisky: (text) => text.includes(RISKY),
+      fetch: (async (url: string, init: RequestInit) => {
+        calls.push({ url, init });
+        return Response.json({ choices: [{ message: { content: typeof reply === "string" ? reply : JSON.stringify(reply) } }] });
+      }) as unknown as typeof fetch,
+    };
+    return { calls, deps, handler: makePickTip(deps) };
+  }
+
+  const signedIn = async (username: string) =>
+    (await registerUser(username, "teh hangat sebelum ujian akhir")).client;
+
+  it("needs an account, the server switch, and a request Solace would send", async () => {
+    const { handler } = fakeAi();
+    expect((await new Client().call(handler, REQUEST)).status).toBe(401);
+    const client = await signedIn("rani.tips");
+    const off = makePickTip({ ...fakeAi().deps, config: () => null });
+    expect((await client.call(off, REQUEST)).body).toEqual({ error: "ai_disabled" });
+    for (const bad of [
+      { ...REQUEST, candidates: [] },
+      { ...REQUEST, candidates: ["not-a-tip"] },
+      { ...REQUEST, candidates: ["slow-breathing"] },
+      { ...REQUEST, candidates: ["grounding", "grounding"] },
+      { ...REQUEST, context: "x".repeat(201) },
+      { ...REQUEST, locale: "fr" },
+    ]) {
+      expect((await client.call(handler, bad)).status).toBe(400);
+    }
+  });
+
+  it("A2: a risky context never reaches the AI", async () => {
+    const { handler, calls } = fakeAi();
+    const client = await signedIn("rani.tipsrisk");
+    const response = await client.call(handler, { ...REQUEST, context: `aku ${RISKY}` });
+    expect(response.body).toEqual({ error: "risk_detected" });
+    expect(calls).toHaveLength(0);
+  });
+
+  it("AI-07: sends library text and the context only, to providers that keep no data", async () => {
+    const { handler, calls } = fakeAi();
+    const client = await signedIn("rani.tipsdata");
+    const response = await client.call(handler, { ...REQUEST, username: "rani.tipsdata", scores: [28, 14, 14] });
+    expect(response.status).toBe(200);
+    const body = JSON.parse(String(calls[0]!.init.body)) as { messages: { content: string }[]; provider: unknown };
+    expect(body.provider).toEqual({ data_collection: "deny", zdr: true });
+    expect(body.messages[0]!.content).toBe(TIPS_SYSTEM_PROMPT);
+    const sent = JSON.parse(body.messages[1]!.content) as { candidates: { id: string }[]; context: string };
+    expect(sent.candidates.map((tip) => tip.id)).toEqual(["worry-time", "grounding"]);
+    expect(sent.context).toBe("lagi skripsi dan susah tidur");
+    expect(String(calls[0]!.init.body)).not.toContain("rani.tipsdata");
+    expect(String(calls[0]!.init.body)).not.toMatch(/moderate|severe|28/);
+  });
+
+  it("AI-05: returns a library tip with reworded steps, never one outside the candidates", async () => {
+    const client = await signedIn("rani.tipspick");
+    expect((await client.call(fakeAi().handler, REQUEST)).body).toEqual(REPLY);
+    for (const reply of [
+      { ...REPLY, tipId: "made-up-tip" },
+      { ...REPLY, tipId: "sleep-routine" },
+      { ...REPLY, steps: [] },
+      { ...REPLY, steps: ["a", "b", "c", "d", "e"] },
+      { ...REPLY, reason: "" },
+      { ...REPLY, steps: [`langkah ${RISKY}`] },
+      "not json",
+    ]) {
+      expect((await client.call(fakeAi(reply).handler, REQUEST)).body).toEqual({ error: "ai_unavailable" });
+    }
+  });
+
+  it("limits AI picks per user per day", async () => {
+    const { handler } = fakeAi();
+    const client = await signedIn("rani.tipslimit");
+    for (let i = 0; i < LIMITS.aiTipsPerUser.limit; i += 1) {
+      expect((await client.call(handler, REQUEST)).status).toBe(200);
+    }
+    expect((await client.call(handler, REQUEST)).status).toBe(429);
   });
 });

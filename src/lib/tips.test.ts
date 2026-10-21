@@ -1,7 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { isTodoPlaceholder } from "./content";
 import { SEVERITIES, SUBSCALES, scoreDass21, type Severity } from "./scoring";
-import { MAX_TIPS, TIPS, categoriesOf, planTips, selectTips, type Categories } from "./tips";
+import {
+  MAX_TIPS,
+  TIPS,
+  alternativesFor,
+  categoriesOf,
+  choicesFromProgress,
+  planTips,
+  replaceTip,
+  restoreTip,
+  selectTips,
+  slotOf,
+  type Categories,
+} from "./tips";
 
 const rank = (severity: Severity) => SEVERITIES.indexOf(severity);
 
@@ -38,9 +50,11 @@ describe("tip library (PRD 11.1, TP-02, K10)", () => {
     }
   });
 
-  it("does not claim reviews or summaries that have not happened yet", () => {
+  it("every evidence summary is written, in both languages", () => {
     for (const tip of TIPS) {
-      if (tip.reviewedAt === null) expect(isTodoPlaceholder(tip.reviewedBy)).toBe(true);
+      for (const locale of ["id", "en"] as const) {
+        expect(isTodoPlaceholder(tip.evidence.summary[locale]), `${tip.id} ${locale}`).toBe(false);
+      }
     }
   });
 
@@ -143,5 +157,87 @@ describe("selectTips examples", () => {
       "depression",
       "anxiety",
     ]);
+  });
+});
+
+const ids = (tips: readonly { id: string }[]) => tips.map((tip) => tip.id);
+
+describe("swapping a tip that did not help (TP-04, K10)", () => {
+  it.each(ALL.map((c) => [`${c.depression}/${c.anxiety}/${c.stress}`, c] as const))(
+    "%s: each swap stays in its section, changes nothing else, and can be undone",
+    (_, categories) => {
+      const before = selectTips(categories);
+      const shown = ids(planTips(before));
+      for (const tipId of shown) {
+        const slot = slotOf(before, tipId)!;
+        const alternatives = alternativesFor(tipId, categories);
+        for (const tip of alternatives) {
+          expect(shown).not.toContain(tip.id);
+          if (slot === "wellbeing") expect(tip.severity).toContain("normal");
+          else {
+            expect(tip.dimensions).toContain(slot);
+            expect(tip.severity).toContain(categories[slot]);
+          }
+        }
+        if (alternatives.length === 0) continue;
+
+        const replacement = alternatives[0]!.id;
+        const progress = replaceTip({}, tipId, replacement, slot);
+        const after = selectTips(categories, TIPS, choicesFromProgress(progress));
+        expect(slotOf(after, replacement)).toBe(slot);
+        expect(ids(planTips(after)).sort()).toEqual(
+          [...shown.filter((id) => id !== tipId), replacement].sort(),
+        );
+
+        const restored = selectTips(categories, TIPS, choicesFromProgress(restoreTip(progress, tipId)));
+        expect(ids(planTips(restored)).sort()).toEqual([...shown].sort());
+        expect(slotOf(restored, tipId)).toBe(slot);
+      }
+    },
+  );
+
+  it("every shown tip has another tip to try when one subscale is elevated", () => {
+    for (const subscale of SUBSCALES) {
+      for (const severity of SEVERITIES.slice(1)) {
+        const categories = { depression: "normal", anxiety: "normal", stress: "normal", [subscale]: severity } as Categories;
+        for (const tip of planTips(selectTips(categories))) {
+          expect(alternativesFor(tip.id, categories).length, `${subscale} ${severity} ${tip.id}`).toBeGreaterThan(0);
+        }
+      }
+    }
+  });
+
+  it("a chain of swaps is undone from its start", () => {
+    const categories: Categories = { depression: "moderate", anxiety: "normal", stress: "normal" };
+    const plan = selectTips(categories);
+    const first = plan.groups[0]!.tips[0]!.id;
+    const [second, third] = ids(alternativesFor(first, categories));
+    if (!second || !third) return;
+    let progress = replaceTip({}, first, second, "depression");
+    progress = replaceTip(progress, second, third, "depression");
+    const swapped = ids(planTips(selectTips(categories, TIPS, choicesFromProgress(progress))));
+    expect(swapped).toContain(third);
+    expect(swapped).not.toContain(first);
+    expect(swapped).not.toContain(second);
+
+    const back = ids(planTips(selectTips(categories, TIPS, choicesFromProgress(restoreTip(progress, first)))));
+    expect(back.sort()).toEqual(ids(planTips(plan)).sort());
+    expect(back).not.toContain(second);
+  });
+
+  it("reads saved choices defensively", () => {
+    const choices = choicesFromProgress({
+      "not-a-tip": { tried: true, helpful: "no", replacedBy: "grounding" },
+      grounding: { tried: false, helpful: null, chosenFor: "nonsense" as never },
+      "worry-time": { tried: true, helpful: "no", replacedBy: "grounding" },
+    });
+    expect([...choices.replaced]).toEqual(["worry-time"]);
+    expect(choices.chosen.size).toBe(0);
+  });
+
+  it("keeps the tried and helpful notes when swapping and restoring", () => {
+    const progress = replaceTip({ grounding: { tried: true, helpful: "no" } }, "grounding", "worry-time", "anxiety");
+    expect(progress.grounding).toEqual({ tried: true, helpful: "no", replacedBy: "worry-time" });
+    expect(restoreTip(progress, "grounding").grounding).toEqual({ tried: true, helpful: "no", chosenFor: "anxiety" });
   });
 });

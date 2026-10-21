@@ -133,6 +133,10 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 | K10-a | Tips match category and severity | Signed in · Start · `all-1` · safety 0 · `continue-to-tips` | `tips-plan` has `tips-group-depression` and `tips-group-anxiety` (moderate), no `tips-group-stress` (normal); every `tip-card-*` has a `tip-source-*` link to doi.org or a WHO/NICE guideline |
 | K10-b | All normal | Signed in · Start · `all-0` · safety 0 · `continue-to-tips` | `tips-wellbeing` instead of tip groups |
 | K10-c | Severe → professional first | Signed in · Start · `all-2` · safety 0 · `continue-to-tips` | `professional-help` and `tips-companion` appear before the tips |
+| TP-02 | Evidence summary on every tip | On `/tips` from K10-a | Every `tip-card-*` has a `tip-summary-*` with one sentence (no "TODO") and a `tip-source-*` link |
+| TP-04-swap | A tip that did not help can be swapped | From K10-a: click `tip-tried-ba-small-activity`, then `tip-helpful-ba-small-activity-no`, then `tip-try-another-ba-small-activity` | `tip-card-ba-small-activity` is gone; `tip-card-sleep-routine` is now in `tips-group-depression`, which still has 3 cards; `tips-replaced` lists the old tip |
+| TP-04-back | A swapped tip can be brought back | After TP-04-swap click `tip-restore-ba-small-activity` | `tip-card-ba-small-activity` is back in `tips-group-depression`; `tip-card-sleep-routine` is gone; `tips-replaced` disappears |
+| A1-tips | AI pick off by default | After `tip-helpful-…-no` on any tip | `tip-try-another-…` is shown but no `tip-ai-pick-…` while the AI is switched off (the case on previews) |
 | TP-03 | Toolkit | On `/tips` click `pmr-start` | `pmr-status` counts through the steps; `pmr-stop` stops it |
 | SP-01 | Safety plan without an account | Clean session · `/rencana-keselamatan` · fill `plan-warningSigns` and `plan-people` · `plan-download` | `plan-local-only` says nothing is stored; there is no `plan-save`; `plan-status` names the PDF, and no request is made while it is built |
 | SP-02 | Saved plan on the crisis screen | Signed in · `/rencana-keselamatan` (`plan-in-account`) · fill `plan-coping` · `plan-save` → `plan-status` · Start · `all-0` · safety 1 | `/krisis` shows `crisis-own-plan` with the saved entry |
@@ -142,18 +146,18 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 
 ## The suite in the TestSprite portal
 
-The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Seven tests were then written by hand for features added later, for **41 tests**.
+The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Eight tests were then written by hand for features added later, for **42 tests**. Seven of them were removed from the project once (after the 41/41 production run on 2026-10-18) and added again with the same steps; the portal gave them new IDs, which are the ones below.
 
 | Use case | TestSprite IDs | Covers |
 | --- | --- | --- |
-| Home & language | HOME-001 to HOME-005 | Landing start button, K9 language switch at question 10, help from the landing page, `robots.txt`, light and dark mode |
+| Home & language | HOME-001 to HOME-003, HOME-006, HOME-007 | Landing start button, K9 language switch at question 10, help from the landing page, `robots.txt` (HOME-006), light and dark mode (HOME-007) |
 | Start & eligibility | STAR-001 to STAR-005 | LO-04 under 18, LO-05 consent, SK-05 resume card |
-| Question flow | QST-001 to QST-006 | All-0 and all-3 runs, SK-08 safety question before results, SK-04 back, SK-05 reload, SK-06 pause and continue |
-| Safety & crisis | SAFE-001 to SAFE-009 | K2 safety answers 1–3, K3 URL/back/refresh gate, K4 both branches, K6 directory by country, SP-01 safety plan without an account |
+| Question flow | QST-001 to QST-005, QST-007 | All-0 and all-3 runs, SK-08 safety question before results, SK-04 back, SK-05 reload, SK-06 pause and continue (QST-007) |
+| Safety & crisis | SAFE-001 to SAFE-008, SAFE-010 | K2 safety answers 1–3, K3 URL/back/refresh gate, K4 both branches, K6 directory by country, SP-01 safety plan without an account (SAFE-010) |
 | Results | RESU-001 to RESU-005 | K1 scores (all-0, all-1, all-3), K5 priority panel, K6 in English, K7 disclaimer |
-| Report | RPT-001 | K8 report numbers match the result cards, PDF-03 report language |
+| Report | RPT-002 | K8 report numbers match the result cards, PDF-03 report language |
 | Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
-| Tips & account | TIPS-001 to TIPS-003 | K10-a tips by category, AK-01 sign-up and P3 account deletion, RW-04 history and daily check-in. Each signs up a `demo-…` account and deletes it at the end |
+| Tips & account | TIPS-001, TIPS-004 to TIPS-006 | K10-a tips by category (TIPS-001), AK-01 sign-up and P3 account deletion (TIPS-004), RW-04 history and daily check-in (TIPS-005), TP-04 swapping a tip that did not help and bringing it back, with TP-02 summaries and A1 for the AI pick (TIPS-006). Each signs up a `demo-…` account and deletes it at the end |
 
 Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
 
@@ -184,7 +188,7 @@ The other blocked test, TIPS-001, met the account gate on `/tips`. It now signs 
 
 ## Not yet covered
 
-With `DATABASE_URL` set for Production and Preview, TIPS-001 to TIPS-003 cover K10-a, AK-01, P3 and RW-04 in TestSprite.
+With `DATABASE_URL` set for Production and Preview, TIPS-001 and TIPS-004 to TIPS-006 cover K10-a, AK-01, P3, RW-04 and TP-04 in TestSprite.
 
 | Invariant | Waiting for |
 | --- | --- |
