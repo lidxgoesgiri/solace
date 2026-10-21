@@ -8,7 +8,7 @@
 
 Solace is a mental health screening web app for university students. It runs the 21-item **DASS-21** plus one separate **safety question**, shows results instantly, and then offers two paths: download a report to bring to a psychologist, or sign in (no email) for research-based tips. Available in **Bahasa Indonesia** (default) and **English**.
 
-Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Vercel preview, and the TestSprite GitHub App runs the 42-test suite against that preview; every push to `main` runs it again against production. Blocking PRs (the merge gate) is not switched on.
+Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Vercel preview, and the TestSprite GitHub App runs the project suite against that preview; every push to `main` runs it again against production. The portal now lists 46 tests, including four new AI scenarios whose results must be checked separately; GitHub runs previously included seven hidden duplicates. Blocking PRs (the merge gate) is not switched on.
 
 - **Live URL:** https://solace-sc.vercel.app
 - **Health check:** https://solace-sc.vercel.app/api/health
@@ -17,7 +17,7 @@ Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Ver
 
 ## What TestSprite found
 
-The suite was generated in the TestSprite 3.0 portal, reviewed by hand, and grown to 42 tests as features landed. Its runs found real problems and taught us to write clearer tests; the full history is in [TESTING.md](TESTING.md).
+The suite was generated in the TestSprite 3.0 portal, reviewed by hand, and grown as features landed. Its runs found real problems and taught us to write clearer tests; the full history and pending AI coverage are in [TESTING.md](TESTING.md).
 
 - **A real bug (first run):** leaving right after giving age and consent, before question 1, left no way to continue from the landing page (STAR-004). Fixed on the same branch.
 - **A real gap:** `/robots.txt` answered with the HTML "page not found" screen. The robots test failed on production until the fix in [#13](https://github.com/lidxgoesgiri/solace/pull/13), and has passed since.

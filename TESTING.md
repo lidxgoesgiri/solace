@@ -159,6 +159,7 @@ The suite was generated in the TestSprite 3.0 portal against https://solace-sc.v
 | Report | RPT-002 | K8 report numbers match the result cards, PDF-03 report language |
 | Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
 | Tips & account | TIPS-001, TIPS-004 to TIPS-006 | K10-a tips by category (TIPS-001), AK-01 sign-up and P3 account deletion (TIPS-004), RW-04 history and daily check-in (TIPS-005), TP-04 swapping a tip that did not help and bringing it back, with TP-02 summaries and A1 for the AI pick (TIPS-006). Each signs up a `demo-…` account and deletes it at the end |
+| AI scenarios added 2026-10-21 | TIPS-007, TIPS-008, TIPS-009, RPT-003 | Actual ID-only selection and canonical content/use/restore; risk and crisis gating; simulated invalid/error/limit/timeout/cancel responses; notes-specific opt-in, real tidy-up and revert. Test existence is not evidence of a pass: read the matching deployment/run report. |
 
 Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
 
@@ -200,7 +201,7 @@ With `DATABASE_URL` set for Production and Preview, TIPS-001 and TIPS-004 to TIP
 | Invariant | Waiting for |
 | --- | --- |
 | P1, P4, K10-b/c in TestSprite | Not written yet (Vitest covers them) |
-| A1–A3 in TestSprite with AI enabled | Update the portal's off-only assertion when the environment enables AI. Owner-approved phrases and a Vercel key are configured; live verification must be recorded separately from mocked Vitest tests |
+| A1–A3 in TestSprite with AI enabled | TIPS-007/008 and RPT-003 have been added in the portal; their actual preview results are required. Owner-approved phrases and a Vercel key are configured; historical 49/49 runs and mocked CI tests do not establish this new coverage |
 
 ### OpenRouter verification (2026-10-20)
 
@@ -212,7 +213,11 @@ With `DATABASE_URL` set for Production and Preview, TIPS-001 and TIPS-004 to TIP
 
 ### AI hardening: required remote scenarios (2026-10-21)
 
-Implementation and CI tests were updated for selection-only tips. **The following are scenario specifications, not a claim that portal tests were created or passed.** This agent's browser inventory reports `Local browser use is disabled in Work settings`; no TestSprite connector was available. Add these scenarios through the existing portal once access is enabled, preserving existing coverage. Use synthetic `demo-…` accounts and delete them afterwards. Do not put real notes or keys into test inputs or failure bundles.
+Implementation and CI tests were updated for selection-only tips. After the owner enabled browser access, four scenarios were created through the existing TestSprite 3.0 portal: **TIPS-007** (real tip selection and canonical content), **TIPS-008** (risk/crisis), **TIPS-009** (remote failure simulations and cancellation), and **RPT-003** (real notes, separate opt-in and revert). The portal lists 46 tests; the existing 42 and seven hidden historical duplicates were not removed. **Creation is not a pass.** Use the actual preview run and failure bundle as evidence.
+
+PR #15 commit `30d7cea` passed GitHub Actions (lint, typecheck, tests, build) and the existing 49-test TestSprite run `44ce2df0-be0a-41ae-b5ad-bdfea0c1bbcc` (49 passed, 0 failed). That run predates these four AI scenarios and does not prove actual AI selection.
+
+The portal's **Save & Run** action immediately uses its `default` environment (`https://solace-sc.vercel.app`). An initial TIPS-007 manual run was started there while saving its deployment-independent steps; it tests the older production build, not PR #15. Do not mistake that result for a preview regression or weaken the success assertion to accommodate it. The new scenarios must run through the GitHub PR trigger against its Vercel preview. All test steps follow the configured run base URL rather than hardcoding a host. Use synthetic `demo-…` accounts, request cleanup even on failure, and never include real notes, keys or cookies in test inputs/failure bundles.
 
 | Scenario | Remote steps and evidence required |
 | --- | --- |
