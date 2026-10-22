@@ -15,6 +15,11 @@
   "header": {
     "homeLabel": "Solace, ke beranda",
     "skipToContent": "Langsung ke konten",
+    "primaryNav": "Navigasi utama",
+    "navHow": "Cara kerja",
+    "navWhy": "Mengapa Solace",
+    "navFeatures": "Fitur",
+    "navFaq": "FAQ",
     "helpNow": "Butuh bantuan sekarang",
     "quickExit": "Keluar cepat",
     "quickExitShort": "Keluar",
@@ -36,10 +41,17 @@
   },
   "landing": {
     "eyebrow": "Untuk mahasiswa",
-    "title": "Bagaimana kabarmu minggu ini, sebenarnya?",
-    "subtitle": "Skrining singkat tentang suasana hati, kecemasan, dan stres. Hasilnya langsung muncul, lengkap dengan langkah berikutnya yang jelas.",
+    "title": "Tidak apa-apa kalau kamu belum tahu apa yang sedang kamu rasakan.",
+    "titleBefore": "Tidak apa-apa kalau kamu ",
+    "titleEmphasis": "belum tahu",
+    "titleAfter": " apa yang sedang kamu rasakan.",
+    "subtitle": "Solace membantumu melihat pola depresi, kecemasan, dan stres dengan lebih jernih—secara privat, tanpa menghakimi, dan dengan langkah berikutnya yang bisa dipahami.",
     "start": "Mulai skrining",
-    "startHint": "Gratis, tanpa akun, sekitar 5 menit.",
+    "seeHow": "Lihat cara kerjanya",
+    "startHint": "Gratis, bisa dimulai tanpa akun, sekitar 5 menit.",
+    "microTime": "±5 menit",
+    "microAge": "Untuk usia 18+",
+    "microDiagnosis": "Skrining, bukan diagnosis",
     "resumeTitle": "Skrining kamu belum selesai",
     "resumeBody": "{answered, plural, =0 {Kamu sudah memulai skrining, tapi belum menjawab pertanyaan pertama.} other {# dari 21 pertanyaan sudah terjawab dan tersimpan di perangkat ini.}}",
     "resume": "Lanjutkan skrining",
@@ -47,6 +59,16 @@
     "lastResultTitle": "Hasil terakhirmu masih tersimpan",
     "lastResultBody": "Hasil skrining terakhirmu tersimpan di perangkat ini.",
     "viewResults": "Lihat hasil",
+    "trustTitle": "Hal penting sebelum memulai",
+    "trust": {
+      "instrument": "Menggunakan 21 pernyataan DASS-21.",
+      "account": "Bisa dimulai tanpa membuat akun.",
+      "local": "Jawaban tanpa akun tetap di perangkat ini.",
+      "screening": "Membantu mengenali gejala, bukan menetapkan diagnosis."
+    },
+    "storyKicker": "Ruang untuk memahami",
+    "storyTitle": "Kadang yang terasa berat belum punya nama.",
+    "storyBody": "Solace memberi ruang untuk berhenti sejenak, menjawab dengan jujur, lalu melihat gambaran yang lebih terstruktur—tanpa memberi label pada dirimu.",
     "privacyTitle": "Privasimu dijaga",
     "privacyNoAccountTitle": "Tanpa akun",
     "privacyNoAccountBody": "Skrining dan hasilnya bisa kamu lihat tanpa membuat akun. Jawabanmu tetap di perangkat ini.",
@@ -54,18 +76,108 @@
     "privacyNoEmailBody": "Kalau nanti membuat akun, cukup nama pengguna dan passphrase. Tidak perlu email, nama asli, atau NIM.",
     "privacyEncryptedTitle": "Data terenkripsi",
     "privacyEncryptedBody": "Jika memakai akun, jawaban dan catatanmu dienkripsi di browser sebelum disimpan. Tanpa akun, jawaban skrining tetap di perangkat ini.",
-    "howTitle": "Cara kerjanya",
+    "howKicker": "Proses yang jelas",
+    "howTitle": "Tiga langkah, tanpa terburu-buru",
+    "howIntro": "Kamu tetap memegang kendali. Preview ini hanya menjelaskan alur dan tidak merekam jawaban kesehatan apa pun.",
+    "stepsLabel": "Tahapan cara kerja Solace",
+    "stepsKicker": "Langkah {current} dari 3",
+    "steps": {
+      "understand": {
+        "tab": "Pahami",
+        "title": "Ketahui apa yang akan terjadi sebelum mulai",
+        "body": "Konfirmasi usia dan persetujuan ditampilkan lebih dahulu. Kamu dapat membaca cara penyimpanan data dan batas alat ini sebelum menjawab apa pun."
+      },
+      "answer": {
+        "tab": "Jawab",
+        "title": "Jawab satu pernyataan pada satu waktu",
+        "body": "Ada 21 pernyataan tentang tujuh hari terakhir, lalu satu pertanyaan keamanan yang terpisah. Tidak ada timer dan kamu bisa kembali ke jawaban sebelumnya."
+      },
+      "choose": {
+        "tab": "Tentukan langkah",
+        "title": "Lihat ringkasan, lalu pilih yang berguna bagimu",
+        "body": "Setelah selesai, kamu dapat menyiapkan laporan untuk psikolog atau melanjutkan ke tips berbasis bukti. Keputusan tetap ada padamu."
+      }
+    },
     "howQuestions": "21 pertanyaan DASS-21 dan 1 pertanyaan keamanan",
     "howTime": "Sekitar 5 menit, tanpa batas waktu",
     "howPeriod": "Mengacu pada 7 hari terakhir",
     "howResult": "Hasil langsung muncul, lalu kamu bisa memilih: unduh laporan untuk psikolog, atau lanjut mendapatkan tips berbasis jurnal.",
     "notDiagnosis": "Solace membantumu mengenali gejala, bukan memberi diagnosis.",
-    "resumeExpiry": "Jawabanmu disimpan di perangkat ini dan dihapus otomatis bila tidak dilanjutkan dalam 7 hari."
+    "resumeExpiry": "Jawabanmu disimpan di perangkat ini dan dihapus otomatis bila tidak dilanjutkan dalam 7 hari.",
+    "evidenceKicker": "Privasi · Keselamatan · Bukti",
+    "evidenceTitle": "Dirancang untuk momen yang terasa rentan",
+    "evidenceBody": "Kepercayaan tidak datang dari klaim besar. Ia dibangun lewat batas yang jelas, bantuan yang didahulukan, dan data yang diperlakukan dengan hati-hati.",
+    "evidence": {
+      "privacy": {
+        "title": "Privasi sesuai pilihanmu",
+        "body": "Tanpa akun, jawaban skrining disimpan di perangkat ini. Jika memakai akun, data sensitif dienkripsi di browser sebelum disimpan."
+      },
+      "safety": {
+        "title": "Keselamatan selalu didahulukan",
+        "body": "Pertanyaan keamanan dipisahkan dari skor. Bila jawaban menunjukkan kebutuhan mendesak, Solace menampilkan akses bantuan lebih dahulu."
+      },
+      "useful": {
+        "title": "Ringkasan yang bisa dibawa",
+        "body": "Hasil menjelaskan tiga subskala dan dapat disiapkan menjadi PDF untuk membantu percakapan dengan tenaga profesional."
+      }
+    },
+    "resultsKicker": "Bukan sekadar angka",
+    "resultsTitle": "Hasil yang menjelaskan, bukan melabeli",
+    "resultsBody": "Tiga subskala ditampilkan dengan kategori dan konteks yang berasal dari jawabanmu. Solace lalu membantu memperjelas pilihan berikutnya.",
+    "resultsNote": "Preview ini sengaja tidak menampilkan skor atau kategori contoh agar tidak menciptakan hasil klinis palsu.",
+    "resultsPreviewHeading": "Ringkasan skrining",
+    "resultsPreviewStatus": "Diisi dari hasil skriningmu",
+    "resultsPreviewFooter": "Sertakan bagian yang kamu pilih, lalu unduh PDF untuk dibawa saat berkonsultasi.",
+    "subscales": {
+      "depression": "Depresi",
+      "anxiety": "Kecemasan",
+      "stress": "Stres"
+    },
+    "toolkitKicker": "Kembali ke saat ini",
+    "toolkitTitle": "Dukungan kecil yang bisa langsung dicoba",
+    "toolkitBody": "Latihan ini bukan pengganti bantuan profesional. Gunakan sebagai pendamping singkat ketika kamu ingin memperlambat ritme atau kembali memperhatikan sekitar.",
+    "toolkitBreathingIn": "Tarik napas",
+    "toolkitBreathingOut": "Hembuskan",
+    "groundingTitle": "Grounding 5-4-3-2-1",
+    "groundingBody": "Arahkan perhatian secara perlahan pada hal yang bisa dilihat, disentuh, didengar, dicium, dan dirasakan.",
+    "groundingLabel": "Urutan grounding lima sampai satu",
+    "faqKicker": "Sebelum kamu mulai",
+    "faqTitle": "Pertanyaan yang wajar ditanyakan",
+    "faqIntro": "Jawaban singkat tentang fungsi, data, dan dukungan di Solace.",
+    "faq": {
+      "diagnosis": {
+        "question": "Apakah Solace memberi diagnosis?",
+        "answer": "Tidak. Solace adalah alat skrining mandiri untuk membantu mengenali gejala. Diagnosis hanya dapat diberikan oleh tenaga profesional yang melakukan penilaian menyeluruh."
+      },
+      "account": {
+        "question": "Apakah saya perlu membuat akun?",
+        "answer": "Tidak untuk memulai skrining dan melihat hasil. Akun digunakan bila kamu memilih menyimpan riwayat dan memakai fitur lanjutan yang tersedia."
+      },
+      "privacy": {
+        "question": "Bagaimana privasi saya dijaga?",
+        "answer": "Tanpa akun, jawaban skrining tetap di perangkat ini dan draft yang tidak dilanjutkan dihapus otomatis setelah tujuh hari. Data akun sensitif dienkripsi di browser sebelum disimpan."
+      },
+      "support": {
+        "question": "Bagaimana jika saya butuh bantuan sekarang?",
+        "answer": "Gunakan tombol Butuh bantuan sekarang di bagian atas. Jika jawaban keamananmu menunjukkan kebutuhan mendesak, Solace akan menampilkan halaman bantuan sebelum hasil."
+      },
+      "duration": {
+        "question": "Berapa lama prosesnya?",
+        "answer": "Biasanya sekitar lima menit, tanpa batas waktu. Kamu menjawab 21 pernyataan dan satu pertanyaan keamanan yang terpisah."
+      }
+    },
+    "finalKicker": "Mulai dari yang bisa dilakukan hari ini",
+    "finalTitle": "Kamu tidak harus memahami semuanya sekaligus.",
+    "finalBody": "Luangkan beberapa menit untuk melihat apa yang sedang terjadi, dengan ritme yang kamu tentukan sendiri."
   },
   "start": {
     "title": "Sebelum mulai",
     "intro": "Ada 21 pernyataan tentang perasaanmu selama 7 hari terakhir, lalu 1 pertanyaan keamanan. Tidak ada jawaban benar atau salah, dan kamu bisa kembali ke pertanyaan sebelumnya kapan saja.",
     "autosave": "Jawabanmu tersimpan otomatis di perangkat ini, jadi kamu bisa berhenti dan melanjutkan nanti.",
+    "expectTitle": "Yang akan kamu temui",
+    "expectItems": "21 pernyataan, satu per satu",
+    "expectPeriod": "Mengacu pada 7 hari terakhir",
+    "expectSafety": "1 pertanyaan keamanan yang terpisah",
     "ageLegend": "Berapa usiamu?",
     "ageAdult": "18 tahun atau lebih",
     "ageMinor": "Di bawah 18 tahun",

@@ -15,6 +15,11 @@
   "header": {
     "homeLabel": "Solace, go to home",
     "skipToContent": "Skip to content",
+    "primaryNav": "Primary navigation",
+    "navHow": "How it works",
+    "navWhy": "Why Solace",
+    "navFeatures": "Features",
+    "navFaq": "FAQ",
     "helpNow": "I need help now",
     "quickExit": "Quick exit",
     "quickExitShort": "Exit",
@@ -36,10 +41,17 @@
   },
   "landing": {
     "eyebrow": "For university students",
-    "title": "How are you really doing this week?",
-    "subtitle": "A short screening about mood, anxiety, and stress. Your results appear right away, together with clear next steps.",
+    "title": "It is okay if you do not know yet what you are feeling.",
+    "titleBefore": "It is okay if you ",
+    "titleEmphasis": "do not know yet",
+    "titleAfter": " what you are feeling.",
+    "subtitle": "Solace helps you see patterns of depression, anxiety, and stress more clearly—privately, without judgement, and with next steps you can understand.",
     "start": "Start screening",
-    "startHint": "Free, no account, about 5 minutes.",
+    "seeHow": "See how it works",
+    "startHint": "Free, can be started without an account, about 5 minutes.",
+    "microTime": "About 5 minutes",
+    "microAge": "For ages 18+",
+    "microDiagnosis": "Screening, not diagnosis",
     "resumeTitle": "Your screening isn't finished",
     "resumeBody": "{answered, plural, =0 {You started a screening but haven't answered the first question yet.} one {# of 21 questions is answered and saved on this device.} other {# of 21 questions are answered and saved on this device.}}",
     "resume": "Continue screening",
@@ -47,6 +59,16 @@
     "lastResultTitle": "Your last result is still saved",
     "lastResultBody": "Your last screening result is saved on this device.",
     "viewResults": "View results",
+    "trustTitle": "What to know before you begin",
+    "trust": {
+      "instrument": "Uses 21 DASS-21 statements.",
+      "account": "You can begin without creating an account.",
+      "local": "Without an account, answers stay on this device.",
+      "screening": "Helps recognise symptoms; it does not diagnose."
+    },
+    "storyKicker": "Space to understand",
+    "storyTitle": "Sometimes what feels heavy does not have a name yet.",
+    "storyBody": "Solace gives you room to pause, answer honestly, and see a more structured picture—without putting a label on who you are.",
     "privacyTitle": "Your privacy is protected",
     "privacyNoAccountTitle": "No account",
     "privacyNoAccountBody": "You can take the screening and see your results without an account. Your answers stay on this device.",
@@ -54,18 +76,108 @@
     "privacyNoEmailBody": "If you create an account later, all you need is a username and a passphrase. No email, real name, or student ID.",
     "privacyEncryptedTitle": "Encrypted data",
     "privacyEncryptedBody": "If you use an account, your answers and notes are encrypted in your browser before they are saved. Without an account, screening answers stay on this device.",
-    "howTitle": "How it works",
+    "howKicker": "A clear process",
+    "howTitle": "Three steps, without rushing",
+    "howIntro": "You remain in control. This preview only explains the flow and does not record any health answers.",
+    "stepsLabel": "How Solace works",
+    "stepsKicker": "Step {current} of 3",
+    "steps": {
+      "understand": {
+        "tab": "Understand",
+        "title": "Know what will happen before you begin",
+        "body": "Age confirmation and consent come first. You can read how data is stored and where this tool's limits are before answering anything."
+      },
+      "answer": {
+        "tab": "Answer",
+        "title": "Answer one statement at a time",
+        "body": "There are 21 statements about the past seven days, followed by one separate safety question. There is no timer, and you can return to earlier answers."
+      },
+      "choose": {
+        "tab": "Choose",
+        "title": "See a summary, then choose what is useful to you",
+        "body": "When you finish, you can prepare a report for a psychologist or continue to research-based tips. The decision remains yours."
+      }
+    },
     "howQuestions": "21 DASS-21 questions and 1 safety question",
     "howTime": "About 5 minutes, no time limit",
     "howPeriod": "Covers the past 7 days",
     "howResult": "Your results appear right away. Then you choose: download a report for a psychologist, or continue to research-based tips.",
     "notDiagnosis": "Solace helps you recognise symptoms. It does not give a diagnosis.",
-    "resumeExpiry": "Your answers are kept on this device and deleted automatically if you don't continue within 7 days."
+    "resumeExpiry": "Your answers are kept on this device and deleted automatically if you don't continue within 7 days.",
+    "evidenceKicker": "Privacy · Safety · Evidence",
+    "evidenceTitle": "Designed for moments that can feel vulnerable",
+    "evidenceBody": "Trust does not come from big claims. It is built through clear boundaries, support that comes first, and careful treatment of data.",
+    "evidence": {
+      "privacy": {
+        "title": "Privacy follows your choice",
+        "body": "Without an account, screening answers are stored on this device. If you use an account, sensitive data is encrypted in the browser before it is stored."
+      },
+      "safety": {
+        "title": "Safety always comes first",
+        "body": "The safety question is separate from your score. If an answer shows an urgent need, Solace presents access to support before anything else."
+      },
+      "useful": {
+        "title": "A summary you can bring",
+        "body": "Results explain three subscales and can be prepared as a PDF to support a conversation with a professional."
+      }
+    },
+    "resultsKicker": "More than a number",
+    "resultsTitle": "Results that explain, not label",
+    "resultsBody": "Three subscales are shown with categories and context drawn from your answers. Solace then helps make your next options clearer.",
+    "resultsNote": "This preview intentionally shows no sample scores or categories, so it never invents a clinical result.",
+    "resultsPreviewHeading": "Screening summary",
+    "resultsPreviewStatus": "Filled from your screening result",
+    "resultsPreviewFooter": "Include the sections you choose, then download a PDF to bring to a consultation.",
+    "subscales": {
+      "depression": "Depression",
+      "anxiety": "Anxiety",
+      "stress": "Stress"
+    },
+    "toolkitKicker": "Return to the present",
+    "toolkitTitle": "Small supports you can try right away",
+    "toolkitBody": "These exercises do not replace professional support. Use them as brief companions when you want to slow the pace or notice your surroundings again.",
+    "toolkitBreathingIn": "Breathe in",
+    "toolkitBreathingOut": "Breathe out",
+    "groundingTitle": "5-4-3-2-1 grounding",
+    "groundingBody": "Gently direct your attention to what you can see, touch, hear, smell, and sense.",
+    "groundingLabel": "Grounding sequence from five to one",
+    "faqKicker": "Before you begin",
+    "faqTitle": "Reasonable questions to ask",
+    "faqIntro": "Short answers about Solace's purpose, data, and support.",
+    "faq": {
+      "diagnosis": {
+        "question": "Does Solace give a diagnosis?",
+        "answer": "No. Solace is a self-screening tool that helps you recognise symptoms. A diagnosis can only come from a professional after a full assessment."
+      },
+      "account": {
+        "question": "Do I need to create an account?",
+        "answer": "Not to begin the screening or see your result. An account is used if you choose to save history and use the available follow-up features."
+      },
+      "privacy": {
+        "question": "How is my privacy protected?",
+        "answer": "Without an account, screening answers stay on this device, and an unfinished draft is removed after seven days. Sensitive account data is encrypted in the browser before storage."
+      },
+      "support": {
+        "question": "What if I need help now?",
+        "answer": "Use the I need help now button at the top. If your safety answer shows an urgent need, Solace presents the support page before your results."
+      },
+      "duration": {
+        "question": "How long does it take?",
+        "answer": "Usually about five minutes, with no time limit. You answer 21 statements and one separate safety question."
+      }
+    },
+    "finalKicker": "Begin with what is possible today",
+    "finalTitle": "You do not have to understand everything at once.",
+    "finalBody": "Take a few minutes to notice what is happening, at a pace you choose for yourself."
   },
   "start": {
     "title": "Before you start",
     "intro": "There are 21 statements about how you have felt over the past 7 days, then 1 safety question. There are no right or wrong answers, and you can go back to earlier questions at any time.",
     "autosave": "Your answers are saved automatically on this device, so you can stop and continue later.",
+    "expectTitle": "What you will encounter",
+    "expectItems": "21 statements, one at a time",
+    "expectPeriod": "Covers the past 7 days",
+    "expectSafety": "1 separate safety question",
     "ageLegend": "How old are you?",
     "ageAdult": "18 or older",
     "ageMinor": "Under 18",

@@ -8,6 +8,12 @@ import { Link } from "@/i18n/navigation";
 
 export async function SiteHeader() {
   const t = await getTranslations("header");
+  const nav = [
+    { href: "/#how-it-works", label: t("navHow") },
+    { href: "/#why-solace", label: t("navWhy") },
+    { href: "/#features", label: t("navFeatures") },
+    { href: "/#faq", label: t("navFaq") },
+  ] as const;
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/75">
@@ -28,6 +34,20 @@ export async function SiteHeader() {
             Solace
           </span>
         </Link>
+        <nav aria-label={t("primaryNav")} className="hidden xl:block">
+          <ul className="flex items-center gap-1 text-sm text-muted-foreground">
+            {nav.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="inline-flex min-h-11 items-center rounded-full px-3 transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
         <LangSwitch />
         {/* On phones the switch shares the second row with "help now", so the
             first row keeps the logo, language, and quick exit. */}
