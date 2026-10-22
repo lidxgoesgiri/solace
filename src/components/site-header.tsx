@@ -47,8 +47,8 @@ export async function SiteHeader() {
           </ul>
         </nav>
         <LangSwitch className="border-transparent bg-transparent px-3 hover:bg-muted" />
-        <QuickExit className="border-transparent bg-transparent px-3 hover:bg-muted" />
         <ThemeSwitch compact className="size-11 border-transparent bg-transparent px-0 hover:bg-muted" />
+        <QuickExit className="border-transparent bg-transparent px-3 hover:bg-muted" />
         <HelpNowButton className="grow basis-48 sm:grow-0 sm:basis-auto" />
       </div>
     </header>
