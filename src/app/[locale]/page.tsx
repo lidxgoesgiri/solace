@@ -39,6 +39,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
       <div className="landing-page space-y-24 sm:space-y-32 lg:space-y-36">
         <section
           aria-labelledby="hero-title"
+          data-halftone-hero
           className="relative isolate grid items-center gap-8 py-2 sm:gap-12 sm:py-8 md:min-h-[min(42rem,calc(100svh-10rem))] md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14"
         >
           <HeroWordmark />
@@ -48,7 +49,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
               id="hero-title"
               className={`${heroStyles.slogan} max-w-[10ch] text-[clamp(3.25rem,6.8vw,5.75rem)] leading-[1.08] tracking-[-0.045em]`}
             >
-              {t.rich("slogan", { emphasis: (words) => <AnimatedUnderline>{words}</AnimatedUnderline> })}
+              {t.rich("slogan", { emphasis: (words) => <AnimatedUnderline className={heroStyles.emphasis}>{words}</AnimatedUnderline> })}
             </h1>
             <div className="max-w-[35rem] space-y-3">
               <p className="font-heading text-xl leading-relaxed sm:text-2xl">{t("title")}</p>
