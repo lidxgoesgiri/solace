@@ -1,0 +1,90 @@
+.backdrop {
+  position: absolute;
+  z-index: 0;
+  inset-block: -4.5rem 0;
+  left: 50%;
+  width: 100dvw;
+  overflow: hidden;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 65%, transparent 95%);
+}
+
+.word {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  color: var(--brand-sage-ink);
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: clamp(7rem, 31vw, 30rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.065em;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0.1;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .word {
+    color: transparent;
+    background-image: radial-gradient(circle, var(--brand-sage-ink) 0 25%, transparent 29%);
+    background-size: 7px 7px;
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+}
+
+.slogan {
+  position: relative;
+  isolation: isolate;
+  text-shadow: 0 0 0.6em color-mix(in srgb, var(--brand-sun) 14%, transparent);
+}
+
+.slogan::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.18em -0.35em -0.22em;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 35%, var(--brand-sky), transparent 66%),
+    radial-gradient(ellipse at 70% 65%, var(--brand-sun), transparent 62%),
+    radial-gradient(ellipse at 42% 58%, var(--brand-sage), transparent 70%);
+  filter: blur(22px);
+  opacity: 0.18;
+}
+
+.slogan svg {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--brand-sage) 30%, transparent));
+}
+
+@media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
+  .slogan::before {
+    animation: soft-bloom 16s ease-in-out infinite;
+  }
+}
+
+@keyframes soft-bloom {
+  0%, 100% { opacity: 0.13; }
+  50% { opacity: 0.2; }
+}
+
+@media (max-width: 47.999rem) {
+  .backdrop { inset-block-start: -1.5rem; }
+  .word { background-size: 5px 5px; opacity: 0.075; }
+  .slogan::before { filter: blur(16px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slogan::before { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .backdrop,
+  .slogan::before { display: none; }
+  .slogan { text-shadow: none; }
+  .slogan svg { filter: none; }
+}

@@ -11,7 +11,8 @@ import { SunriseMark } from "@/components/sunrise-mark";
 import { Button } from "@/components/ui/button";
 import { AnimatedUnderline } from "@/features/landing/animated-underline";
 import { BreathingPreview } from "@/features/landing/breathing-preview";
-import { HalftoneWordmark } from "@/features/landing/halftone-wordmark";
+import { HeroWordmark } from "@/features/landing/hero-wordmark";
+import heroStyles from "@/features/landing/hero-wordmark.module.css";
 import { InteractiveSteps } from "@/features/landing/interactive-steps";
 import { LandingReveal, LandingRevealItem } from "@/features/landing/landing-reveal";
 import { localeFromParams } from "@/i18n/locale";
@@ -38,13 +39,14 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
       <div className="landing-page space-y-24 sm:space-y-32 lg:space-y-36">
         <section
           aria-labelledby="hero-title"
-          className="grid items-center gap-8 py-2 sm:gap-12 sm:py-8 md:min-h-[min(42rem,calc(100svh-10rem))] md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14"
+          className="relative isolate grid items-center gap-8 py-2 sm:gap-12 sm:py-8 md:min-h-[min(42rem,calc(100svh-10rem))] md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14"
         >
+          <HeroWordmark />
           <div className="relative z-10 space-y-6">
             <p className="kicker max-w-xs">{t("eyebrow")}</p>
             <h1
               id="hero-title"
-              className="max-w-[10ch] text-[clamp(3.25rem,6.8vw,5.75rem)] leading-[1.08] tracking-[-0.045em]"
+              className={`${heroStyles.slogan} max-w-[10ch] text-[clamp(3.25rem,6.8vw,5.75rem)] leading-[1.08] tracking-[-0.045em]`}
             >
               {t.rich("slogan", { emphasis: (words) => <AnimatedUnderline>{words}</AnimatedUnderline> })}
             </h1>
@@ -217,7 +219,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
         </section>
 
         <section className="full-bleed -mb-24 overflow-hidden bg-[#18333b] text-[#f3f6f3] sm:-mb-[7.5rem]" aria-labelledby="final-cta-title">
-          <div className="mx-auto grid max-w-6xl gap-8 px-5 pt-20 sm:px-8 sm:pt-28 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="mx-auto grid max-w-6xl gap-8 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1fr_auto] lg:items-end">
             <div className="space-y-5">
               <p className="kicker kicker-plain !text-[#b8d0c0]">{t("finalKicker")}</p>
               <h2 id="final-cta-title" className="max-w-4xl text-[clamp(2.8rem,6vw,5.5rem)] leading-[0.98] tracking-[-0.04em]">{t("finalTitle")}</h2>
@@ -230,7 +232,6 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
               </Link>
             </Button>
           </div>
-          <HalftoneWordmark />
         </section>
       </div>
     </MotionProvider>

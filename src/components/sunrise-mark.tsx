@@ -39,7 +39,7 @@ export function SunriseMark() {
     <div
       ref={ref}
       data-testid="sunrise-visual"
-      className="sunrise-visual relative mx-auto aspect-[6/5] w-full max-w-[32rem] select-none"
+      className="sunrise-visual relative z-10 mx-auto aspect-[6/5] w-full max-w-[32rem] select-none"
       aria-hidden="true"
       onPointerMove={move}
       onPointerLeave={settle}
