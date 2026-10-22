@@ -281,6 +281,7 @@
   --foreground: #1f2a37;
   --muted-foreground: #4f5866;
   --border: #e3dccf;
+  --brand-sage-soft: #e8efe8;
   --brand-sage-ink: #3d5c45;
   color: var(--paper-ink);
 }
