@@ -11,7 +11,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
  * switching mid-screening keeps them (K9). next-intl's locale cookie
  * remembers the choice.
  */
-export function LangSwitch() {
+export function LangSwitch({ className }: { className?: string }) {
   const t = useTranslations("header");
   const locale = useLocale();
   const pathname = usePathname();
@@ -27,6 +27,7 @@ export function LangSwitch() {
       data-testid="lang-switch"
       aria-label={t("langSwitchLabel")}
       aria-busy={isPending}
+      className={className}
       onClick={() =>
         startTransition(() => {
           router.replace(pathname, { locale: target, scroll: false });

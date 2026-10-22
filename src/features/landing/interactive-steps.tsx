@@ -1,7 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { m, useAnimationControls } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { LANDING_REVEAL } from "@/features/landing/motion";
+import { useLandingReducedMotion } from "@/features/landing/motion-preferences";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["understand", "answer", "choose"] as const;
@@ -10,13 +13,30 @@ export function InteractiveSteps() {
   const t = useTranslations("landing");
   const [active, setActive] = useState<(typeof STEPS)[number]>("understand");
   const index = STEPS.indexOf(active);
+  const reducedMotion = useLandingReducedMotion();
+  const controls = useAnimationControls();
+  const previous = useRef(active);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      previous.current = active;
+      controls.stop();
+      controls.set({ opacity: 1, y: 0 });
+      return;
+    }
+    if (previous.current === active) return;
+    previous.current = active;
+    void controls.start({ opacity: [0.78, 1], y: [8, 0], transition: LANDING_REVEAL })
+      .catch(() => controls.set({ opacity: 1, y: 0 }));
+  }, [active, controls, reducedMotion]);
 
   return (
-    <div className="grid overflow-hidden rounded-[1.75rem] border bg-card shadow-(--shadow-soft) lg:grid-cols-[0.82fr_1.18fr]">
+    <div className="overflow-hidden rounded-[1.75rem] border bg-card shadow-(--shadow-soft)">
       <div
         role="tablist"
         aria-label={t("stepsLabel")}
-        className="flex gap-1 overflow-x-auto border-b bg-muted/45 p-2 lg:flex-col lg:justify-center lg:border-r lg:border-b-0 lg:p-5"
+        aria-orientation="horizontal"
+        className="grid grid-cols-3 gap-1 border-b bg-muted/40 p-2 sm:gap-2 sm:p-3"
       >
         {STEPS.map((step, stepIndex) => (
           <button
@@ -30,19 +50,19 @@ export function InteractiveSteps() {
             tabIndex={active === step ? 0 : -1}
             onClick={() => setActive(step)}
             onKeyDown={(event) => {
-              if (event.key !== "ArrowDown" && event.key !== "ArrowRight" && event.key !== "ArrowUp" && event.key !== "ArrowLeft") return;
+              if (!["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"].includes(event.key)) return;
               event.preventDefault();
               const direction = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
-              const next = STEPS[(stepIndex + direction + STEPS.length) % STEPS.length]!;
+              const next = event.key === "Home" ? STEPS[0] : event.key === "End" ? STEPS[STEPS.length - 1]! : STEPS[(stepIndex + direction + STEPS.length) % STEPS.length]!;
               setActive(next);
               document.getElementById(`landing-step-${next}`)?.focus();
             }}
             className={cn(
-              "min-h-12 min-w-max rounded-2xl px-4 py-3 text-left text-sm font-semibold transition-colors sm:text-base lg:min-w-0",
+              "relative min-h-14 min-w-0 rounded-xl px-2 py-3 text-center text-sm font-medium transition-colors sm:px-4 sm:text-base",
               active === step ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-card hover:text-foreground",
             )}
           >
-            <span aria-hidden="true" className="mr-3 font-heading text-lg opacity-70">
+            <span aria-hidden="true" className="mb-0.5 block font-heading text-xs opacity-70 sm:mr-3 sm:mb-0 sm:inline sm:text-base">
               0{stepIndex + 1}
             </span>
             {t(`steps.${step}.tab`)}
@@ -58,9 +78,9 @@ export function InteractiveSteps() {
           aria-labelledby={`landing-step-${step}`}
           hidden={active !== step}
           tabIndex={0}
-          className="min-h-[22rem] p-6 outline-none sm:p-9 lg:p-12"
+          className="min-h-[26rem] rounded-b-[1.75rem] p-6 sm:min-h-[22rem] sm:p-9 lg:p-12"
         >
-          <div className="grid h-full content-between gap-10">
+          <m.div initial={false} animate={active === step ? controls : undefined} className="grid h-full content-between gap-10">
             <div className="space-y-4">
               <p className="kicker kicker-plain">{t("stepsKicker", { current: stepIndex + 1 })}</p>
               <h3 className="max-w-xl text-3xl leading-tight sm:text-4xl">{t(`steps.${step}.title`)}</h3>
@@ -71,13 +91,13 @@ export function InteractiveSteps() {
                 <span
                   key={item}
                   className={cn(
-                    "h-2 rounded-full transition-[width,background-color] duration-(--duration-base)",
-                    dotIndex === index ? "w-14 bg-primary" : "w-5 bg-border",
+                    "h-1.5 w-12 origin-left rounded-full transition-[transform,background-color] duration-500 ease-(--ease-calm)",
+                    dotIndex === index ? "scale-x-100 bg-primary" : "scale-x-50 bg-border",
                   )}
                 />
               ))}
             </div>
-          </div>
+          </m.div>
         </div>
       ))}
     </div>

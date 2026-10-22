@@ -14,7 +14,7 @@ function quickExit() {
   window.location.replace(QUICK_EXIT_URL);
 }
 
-export function QuickExit() {
+export function QuickExit({ className }: { className?: string }) {
   const t = useTranslations("header");
 
   useEffect(() => {
@@ -39,6 +39,7 @@ export function QuickExit() {
       size="sm"
       data-testid="quick-exit"
       aria-label={t("quickExitLabel")}
+      className={className}
       onClick={quickExit}
     >
       <LogOut aria-hidden="true" />

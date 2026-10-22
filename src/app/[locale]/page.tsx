@@ -6,15 +6,14 @@ import { Lock } from "@/components/icons/lock";
 import { ShieldCheck } from "@/components/icons/shield-check";
 import { Wind } from "@/components/icons/wind";
 import { LandingResume } from "@/components/landing-resume";
-import { Logo } from "@/components/logo";
 import { MotionProvider } from "@/components/motion/motion-provider";
-import { Stagger, StaggerItem } from "@/components/motion/reveal";
+import { SunriseMark } from "@/components/sunrise-mark";
 import { Button } from "@/components/ui/button";
 import { AnimatedUnderline } from "@/features/landing/animated-underline";
 import { BreathingPreview } from "@/features/landing/breathing-preview";
 import { HalftoneWordmark } from "@/features/landing/halftone-wordmark";
 import { InteractiveSteps } from "@/features/landing/interactive-steps";
-import { LiquidSculpture } from "@/features/landing/liquid-sculpture";
+import { LandingReveal, LandingRevealItem } from "@/features/landing/landing-reveal";
 import { localeFromParams } from "@/i18n/locale";
 import { Link } from "@/i18n/navigation";
 import { PATHS } from "@/lib/flow";
@@ -37,29 +36,25 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
 
   return (
     <MotionProvider>
-      <div className="space-y-24 sm:space-y-32 lg:space-y-40">
+      <div className="landing-page space-y-24 sm:space-y-32 lg:space-y-36">
         <section
           aria-labelledby="hero-title"
-          className="grid min-h-[min(48rem,calc(100svh-8rem))] items-center gap-12 py-4 md:grid-cols-[minmax(0,1fr)_minmax(20rem,0.92fr)] md:gap-10 lg:gap-16"
+          className="grid items-center gap-8 py-2 sm:gap-12 sm:py-8 md:min-h-[min(42rem,calc(100svh-10rem))] md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14"
         >
-          <div className="relative z-10 space-y-7">
-            <div className="flex max-w-sm items-center gap-4">
-              <Logo size={38} priority />
-              <p className="kicker min-w-0 flex-1">{t("eyebrow")}</p>
-            </div>
+          <div className="relative z-10 space-y-6">
+            <p className="kicker max-w-xs">{t("eyebrow")}</p>
             <h1
               id="hero-title"
-              className="max-w-3xl text-[clamp(2.7rem,7vw,5.8rem)] leading-[0.98] tracking-[-0.045em]"
+              className="max-w-[10ch] text-[clamp(3.25rem,6.8vw,5.75rem)] leading-[1.08] tracking-[-0.045em]"
             >
-              {t("titleBefore")}
-              <AnimatedUnderline>{t("titleEmphasis")}</AnimatedUnderline>
-              {t("titleAfter")}
+              {t.rich("slogan", { emphasis: (words) => <AnimatedUnderline>{words}</AnimatedUnderline> })}
             </h1>
-            <p className="measure text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              {t("subtitle")}
-            </p>
+            <div className="max-w-[35rem] space-y-3">
+              <p className="font-heading text-xl leading-relaxed sm:text-2xl">{t("title")}</p>
+              <p className="measure text-base leading-relaxed text-muted-foreground sm:text-lg">{t("subtitle")}</p>
+            </div>
             <div className="flex flex-col items-stretch gap-3 pt-1 sm:flex-row sm:items-center" data-testid="landing-primary-action">
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="landing-cta">
                 <Link href={PATHS.mulai} data-testid="start-screening">
                   {t("start")}
                   <ArrowRight aria-hidden="true" />
@@ -77,24 +72,24 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
               <span>{t("microDiagnosis")}</span>
             </div>
           </div>
-          <LiquidSculpture />
+          <SunriseMark />
         </section>
 
         <LandingResume />
 
         <section id="why-solace" aria-labelledby="trust-title" className="scroll-mt-28 space-y-8">
-          <div className="grid gap-5 border-y py-6 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x">
-            <h2 id="trust-title" className="sr-only">{t("trustTitle")}</h2>
+          <h2 id="trust-title" className="sr-only">{t("trustTitle")}</h2>
+          <LandingReveal stagger className="grid gap-5 border-y py-6 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x">
             {trustFacts.map((fact, index) => (
-              <div key={fact} className="flex gap-4 lg:px-6 lg:first:pl-0 lg:last:pr-0">
+              <LandingRevealItem key={fact} className="flex gap-4 lg:px-6 lg:first:pl-0 lg:last:pr-0">
                 <span aria-hidden="true" className="numeral text-sm text-sage-ink">0{index + 1}</span>
                 <p className="text-sm leading-relaxed sm:text-base">{t(`trust.${fact}`)}</p>
-              </div>
+              </LandingRevealItem>
             ))}
-          </div>
+          </LandingReveal>
         </section>
 
-        <section aria-labelledby="story-title" className="grid gap-8 lg:grid-cols-[0.52fr_1fr] lg:gap-20">
+        <LandingReveal as="section" aria-labelledby="story-title" className="grid gap-8 lg:grid-cols-[0.52fr_1fr] lg:gap-20">
           <p className="kicker self-start">{t("storyKicker")}</p>
           <div className="space-y-7">
             <h2 id="story-title" className="max-w-4xl text-[clamp(2.5rem,5vw,4.8rem)] leading-[1.03] tracking-[-0.035em]">
@@ -104,17 +99,17 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
               {t("storyBody")}
             </p>
           </div>
-        </section>
+        </LandingReveal>
 
         <section id="how-it-works" aria-labelledby="how-title" className="scroll-mt-28 space-y-10">
-          <div className="grid gap-5 md:grid-cols-[0.72fr_1fr] md:items-end">
+          <LandingReveal className="grid gap-5 md:grid-cols-[0.72fr_1fr] md:items-end">
             <div className="space-y-3">
               <p className="kicker max-w-xs">{t("howKicker")}</p>
               <h2 id="how-title" className="text-4xl leading-tight sm:text-5xl">{t("howTitle")}</h2>
             </div>
             <p className="measure text-lg leading-relaxed text-muted-foreground md:justify-self-end">{t("howIntro")}</p>
-          </div>
-          <InteractiveSteps />
+          </LandingReveal>
+          <LandingReveal><InteractiveSteps /></LandingReveal>
           <ol data-testid="how-it-works" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {processFacts.map((fact, index) => (
               <li key={fact} className="flex gap-3 border-t pt-4 text-sm leading-relaxed text-muted-foreground">
@@ -137,21 +132,21 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                 <h2 id="evidence-title" className="text-4xl leading-tight sm:text-5xl">{t("evidenceTitle")}</h2>
                 <p className="measure leading-relaxed text-[#c9d7d3]">{t("evidenceBody")}</p>
               </div>
-              <Stagger as="ul" inView data-testid="privacy-points" className="divide-y divide-white/15 border-y border-white/15">
+              <LandingReveal as="ul" stagger data-testid="privacy-points" className="divide-y divide-white/15 border-y border-white/15">
                 {evidence.map(({ key, icon: Icon }) => (
-                  <StaggerItem as="li" key={key} className="grid gap-3 py-7 sm:grid-cols-[2.75rem_1fr]">
+                  <LandingRevealItem as="li" key={key} className="landing-evidence-row grid gap-3 py-7 sm:grid-cols-[2.75rem_1fr]">
                     <Icon aria-hidden="true" className="size-6 text-[#b8d0c0] sm:row-span-2 sm:mt-1" />
                     <h3 className="text-2xl text-white">{t(`evidence.${key}.title`)}</h3>
                     <p className="measure leading-relaxed text-[#c9d7d3]">{t(`evidence.${key}.body`)}</p>
-                  </StaggerItem>
+                  </LandingRevealItem>
                 ))}
-              </Stagger>
+              </LandingReveal>
             </div>
           </div>
         </section>
 
         <section aria-labelledby="results-preview-title" className="grid gap-12 lg:grid-cols-[0.78fr_1fr] lg:items-center lg:gap-20">
-          <div className="space-y-6">
+          <LandingReveal className="space-y-6">
             <p className="kicker max-w-xs">{t("resultsKicker")}</p>
             <h2 id="results-preview-title" className="text-4xl leading-tight sm:text-5xl">{t("resultsTitle")}</h2>
             <p className="measure text-lg leading-relaxed text-muted-foreground">{t("resultsBody")}</p>
@@ -159,8 +154,8 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
               <ShieldCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-sage-ink" />
               <p>{t("resultsNote")}</p>
             </div>
-          </div>
-          <div className="paper rotate-[0.7deg] rounded-[1.25rem] border bg-[#fffdf9] p-5 shadow-[0_28px_70px_-36px_rgb(31_42_55/0.48)] sm:p-8">
+          </LandingReveal>
+          <LandingReveal className="paper landing-report rounded-[1.25rem] border bg-[#fffdf9] p-5 shadow-[0_28px_70px_-36px_rgb(31_42_55/0.48)] sm:p-8">
             <div className="mb-8 flex items-center justify-between gap-4 border-b pb-5">
               <div>
                 <p className="text-xs font-semibold tracking-[0.14em] text-sage-ink uppercase">Solace</p>
@@ -170,7 +165,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             </div>
             <div className="space-y-3">
               {subscales.map((subscale, index) => (
-                <div key={subscale} className="grid grid-cols-[auto_1fr] items-center gap-4 rounded-2xl border bg-white p-4">
+                <div key={subscale} className="landing-preview-row grid grid-cols-[auto_1fr] items-center gap-4 rounded-2xl border bg-white p-4">
                   <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-full bg-sage-soft font-heading text-lg text-sage-ink">0{index + 1}</span>
                   <div>
                     <p className="font-heading text-xl">{t(`subscales.${subscale}`)}</p>
@@ -180,7 +175,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
               ))}
             </div>
             <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{t("resultsPreviewFooter")}</p>
-          </div>
+          </LandingReveal>
         </section>
 
         <section id="features" aria-labelledby="toolkit-title" className="scroll-mt-28 space-y-10">
@@ -191,9 +186,9 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             </div>
             <p className="measure text-lg leading-relaxed text-muted-foreground md:justify-self-end">{t("toolkitBody")}</p>
           </div>
-          <div className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr]">
-            <BreathingPreview />
-            <div className="surface flex flex-col justify-between gap-10 p-6 sm:p-8">
+          <LandingReveal stagger className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr]">
+            <LandingRevealItem><BreathingPreview /></LandingRevealItem>
+            <LandingRevealItem className="surface landing-lift flex flex-col justify-between gap-10 p-6 sm:p-8">
               <div className="space-y-4">
                 <div className="flex size-12 items-center justify-center rounded-full bg-sage-soft text-sage-ink">
                   <Wind aria-hidden="true" className="size-6" />
@@ -206,8 +201,8 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                   <li key={number} className="flex aspect-square items-center justify-center rounded-2xl border bg-muted/40 font-heading text-2xl text-sage-ink">{number}</li>
                 ))}
               </ol>
-            </div>
-          </div>
+            </LandingRevealItem>
+          </LandingReveal>
         </section>
 
         <section id="faq" aria-labelledby="faq-title" className="scroll-mt-28 grid gap-10 lg:grid-cols-[0.62fr_1fr] lg:gap-20">
@@ -224,7 +219,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                   <span className="flex-1">{t(`faq.${faq}.question`)}</span>
                   <span aria-hidden="true" className="text-2xl font-light transition-transform group-open:rotate-45">+</span>
                 </summary>
-                <p className="measure pb-6 pl-10 leading-relaxed text-muted-foreground">{t(`faq.${faq}.answer`)}</p>
+                <div className="landing-faq-answer"><p className="measure pb-6 pl-10 leading-relaxed text-muted-foreground">{t(`faq.${faq}.answer`)}</p></div>
               </details>
             ))}
           </div>
