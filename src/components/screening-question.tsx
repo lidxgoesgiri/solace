@@ -75,7 +75,7 @@ export function ScreeningQuestion({
 
   return (
     <div
-      className="mx-auto max-w-2xl space-y-8"
+      className="mx-auto max-w-3xl space-y-8"
       data-testid="screening-question"
       data-question={n}
     >
