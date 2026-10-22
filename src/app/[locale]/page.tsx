@@ -40,7 +40,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
         <section
           aria-labelledby="hero-title"
           data-halftone-hero
-          className="relative isolate grid items-center gap-8 py-2 sm:gap-12 sm:py-8 md:min-h-[min(42rem,calc(100svh-10rem))] md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14"
+          className={`${heroStyles.surface} relative isolate grid items-center gap-8 py-2 sm:gap-12 sm:py-8 md:min-h-[min(42rem,calc(100svh-10rem))] md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14`}
         >
           <HeroWordmark />
           <div className="relative z-10 space-y-6">

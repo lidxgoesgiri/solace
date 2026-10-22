@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, type PointerEvent } from "react";
 import { Logo } from "@/components/logo";
 import { LANDING_SPRING } from "@/features/landing/motion";
 import { useDocumentVisible, useLandingReducedMotion } from "@/features/landing/motion-preferences";
+import styles from "@/features/landing/sunrise-mark.module.css";
 
 /**
  * The landing motif: a sun rising over a quiet horizon, taken from the
@@ -14,6 +15,9 @@ import { useDocumentVisible, useLandingReducedMotion } from "@/features/landing/
 export function SunriseMark() {
   const ref = useRef<HTMLDivElement>(null);
   const clipId = useId();
+  const auraId = useId();
+  const discId = useId();
+  const coreId = useId();
   const reducedMotion = useLandingReducedMotion();
   const documentVisible = useDocumentVisible();
   const inView = useInView(ref, { margin: "60px" });
@@ -39,7 +43,7 @@ export function SunriseMark() {
     <div
       ref={ref}
       data-testid="sunrise-visual"
-      className="sunrise-visual relative z-10 mx-auto aspect-[6/5] w-full max-w-[32rem] select-none"
+      className={`${styles.visual} sunrise-visual relative z-10 mx-auto aspect-[6/5] w-full max-w-[32rem] select-none`}
       aria-hidden="true"
       onPointerMove={move}
       onPointerLeave={settle}
@@ -54,16 +58,32 @@ export function SunriseMark() {
           <clipPath id={clipId}>
             <rect x="-40" y="-40" width="560" height="290" />
           </clipPath>
+          <radialGradient id={auraId} cx="50%" cy="45%" r="50%">
+            <stop offset="0%" className={styles.auraCenter} />
+            <stop offset="65%" className={styles.auraMiddle} />
+            <stop offset="100%" className={styles.auraEdge} />
+          </radialGradient>
+          <radialGradient id={discId} cx="42%" cy="20%" r="90%">
+            <stop offset="0%" className={styles.discLight} />
+            <stop offset="60%" className={styles.discWarm} />
+            <stop offset="100%" className={styles.discEdge} />
+          </radialGradient>
+          <radialGradient id={coreId} cx="45%" cy="12%" r="92%">
+            <stop offset="0%" className={styles.coreLight} />
+            <stop offset="100%" className={styles.coreWarm} />
+          </radialGradient>
         </defs>
         <g clipPath={`url(#${clipId})`}>
-          <m.g
-            initial={false}
-            animate={{ y: ambient ? [0, -5, 0] : 0 }}
-            transition={ambient ? { duration: 13, repeat: Infinity, ease: "easeInOut" } : { duration: 0 }}
-          >
-            <circle cx="240" cy="250" r="190" className="fill-sun-soft" />
-            <circle cx="240" cy="250" r="132" className="fill-sun/60" />
-          </m.g>
+          <g className={styles.rise}>
+            <m.g
+              className={styles.aura}
+              style={{ x: reducedMotion ? 0 : rotateY, y: reducedMotion ? 0 : rotateX }}
+            >
+              <circle cx="240" cy="250" r="228" fill={`url(#${auraId})`} />
+            </m.g>
+            <circle cx="240" cy="250" r="190" fill={`url(#${discId})`} className={styles.rim} />
+            <circle cx="240" cy="250" r="132" fill={`url(#${coreId})`} />
+          </g>
         </g>
         <line x1="0" y1="250" x2="480" y2="250" className="stroke-ink/25" strokeWidth="1.25" />
         <m.g
@@ -90,17 +110,11 @@ export function SunriseMark() {
         </m.g>
       </svg>
       <div className="absolute inset-x-0 top-[43%] flex -translate-y-1/2 justify-center">
-        <m.div
-          className="sunrise-floating"
-          initial={false}
-          animate={{ y: ambient ? [0, -5, 0] : 0 }}
-          transition={ambient ? { duration: 9, repeat: Infinity, ease: "easeInOut" } : { duration: 0 }}
-        >
+        <div className="sunrise-floating">
           <Logo size={92} priority className="shadow-(--shadow-lift)" />
-        </m.div>
+        </div>
       </div>
       </m.div>
-      <span className="sunrise-pointer-ripple absolute top-[58%] left-1/2 h-8 w-40 -translate-x-1/2 rounded-[50%] border border-sky/25" />
     </div>
   );
 }
