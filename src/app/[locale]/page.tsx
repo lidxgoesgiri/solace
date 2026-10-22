@@ -32,7 +32,6 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
   ] as const;
   const subscales = ["depression", "anxiety", "stress"] as const;
   const faqs = ["diagnosis", "account", "privacy", "support", "duration"] as const;
-  const processFacts = [t("howQuestions"), t("howTime"), t("howPeriod"), t("howResult")];
 
   return (
     <MotionProvider>
@@ -101,7 +100,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
           </div>
         </LandingReveal>
 
-        <section id="how-it-works" aria-labelledby="how-title" className="scroll-mt-28 space-y-10">
+        <section id="how-it-works" data-testid="how-it-works" aria-labelledby="how-title" className="scroll-mt-28 space-y-10">
           <LandingReveal className="grid gap-5 md:grid-cols-[0.72fr_1fr] md:items-end">
             <div className="space-y-3">
               <p className="kicker max-w-xs">{t("howKicker")}</p>
@@ -110,14 +109,6 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             <p className="measure text-lg leading-relaxed text-muted-foreground md:justify-self-end">{t("howIntro")}</p>
           </LandingReveal>
           <LandingReveal><InteractiveSteps /></LandingReveal>
-          <ol data-testid="how-it-works" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {processFacts.map((fact, index) => (
-              <li key={fact} className="flex gap-3 border-t pt-4 text-sm leading-relaxed text-muted-foreground">
-                <span aria-hidden="true" className="numeral text-sage-ink">0{index + 1}</span>
-                <span>{fact}</span>
-              </li>
-            ))}
-          </ol>
           <p className="flex max-w-2xl items-start gap-3 text-sm text-muted-foreground">
             <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
             {t("notDiagnosis")}
