@@ -23,7 +23,7 @@ interface TipCardProps {
 }
 
 const toggleClass =
-  "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors aria-pressed:border-primary aria-pressed:bg-secondary";
+  "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors aria-pressed:border-primary aria-pressed:bg-secondary";
 
 /**
  * One tip with its steps, its sources (TP-02), and the tried/helpful note

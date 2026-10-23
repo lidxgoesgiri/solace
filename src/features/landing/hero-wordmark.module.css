@@ -1,0 +1,147 @@
+.surface {
+  --hero-wordmark-opacity: 0.18;
+  --hero-wordmark-mobile-opacity: 0.12;
+  --hero-wash-opacity: 0.65;
+  --hero-glow-low: 0.24;
+  --hero-glow-high: 0.32;
+}
+
+/* An overlay only: no extra grid item, fixed dimensions or layout shift. */
+.surface::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -3rem -1.25rem -2rem;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 82% 36%, color-mix(in srgb, var(--brand-sun) 24%, transparent), transparent 65%),
+    radial-gradient(ellipse at 15% 20%, color-mix(in srgb, var(--brand-sky) 20%, transparent), transparent 62%),
+    radial-gradient(ellipse at 48% 85%, color-mix(in srgb, var(--brand-sage) 18%, transparent), transparent 68%);
+  mask-image: radial-gradient(ellipse at center, #000 38%, transparent 74%);
+  opacity: var(--hero-wash-opacity);
+}
+
+/* Mirror the existing theme contract, including an explicitly pinned light theme. */
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .surface {
+    --hero-wordmark-opacity: 0.12;
+    --hero-wordmark-mobile-opacity: 0.075;
+    --hero-wash-opacity: 0;
+    --hero-glow-low: 0.12;
+    --hero-glow-high: 0.18;
+  }
+}
+
+:global(:root[data-theme="dark"]) .surface {
+  --hero-wordmark-opacity: 0.12;
+  --hero-wordmark-mobile-opacity: 0.075;
+  --hero-wash-opacity: 0;
+  --hero-glow-low: 0.12;
+  --hero-glow-high: 0.18;
+}
+
+.backdrop {
+  position: absolute;
+  z-index: 0;
+  inset-block: -4.5rem 0;
+  left: 50%;
+  width: 100dvw;
+  overflow: hidden;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+  opacity: var(--hero-wordmark-opacity, 0.12);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 65%, transparent 95%);
+}
+
+.wordmark {
+  color: var(--brand-sage-ink);
+}
+
+.staticWord {
+  color: var(--brand-sage-ink);
+}
+
+/* Only a fallback: supported, motion-eligible desktops use the original canvas. */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .staticWord {
+    color: transparent;
+    background-image: radial-gradient(circle, color-mix(in srgb, var(--brand-sage-ink) 80%, transparent) 0 35%, transparent 39%);
+    background-size: 8px 8px;
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+}
+
+.canvas {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wordmark[data-enhanced="true"] .canvas {
+  opacity: 1;
+}
+
+.wordmark[data-enhanced="true"] .staticWord {
+  opacity: 0;
+}
+
+.slogan {
+  position: relative;
+  isolation: isolate;
+  text-shadow: 0 0 0.6em color-mix(in srgb, var(--brand-sun) 14%, transparent);
+}
+
+.emphasis {
+  position: relative;
+  isolation: isolate;
+}
+
+.emphasis::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.15em -0.25em -0.2em;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 35%, var(--brand-sky), transparent 66%),
+    radial-gradient(ellipse at 70% 65%, var(--brand-sun), transparent 62%),
+    radial-gradient(ellipse at 42% 58%, var(--brand-sage), transparent 70%);
+  filter: blur(18px);
+  opacity: var(--hero-glow-low, 0.16);
+}
+
+.slogan svg {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--brand-sage) 30%, transparent));
+}
+
+@media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
+  .emphasis::before {
+    animation: soft-bloom 16s ease-in-out infinite;
+  }
+}
+
+@keyframes soft-bloom {
+  0%, 100% { opacity: var(--hero-glow-low, 0.12); }
+  50% { opacity: var(--hero-glow-high, 0.18); }
+}
+
+@media (max-width: 47.999rem) {
+  .backdrop { inset-block-start: -1.5rem; opacity: var(--hero-wordmark-mobile-opacity, 0.075); }
+  .emphasis::before { filter: blur(16px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas { display: none; }
+  .wordmark .staticWord { opacity: 1 !important; }
+  .emphasis::before { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .surface::before,
+  .backdrop,
+  .emphasis::before { display: none; }
+  .slogan { text-shadow: none; }
+  .slogan svg { filter: none; }
+}

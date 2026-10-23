@@ -5,8 +5,11 @@ import { PATHS } from "@/lib/flow";
 
 /** Disclaimer on every page (GL-04). */
 export async function SiteFooter() {
-  const t = await getTranslations("footer");
-  const common = await getTranslations("common");
+  const [t, common, header] = await Promise.all([
+    getTranslations("footer"),
+    getTranslations("common"),
+    getTranslations("header"),
+  ]);
 
   return (
     <footer className="mt-16 border-t bg-muted/50">
@@ -23,7 +26,17 @@ export async function SiteFooter() {
           <p>{t("independence")}</p>
           <p className="hidden sm:block">{t("quickExitHint")}</p>
           <nav aria-label={t("navLabel")} className="pt-2">
-            <ul className="flex flex-wrap gap-x-5 gap-y-1">
+            <ul className="flex flex-wrap gap-x-5 gap-y-1 [&_a]:inline-flex [&_a]:min-h-11 [&_a]:items-center">
+              <li>
+                <Link href="/#why-solace" className="underline decoration-ink/30 underline-offset-4 hover:text-foreground">
+                  {header("navWhy")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/#faq" className="underline decoration-ink/30 underline-offset-4 hover:text-foreground">
+                  {header("navFaq")}
+                </Link>
+              </li>
               <li>
                 <Link
                   href={PATHS.akun}

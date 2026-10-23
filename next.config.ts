@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       "*.css": {
+        // Preserve Next's native scoped exports for CSS Modules. Applying
+        // `as: "*.css"` to them turns the output into ordinary global CSS.
+        condition: { not: { path: /\.module\.css$/ } },
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },

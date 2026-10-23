@@ -5,6 +5,7 @@ import { Info } from "@/components/icons/info";
 import { Sparkles } from "@/components/icons/sparkles";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { m } from "framer-motion";
 import { HelpDirectory } from "@/components/help-directory";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { Stagger } from "@/components/motion/reveal";
@@ -113,19 +114,25 @@ export function ResultsView() {
           <h2 id="next-steps-title" className="text-3xl">
             {t("nextStepsTitle")}
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Button asChild size="lg">
-              <Link href={PATHS.laporan} data-testid="download-report">
-                <Download aria-hidden="true" />
-                {t("downloadReport")}
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href={PATHS.tips} data-testid="continue-to-tips">
-                <Sparkles aria-hidden="true" />
-                {t("continueToTips")}
-              </Link>
-            </Button>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="surface flex flex-col gap-3 p-5 sm:p-6">
+              <p className="flex-1 text-sm leading-relaxed text-muted-foreground">{t("reportStep")}</p>
+              <Button asChild size="lg" className="w-full">
+                <Link href={PATHS.laporan} data-testid="download-report">
+                  <Download aria-hidden="true" />
+                  {t("downloadReport")}
+                </Link>
+              </Button>
+            </div>
+            <div className="surface flex flex-col gap-3 p-5 sm:p-6">
+              <p className="flex-1 text-sm leading-relaxed text-muted-foreground">{t("tipsStep")}</p>
+              <Button asChild size="lg" variant="outline" className="w-full">
+                <Link href={PATHS.tips} data-testid="continue-to-tips">
+                  <Sparkles aria-hidden="true" />
+                  {t("continueToTips")}
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -144,7 +151,7 @@ export function ResultsView() {
           </h2>
           <p className="measure text-muted-foreground">{t("deviceBody")}</p>
           {confirmClear ? (
-            <div className="space-y-3" role="group" aria-labelledby="clear-question">
+            <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3" role="group" aria-labelledby="clear-question">
               <p id="clear-question" className="font-medium">
                 {t("clearDeviceQuestion")}
               </p>
@@ -161,7 +168,7 @@ export function ResultsView() {
                   {t("clearDeviceCancel")}
                 </Button>
               </div>
-            </div>
+            </m.div>
           ) : (
             <Button
               type="button"

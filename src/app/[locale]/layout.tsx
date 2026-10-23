@@ -68,7 +68,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <main
             id="content"
             tabIndex={-1}
-            className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 outline-none sm:px-8 sm:py-14"
+            className="mx-auto min-h-[calc(100svh-7rem)] w-full min-w-0 max-w-6xl flex-1 px-5 py-8 outline-none sm:px-8 sm:py-14"
           >
             <FlowGuard>
               <PageTransition>{children}</PageTransition>

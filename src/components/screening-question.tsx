@@ -75,7 +75,7 @@ export function ScreeningQuestion({
 
   return (
     <div
-      className="mx-auto max-w-2xl space-y-8"
+      className="mx-auto max-w-3xl space-y-8"
       data-testid="screening-question"
       data-question={n}
     >
@@ -88,9 +88,9 @@ export function ScreeningQuestion({
           >
             {t("progress", { current: n, total: DASS21_ITEM_COUNT })}
           </span>
-          <span className="flex items-center gap-1.5 text-right text-sm text-muted-foreground">
+          <span className="flex max-w-48 items-start gap-1.5 text-right text-xs text-muted-foreground sm:text-sm">
             <Check aria-hidden="true" className="size-4 text-sage-ink" />
-            {t("autosaved")}
+            {t(selected === null ? "autosaveHint" : "autosaved")}
           </span>
         </div>
         <div
@@ -144,7 +144,15 @@ export function ScreeningQuestion({
         aria-describedby="question-instructions"
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-6">
+      <p
+        role="status"
+        data-testid="answer-feedback"
+        className="min-h-10 text-sm leading-relaxed text-muted-foreground"
+      >
+        {t(selected === null ? "chooseToContinue" : "answerSelected")}
+      </p>
+
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border-t pt-6 sm:flex sm:justify-between">
         <Button
           type="button"
           variant="ghost"
@@ -160,6 +168,7 @@ export function ScreeningQuestion({
           data-testid="next-question"
           disabled={selected === null}
           onClick={goNext}
+          className="justify-self-end"
         >
           {isLast ? t("toSafety") : t("next")}
           <ArrowRight aria-hidden="true" />

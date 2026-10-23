@@ -44,6 +44,11 @@ describe("parseRoute", () => {
     ["/rencana-keselamatan", "rencana-keselamatan"],
     ["/akun", "akun"],
     ["/en/akun/masuk", "akun"],
+    ["/privasi", "privasi"],
+    ["/en/privasi", "privasi"],
+    ["/krisis/typo", "other"],
+    ["/akun/typo", "other"],
+    ["/privasi/typo", "other"],
     ["/something-else", "other"],
   ])("%s → %s", (path, name) => {
     expect(parseRoute(path).name).toBe(name);
@@ -63,7 +68,11 @@ describe("parseRoute", () => {
     expect(routeNeedsState("/mulai")).toBe(false);
     expect(routeNeedsState("/rencana-keselamatan")).toBe(false);
     expect(routeNeedsState("/akun/daftar")).toBe(false);
+    expect(routeNeedsState("/privasi")).toBe(false);
     expect(routeNeedsState("/skrining/3")).toBe(true);
+    expect(routeNeedsState("/hasil%60")).toBe(true);
+    expect(routeNeedsState("/en/hasil%60")).toBe(true);
+    expect(routeNeedsState("/does-not-exist")).toBe(true);
     for (const path of GATED_PATHS) expect(routeNeedsState(path)).toBe(true);
   });
 
@@ -287,6 +296,39 @@ describe("K3: the crisis screen cannot be skipped", () => {
     const restored = sanitizeFlowState(stored);
     expect(mustShowCrisis(restored)).toBe(true);
     expect(guardRoute(restored, PATHS.tips)).toBe(PATHS.krisis);
+  });
+
+  it.each(["/hasil%60", "/en/hasil%60", "/hasil%20", "/%68asil", "/krisis%60", "/unknown-page", "/krisis/typo", "/akun/typo", "/privasi/typo"])(
+    "keeps crisis support instead of a 404 at %s after history navigation or reload",
+    (path) => {
+      const stored = sanitizeFlowState(JSON.parse(JSON.stringify(afterSafety(1))));
+      expect(guardRoute(stored, path)).toBe(PATHS.krisis);
+      expect(resultsView(stored)).toBeNull();
+      const acknowledged = flowReducer(stored, { type: "ACKNOWLEDGE_CRISIS" });
+      // A malformed URL remains unknown after acknowledgement; it is not rewritten to results.
+      expect(parseRoute(path).name).toBe("other");
+      expect(guardRoute(acknowledged, path)).toBeNull();
+      expect(guardRoute(createInitialFlowState(), path)).toBeNull();
+    },
+  );
+
+  it.each([1, 2, 3] as const)("restores a completed screening and continues to its results after safety %i", (value) => {
+    const stored = sanitizeFlowState(JSON.parse(JSON.stringify(afterSafety(value))));
+    const acknowledged = flowReducer(stored, { type: "ACKNOWLEDGE_CRISIS" });
+    const destination = pathAfterCrisis(acknowledged);
+    expect(destination).toBe(PATHS.hasil);
+    expect(guardRoute(acknowledged, destination)).toBeNull();
+    expect(acknowledged.answers).toEqual(Array(21).fill(1));
+    expect(acknowledged.safetyAnswer).toBe(value);
+    expect(resultsView(acknowledged)?.result.depression.score).toBe(14);
+  });
+
+  it("keeps privacy and safety-plan support reachable during a pending crisis", () => {
+    const state = afterSafety(1);
+    for (const path of [PATHS.krisis, PATHS.privasi, PATHS.rencana]) {
+      expect(guardRoute(state, path)).toBeNull();
+      expect(guardRoute(state, `/en${path}`)).toBeNull();
+    }
   });
 });
 

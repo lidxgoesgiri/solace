@@ -10,7 +10,7 @@ import { THEME_TOGGLE_ATTRIBUTE } from "@/lib/theme";
  * clicks on it, so this adds no JavaScript to any page (PRD 14). The label
  * names the mode it switches to; CSS shows the right one.
  */
-export async function ThemeSwitch({ className }: { className?: string }) {
+export async function ThemeSwitch({ className, compact = false }: { className?: string; compact?: boolean }) {
   const t = await getTranslations("header");
   return (
     <Button
@@ -23,11 +23,11 @@ export async function ThemeSwitch({ className }: { className?: string }) {
     >
       <span className="theme-when-light">
         <Moon aria-hidden="true" />
-        <span className="sr-only lg:not-sr-only">{t("themeDark")}</span>
+        <span className={compact ? "sr-only" : "sr-only lg:not-sr-only"}>{t("themeDark")}</span>
       </span>
       <span className="theme-when-dark">
         <Sun aria-hidden="true" />
-        <span className="sr-only lg:not-sr-only">{t("themeLight")}</span>
+        <span className={compact ? "sr-only" : "sr-only lg:not-sr-only"}>{t("themeLight")}</span>
       </span>
     </Button>
   );

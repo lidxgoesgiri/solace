@@ -5,13 +5,12 @@ import { ShieldCheck } from "@/components/icons/shield-check";
 import { GroundingList } from "@/components/toolkit/grounding-list";
 import { useTranslations } from "next-intl";
 import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { BreathingPacer } from "@/components/breathing-pacer";
 import { CountrySelect, ServiceList } from "@/components/help-directory";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PATHS, pathAfterCrisis } from "@/lib/flow";
-import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
+import { useFlow, useFlowDispatch, useFlowHydrated, useFlowStore } from "@/store/flow-store";
 
 /**
  * The user's own plan (SP-02) is code-split with React.lazy and rendered
@@ -25,6 +24,11 @@ const LazyCrisisPlanPanel = lazy(() =>
   import("@/components/safety-plan/crisis-plan-panel").then((mod) => ({
     default: mod.CrisisPlanPanel,
   })),
+);
+
+// Only the optional exercise suspends; emergency actions always render at once.
+const LazyBreathingPacer = lazy(() =>
+  import("@/components/breathing-pacer").then((mod) => ({ default: mod.BreathingPacer })),
 );
 
 /**
@@ -49,16 +53,16 @@ export function CrisisScreen() {
     () => false,
   );
 
-  const next = hydrated ? pathAfterCrisis(flow) : PATHS.landing;
+  const next = hydrated ? pathAfterCrisis(flow) : null;
 
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
 
   const onContinue = () => {
-    if (!acknowledged) return;
+    if (!hydrated || !acknowledged) return;
     dispatch({ type: "ACKNOWLEDGE_CRISIS" });
-    router.push(next);
+    router.push(pathAfterCrisis(useFlowStore.getState().flow));
   };
 
   const plan = [
@@ -127,7 +131,13 @@ export function CrisisScreen() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="surface space-y-4 p-6">
             <h3 className="text-xl">{t("breathingTitle")}</h3>
-            <BreathingPacer />
+            <div className="min-h-80">
+              {mounted ? (
+                <Suspense fallback={<p className="text-center text-sm text-muted-foreground">{t("breathingStatic")}</p>}>
+                  <LazyBreathingPacer />
+                </Suspense>
+              ) : <p className="text-center text-sm text-muted-foreground">{t("breathingStatic")}</p>}
+            </div>
           </div>
           <div className="surface space-y-4 p-6" data-testid="grounding">
             <h3 className="text-xl">{t("groundingTitle")}</h3>
@@ -199,7 +209,7 @@ export function CrisisScreen() {
           type="button"
           size="lg"
           data-testid="crisis-continue"
-          disabled={!acknowledged}
+          disabled={!hydrated || !acknowledged}
           aria-describedby={acknowledged ? undefined : "crisis-continue-hint"}
           onClick={onContinue}
           className="w-full sm:w-auto"

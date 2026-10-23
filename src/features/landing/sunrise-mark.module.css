@@ -1,0 +1,76 @@
+.visual {
+  isolation: isolate;
+}
+
+.aura {
+  opacity: 0.65;
+  transition: opacity 900ms var(--ease-calm);
+  pointer-events: none;
+}
+
+.auraCenter {
+  stop-color: var(--brand-sun);
+  stop-opacity: 0.5;
+}
+
+.auraMiddle {
+  stop-color: var(--brand-sun-edge);
+  stop-opacity: 0.22;
+}
+
+.auraEdge {
+  stop-color: var(--brand-sun);
+  stop-opacity: 0;
+}
+
+.discLight {
+  stop-color: var(--brand-sun-soft);
+}
+
+.discWarm {
+  stop-color: color-mix(in srgb, var(--brand-sun-soft) 76%, var(--brand-sun));
+}
+
+.discEdge {
+  stop-color: color-mix(in srgb, var(--brand-sun-soft) 86%, var(--brand-sun-edge));
+}
+
+.coreLight {
+  stop-color: color-mix(in srgb, var(--brand-sun) 84%, var(--background));
+}
+
+.coreWarm {
+  stop-color: color-mix(in srgb, var(--brand-sun) 76%, var(--brand-sun-edge));
+}
+
+.rim {
+  stroke: var(--brand-sun-edge);
+  stroke-opacity: 0.3;
+  stroke-width: 0.75;
+}
+
+/* CSS owns the one-shot entrance from first paint, not a hydration-time toggle.
+   The official logo stays visible and fixed above this clipped sun layer. */
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: sun-rise 1650ms var(--ease-calm) both;
+  }
+}
+
+@keyframes sun-rise {
+  from { transform: translateY(228px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .visual:hover .aura { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; transform: none; opacity: 1; }
+  .aura { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .aura { display: none; }
+}
