@@ -67,11 +67,12 @@ export function AccountHome() {
     {
       href: PATHS.riwayat,
       label: t("linkHistory"),
+      description: t("linkHistoryDescription"),
       icon: ChartLine,
       testId: "account-link-history",
     },
-    { href: PATHS.tips, label: t("linkTips"), icon: Sparkles, testId: "account-link-tips" },
-    { href: PATHS.rencana, label: t("linkPlan"), icon: ClipboardList, testId: "account-link-plan" },
+    { href: PATHS.tips, label: t("linkTips"), description: t("linkTipsDescription"), icon: Sparkles, testId: "account-link-tips" },
+    { href: PATHS.rencana, label: t("linkPlan"), description: t("linkPlanDescription"), icon: ClipboardList, testId: "account-link-plan" },
   ];
 
   return (
@@ -79,23 +80,29 @@ export function AccountHome() {
       <header className="space-y-3">
         <p className="kicker">
           <UserRound aria-hidden="true" className="size-4" />
-          <span data-testid="account-username">{username}</span>
+          <span className="min-w-0 break-all" data-testid="account-username">{username}</span>
         </p>
-        <h1 className="text-4xl leading-tight sm:text-5xl">{t("hello", { username })}</h1>
+        <h1 className="break-words text-4xl leading-tight sm:text-5xl">{t("hello", { username })}</h1>
         <p className="measure text-muted-foreground">{t("homeSignedIn")}</p>
       </header>
 
       <nav aria-label={t("title")}>
-        <ul className="grid gap-3 sm:grid-cols-3">
-          {links.map(({ href, label, icon: Icon, testId }) => (
-            <li key={href}>
+        <ul className="grid items-stretch gap-3 sm:grid-cols-3 sm:gap-4">
+          {links.map(({ href, label, description, icon: Icon, testId }) => (
+            <li key={href} className="min-w-0">
               <Link
                 href={href}
                 data-testid={testId}
-                className="surface flex min-h-20 items-center gap-3 p-5 transition-shadow hover:shadow-(--shadow-lift)"
+                className="surface group grid h-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 p-5 transition-[border-color,box-shadow] hover:border-sage hover:shadow-(--shadow-lift) focus-visible:border-sage sm:flex sm:flex-col sm:items-start sm:p-6"
               >
-                <Icon aria-hidden="true" className="size-5 shrink-0 text-sage-ink" />
-                <span className="font-heading text-lg">{label}</span>
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-sage-soft text-sage-ink">
+                  <Icon aria-hidden="true" className="size-5" />
+                </span>
+                <span className="min-w-0 space-y-2 sm:flex-1">
+                  <span className="block font-heading text-xl leading-snug sm:min-h-14">{label}</span>
+                  <span className="block text-sm leading-relaxed text-muted-foreground">{description}</span>
+                </span>
+                <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-primary transition-transform motion-safe:group-hover:translate-x-1 sm:mt-1" />
               </Link>
             </li>
           ))}

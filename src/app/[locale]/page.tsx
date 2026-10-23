@@ -4,13 +4,13 @@ import { FileText } from "@/components/icons/file-text";
 import { Info } from "@/components/icons/info";
 import { Lock } from "@/components/icons/lock";
 import { ShieldCheck } from "@/components/icons/shield-check";
-import { Wind } from "@/components/icons/wind";
 import { LandingResume } from "@/components/landing-resume";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { SunriseMark } from "@/components/sunrise-mark";
 import { Button } from "@/components/ui/button";
 import { AnimatedUnderline } from "@/features/landing/animated-underline";
 import { BreathingPreview } from "@/features/landing/breathing-preview";
+import { GroundingPreview } from "@/features/landing/grounding-preview";
 import { HeroWordmark } from "@/features/landing/hero-wordmark";
 import heroStyles from "@/features/landing/hero-wordmark.module.css";
 import { InteractiveSteps } from "@/features/landing/interactive-steps";
@@ -180,22 +180,9 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             </div>
             <p className="measure text-lg leading-relaxed text-muted-foreground md:justify-self-end">{t("toolkitBody")}</p>
           </div>
-          <LandingReveal stagger className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr]">
+          <LandingReveal stagger className="grid items-stretch gap-5 md:grid-cols-2">
             <LandingRevealItem><BreathingPreview /></LandingRevealItem>
-            <LandingRevealItem className="surface landing-lift flex flex-col justify-between gap-10 p-6 sm:p-8">
-              <div className="space-y-4">
-                <div className="flex size-12 items-center justify-center rounded-full bg-sage-soft text-sage-ink">
-                  <Wind aria-hidden="true" className="size-6" />
-                </div>
-                <h3 className="text-3xl">{t("groundingTitle")}</h3>
-                <p className="leading-relaxed text-muted-foreground">{t("groundingBody")}</p>
-              </div>
-              <ol className="grid grid-cols-5 gap-2" aria-label={t("groundingLabel")}>
-                {[5, 4, 3, 2, 1].map((number) => (
-                  <li key={number} className="flex aspect-square items-center justify-center rounded-2xl border bg-muted/40 font-heading text-2xl text-sage-ink">{number}</li>
-                ))}
-              </ol>
-            </LandingRevealItem>
+            <LandingRevealItem><GroundingPreview /></LandingRevealItem>
           </LandingReveal>
         </section>
 

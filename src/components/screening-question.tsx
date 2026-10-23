@@ -75,12 +75,12 @@ export function ScreeningQuestion({
 
   return (
     <div
-      className="mx-auto max-w-3xl space-y-8"
+      className="mx-auto max-w-3xl space-y-7 sm:space-y-8"
       data-testid="screening-question"
       data-question={n}
     >
       <div className="space-y-3">
-        <div className="flex items-baseline justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <span
             data-testid="progress"
             aria-hidden="true"
@@ -88,9 +88,9 @@ export function ScreeningQuestion({
           >
             {t("progress", { current: n, total: DASS21_ITEM_COUNT })}
           </span>
-          <span className="flex max-w-48 items-start gap-1.5 text-right text-xs text-muted-foreground sm:text-sm">
-            <Check aria-hidden="true" className="size-4 text-sage-ink" />
-            {t(selected === null ? "autosaveHint" : "autosaved")}
+          <span className="inline-flex min-w-0 items-start gap-2 text-xs leading-relaxed text-muted-foreground sm:text-sm" data-testid="screening-save-status">
+            <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
+            <span>{t(selected === null ? "autosaveHint" : "autosaved")}</span>
           </span>
         </div>
         <div
@@ -144,46 +144,44 @@ export function ScreeningQuestion({
         aria-describedby="question-instructions"
       />
 
-      <p
-        role="status"
-        data-testid="answer-feedback"
-        className="min-h-10 text-sm leading-relaxed text-muted-foreground"
-      >
-        {t(selected === null ? "chooseToContinue" : "answerSelected")}
-      </p>
-
-      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border-t pt-6 sm:flex sm:justify-between">
-        <Button
-          type="button"
-          variant="ghost"
-          data-testid="prev-question"
-          onClick={goPrevious}
-        >
-          <ArrowLeft aria-hidden="true" />
-          {t("previous")}
-        </Button>
-        <Button
-          type="button"
-          size="lg"
-          data-testid="next-question"
-          disabled={selected === null}
-          onClick={goNext}
-          className="justify-self-end"
-        >
-          {isLast ? t("toSafety") : t("next")}
-          <ArrowRight aria-hidden="true" />
-        </Button>
-      </div>
-      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-        <Link
-          href={PATHS.landing}
-          data-testid="pause-screening"
-          className="inline-flex min-h-11 items-center gap-2 rounded-full px-2 underline decoration-ink/30 underline-offset-4 hover:text-foreground hover:decoration-ink"
-        >
-          <Pause aria-hidden="true" className="size-4" />
-          {t("pause")}
-        </Link>
-        <p className="hidden sm:block">{t("keyboardHint")}</p>
+      <div className="space-y-4 border-t pt-5">
+        <p role="status" data-testid="answer-feedback" className="min-h-6 text-sm leading-relaxed text-muted-foreground">
+          {t(selected === null ? "chooseToContinue" : "answerSelected")}
+        </p>
+        <div className="grid grid-cols-2 items-center gap-3 sm:grid-cols-[auto_minmax(0,1fr)]">
+          <Button
+            type="button"
+            variant="ghost"
+            data-testid="prev-question"
+            onClick={goPrevious}
+            className="max-sm:px-3"
+          >
+            <ArrowLeft aria-hidden="true" />
+            {t("previous")}
+          </Button>
+          <Button
+            type="button"
+            size="lg"
+            data-testid="next-question"
+            disabled={selected === null}
+            onClick={goNext}
+            className="w-full justify-self-end max-sm:px-3 max-sm:text-sm sm:w-auto"
+          >
+            {isLast ? t("toSafety") : t("next")}
+            <ArrowRight aria-hidden="true" />
+          </Button>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-1 text-sm text-muted-foreground">
+          <Link
+            href={PATHS.landing}
+            data-testid="pause-screening"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full px-5 transition-colors hover:bg-muted hover:text-foreground max-sm:px-3"
+          >
+            <Pause aria-hidden="true" className="size-4" />
+            {t("pause")}
+          </Link>
+          <p className="hidden text-xs sm:block">{t("keyboardHint")}</p>
+        </div>
       </div>
     </div>
   );

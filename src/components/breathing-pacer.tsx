@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { BREATH_CYCLE_MS, breathAt, shouldPulse } from "@/lib/breathing";
+import styles from "./breathing-pacer.module.css";
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 const noSubscribe = () => () => {};
@@ -42,6 +43,7 @@ export function BreathingPacer() {
     () => false,
   );
   const origin = useRef<number | null>(null);
+  const container = useRef<HTMLDivElement>(null);
   const circle = useRef<HTMLDivElement>(null);
   const vibrationEnabled = useRef(false);
 
@@ -50,8 +52,9 @@ export function BreathingPacer() {
     const started = origin.current;
     let previousAt = performance.now();
     let previousSegment = breathAt(previousAt - started).segment;
+    let visible = typeof IntersectionObserver === "undefined";
     let timer: ReturnType<typeof setTimeout>;
-    const animation = !reducedMotion ? circle.current?.animate([
+    const animation = !reducedMotion && typeof circle.current?.animate === "function" ? circle.current.animate([
       { transform: "scale(0.6)", offset: 0, easing: "ease-in-out" },
       { transform: "scale(1)", offset: 0.4, easing: "ease-in-out" },
       { transform: "scale(0.6)", offset: 1 },
@@ -68,13 +71,13 @@ export function BreathingPacer() {
       setBreath((current) => current.segment === next.segment && current.seconds === next.seconds ? current : next);
     };
     const tick = () => {
-      if (document.hidden) return;
+      if (document.hidden || !visible) return;
       sync(true);
       timer = setTimeout(tick, 100);
     };
     const visibility = () => {
       clearTimeout(timer);
-      if (document.hidden) {
+      if (document.hidden || !visible) {
         animation?.pause();
         if (vibrationEnabled.current) vibrate(0);
         return;
@@ -86,42 +89,47 @@ export function BreathingPacer() {
       }
       timer = setTimeout(tick, 100);
     };
+    const observer = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(([entry]) => {
+      visible = Boolean(entry?.isIntersecting);
+      visibility();
+    }, { rootMargin: "40px" });
+    if (container.current) observer?.observe(container.current);
     visibility();
     document.addEventListener("visibilitychange", visibility);
     return () => {
       clearTimeout(timer);
       animation?.cancel();
+      observer?.disconnect();
       document.removeEventListener("visibilitychange", visibility);
       if (vibrationEnabled.current) vibrate(0);
     };
   }, [reducedMotion]);
 
   return (
-    <div className="flex flex-col items-center gap-4" data-testid="breathing-pacer">
+    <div ref={container} className={styles.pacer} data-testid="breathing-pacer">
       <div
         data-testid="breathing-circle"
         data-phase={breath.phase}
         data-reduced-motion={reducedMotion}
-        className="relative flex size-40 items-center justify-center"
+        className={styles.circle}
       >
-          <div className="absolute inset-0 rounded-full border border-sage" />
           <div
             ref={circle}
             aria-hidden="true"
-            className="absolute inset-2 rounded-full bg-(--pacer-fill)"
+            className={styles.fill}
             style={{ transform: "scale(0.6)" }}
           />
           <div className="relative text-center text-ink">
             <p className="font-heading text-lg font-medium" aria-live="off">
               {breath.phase === "in" ? t("breathingIn") : t("breathingOut")}
             </p>
-            <p data-testid="breathing-countdown" className="numeral mt-1 text-3xl" aria-hidden="true">
+            <p data-testid="breathing-countdown" className="numeral mt-1 text-4xl" aria-hidden="true">
               {t("breathingSeconds", { seconds: breath.seconds })}
             </p>
           </div>
       </div>
-      <p className="text-center text-sm text-muted-foreground">{t("breathingStatic")}</p>
-      <div className="w-full space-y-1 text-center">
+      <p className="max-w-xs text-center text-sm leading-relaxed text-muted-foreground">{t("breathingStatic")}</p>
+      <div className="w-full space-y-2 border-t pt-4">
         <button
           type="button"
           role="switch"
@@ -134,14 +142,17 @@ export function BreathingPacer() {
             setVibration(!vibration);
             if (vibration) vibrate(0);
           }}
-          className="inline-flex min-h-11 items-center gap-3 rounded-full border border-input px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          className={styles.switch}
         >
-          <span>{t("breathingVibration")}</span>
-          <span aria-hidden="true" className={vibration ? "font-semibold text-primary" : "text-muted-foreground"}>
-            {vibration ? t("breathingVibrationOn") : t("breathingVibrationOff")}
+          <span className="min-w-0">{t("breathingVibration")}</span>
+          <span aria-hidden="true" className="flex shrink-0 items-center gap-2">
+            <span className={vibration ? "font-semibold text-primary" : "text-muted-foreground"}>
+              {vibration ? t("breathingVibrationOn") : t("breathingVibrationOff")}
+            </span>
+            <span className={styles.track} />
           </span>
         </button>
-        <p id={hintId} className="text-xs text-muted-foreground">
+        <p id={hintId} className="px-1 text-xs leading-relaxed text-muted-foreground">
           {t(supported ? "breathingVibrationHint" : "breathingVibrationUnavailable")}
         </p>
       </div>

@@ -18,13 +18,13 @@ export function GroundingList() {
     { icon: Coffee, text: t("groundingTaste") },
   ];
   return (
-    <ol className="space-y-2.5">
+    <ol className="divide-y divide-border/70">
       {steps.map(({ icon: Icon, text }) => (
-        <li key={text} className="flex items-center gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sage-soft text-sage-ink">
+        <li key={text} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-sage-soft text-sage-ink">
             <Icon aria-hidden="true" className="size-4" />
           </span>
-          {text}
+          <span className="text-sm leading-relaxed">{text}</span>
         </li>
       ))}
     </ol>

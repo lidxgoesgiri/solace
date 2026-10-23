@@ -321,7 +321,7 @@
   }
   ::selection {
     background: var(--brand-sun);
-    color: var(--brand-ink);
+    color: var(--paper-ink);
   }
 }
 
