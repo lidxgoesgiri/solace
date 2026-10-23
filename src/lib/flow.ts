@@ -114,6 +114,7 @@ export type RouteName =
   | "riwayat"
   | "rencana-keselamatan"
   | "akun"
+  | "privasi"
   | "other";
 
 export interface ParsedRoute {
@@ -138,6 +139,8 @@ const STATEFUL_ROUTES: readonly RouteName[] = [
   "skrining",
   "keamanan",
   ...CRISIS_GATED_ROUTES,
+  // Unknown/malformed URLs must not replace pending crisis support with a 404.
+  "other",
 ];
 
 const LOCALE_PREFIX = /^\/(id|en)(?=\/|$)/;
@@ -170,8 +173,14 @@ export function parseRoute(pathname: string): ParsedRoute {
     case "tips":
     case "riwayat":
     case "rencana-keselamatan":
+    case "privasi":
+      return { name: second === undefined ? first : "other" };
     case "akun":
-      return { name: first };
+      return {
+        name: rest.length === 0 && (second === undefined || ["daftar", "masuk", "pulihkan"].includes(second))
+          ? "akun"
+          : "other",
+      };
     default:
       return { name: "other" };
   }
@@ -268,7 +277,7 @@ export function pathAfterCrisis(state: FlowState): string {
 export function guardRoute(state: FlowState, pathname: string): string | null {
   const route = parseRoute(pathname);
 
-  if (isCrisisGated(route.name) && mustShowCrisis(state)) {
+  if ((isCrisisGated(route.name) || route.name === "other") && mustShowCrisis(state)) {
     return PATHS.krisis;
   }
 

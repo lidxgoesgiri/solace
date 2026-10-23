@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PATHS, pathAfterCrisis } from "@/lib/flow";
-import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
+import { useFlow, useFlowDispatch, useFlowHydrated, useFlowStore } from "@/store/flow-store";
 
 /**
  * The user's own plan (SP-02) is code-split with React.lazy and rendered
@@ -53,16 +53,16 @@ export function CrisisScreen() {
     () => false,
   );
 
-  const next = hydrated ? pathAfterCrisis(flow) : PATHS.landing;
+  const next = hydrated ? pathAfterCrisis(flow) : null;
 
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
 
   const onContinue = () => {
-    if (!acknowledged) return;
+    if (!hydrated || !acknowledged) return;
     dispatch({ type: "ACKNOWLEDGE_CRISIS" });
-    router.push(next);
+    router.push(pathAfterCrisis(useFlowStore.getState().flow));
   };
 
   const plan = [
@@ -209,7 +209,7 @@ export function CrisisScreen() {
           type="button"
           size="lg"
           data-testid="crisis-continue"
-          disabled={!acknowledged}
+          disabled={!hydrated || !acknowledged}
           aria-describedby={acknowledged ? undefined : "crisis-continue-hint"}
           onClick={onContinue}
           className="w-full sm:w-auto"
