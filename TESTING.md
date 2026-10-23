@@ -103,6 +103,7 @@ Scores are shown ×2 (0–42). Each `result-card-{subscale}` carries `data-score
 | PDF-03 | Report language | Reach `/hasil` in Indonesian · `download-report` · choose English in `report-language` | The `report-preview` content (title, labels, disclaimer) switches to English while the page around it stays Indonesian; `download-pdf` makes an English PDF |
 | P2-csp | Only Solace's own origin | Open any page and check the response headers; run a full `all-1` flow | `Content-Security-Policy` has `connect-src 'self'`; no CSP violation in the console; no request leaves the Solace origin |
 | Theme | Light and dark mode | Clean session, system in light mode · click `theme-switch` · reload · open `/mulai` · click `theme-switch` again | Dark after the first click and still dark after the reload and on `/mulai` (`<html data-theme="dark">`); the button then reads "Mode terang" / "Light mode". The second click returns to light and to following the system. With the system in dark mode, the page starts dark with no click |
+| Privacy | Privacy policy on every page | Click `footer-privacy` | `/privasi` shows `privacy-page` with its sections (`privacy-summary` … `privacy-contact`); the English version is `/en/privasi`. Vitest (`privacy.test.ts`) ties its numbers to the code |
 | PWA | Works offline after the first visit | Visit `/` once and wait a few seconds · go offline · Start · `all-0` · safety 0 | Every step loads; `/hasil` shows the three cards. Manual check: TestSprite cannot switch the network off |
 
 ### Accounts (needs `DATABASE_URL` on the preview)
@@ -123,7 +124,7 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 | --- | --- | --- | --- |
 | AI-04 | Notes on page 3 | Reach `/laporan` · `notes-open` · type in `notes-since` and `notes-tried` · `download-pdf` | `report-notes-preview` says the notes are on page 3; `report-status` names the PDF; no request is sent while it is built |
 | AI-04-off | Notes can be left out | After AI-04, untick `notes-include` | `report-notes-preview` disappears; the PDF is two pages |
-| A1 | AI off by default | Reach `/laporan` · `notes-open` | No `notes-ai` button while the AI is switched off (the case on previews); when it is on, `ai-consent` appears before anything is sent |
+| A1 | AI off by default | Reach `/laporan` · `notes-open` | No `notes-ai` button while the AI is switched off; when it is on, `ai-consent` appears before anything is sent |
 | A3 | No AI during a crisis | Start · `all-0` · safety 1 (crisis pending) · open `/laporan` | Redirected to `/krisis`; the notes and AI controls are never shown |
 
 ### Tips, safety plan, and history
@@ -136,7 +137,7 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 | TP-02 | Evidence summary on every tip | On `/tips` from K10-a | Every `tip-card-*` has a `tip-summary-*` with one sentence (no "TODO") and a `tip-source-*` link |
 | TP-04-swap | A tip that did not help can be swapped | From K10-a: click `tip-tried-ba-small-activity`, then `tip-helpful-ba-small-activity-no`, then `tip-try-another-ba-small-activity` | `tip-card-ba-small-activity` is gone; `tip-card-sleep-routine` is now in `tips-group-depression`, which still has 3 cards; `tips-replaced` lists the old tip |
 | TP-04-back | A swapped tip can be brought back | After TP-04-swap click `tip-restore-ba-small-activity` | `tip-card-ba-small-activity` is back in `tips-group-depression`; `tip-card-sleep-routine` is gone; `tips-replaced` disappears |
-| A1-tips | AI pick off by default | After `tip-helpful-…-no` on any tip | `tip-try-another-…` is shown but no `tip-ai-pick-…` while the AI is switched off (the case on previews) |
+| A1-tips | AI requires opt-in | After `tip-helpful-…-no` on any tip | With AI disabled, there is no `tip-ai-pick-…`. With AI enabled, the button opens consent and sends nothing until acceptance; manual swaps still work |
 | TP-03 | Toolkit | On `/tips` click `pmr-start` | `pmr-status` counts through the steps; `pmr-stop` stops it |
 | SP-01 | Safety plan without an account | Clean session · `/rencana-keselamatan` · fill `plan-warningSigns` and `plan-people` · `plan-download` | `plan-local-only` says nothing is stored; there is no `plan-save`; `plan-status` names the PDF, and no request is made while it is built |
 | SP-02 | Saved plan on the crisis screen | Signed in · `/rencana-keselamatan` (`plan-in-account`) · fill `plan-coping` · `plan-save` → `plan-status` · Start · `all-0` · safety 1 | `/krisis` shows `crisis-own-plan` with the saved entry |
@@ -146,7 +147,7 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 
 ## The suite in the TestSprite portal
 
-The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Eight tests were then written by hand for features added later, for **42 tests**. Seven of them were removed from the project once (after the 41/41 production run on 2026-10-18) and added again with the same steps; the portal gave them new IDs, which are the ones below.
+The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Eight tests were then written by hand for features added later, for **42 tests**. Seven of them stopped showing in the portal's test list after the 41/41 production run on 2026-10-18, so they were added again with the same steps and new IDs (the ones below). The originals turned out to still run in GitHub-triggered runs (PR #14 ran 49 tests: those seven twice), but they can no longer be opened or edited in the portal. Until TestSprite removes them, a run can include both copies.
 
 | Use case | TestSprite IDs | Covers |
 | --- | --- | --- |
@@ -158,6 +159,7 @@ The suite was generated in the TestSprite 3.0 portal against https://solace-sc.v
 | Report | RPT-002 | K8 report numbers match the result cards, PDF-03 report language |
 | Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
 | Tips & account | TIPS-001, TIPS-004 to TIPS-006 | K10-a tips by category (TIPS-001), AK-01 sign-up and P3 account deletion (TIPS-004), RW-04 history and daily check-in (TIPS-005), TP-04 swapping a tip that did not help and bringing it back, with TP-02 summaries and A1 for the AI pick (TIPS-006). Each signs up a `demo-…` account and deletes it at the end |
+| AI scenarios added 2026-10-21 | TIPS-007, TIPS-008, TIPS-009, RPT-003 | Actual ID-only selection and canonical content/use/restore; risk and crisis gating; simulated invalid/error/limit/timeout/cancel responses; notes-specific opt-in, real tidy-up and revert. Test existence is not evidence of a pass: read the matching deployment/run report. |
 
 Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
 
@@ -186,6 +188,12 @@ The app was right; checked by hand on the #11 preview, `safety-answer-1` opens `
 
 The other blocked test, TIPS-001, met the account gate on `/tips`. It now signs up first and deletes its account at the end.
 
+### Production after #13, and PR #14 (2026-10-18 and 19)
+
+- **Production:** before #13, the robots test failed on production because `/robots.txt` answered with the HTML "page not found" screen; a real gap, fixed in #13. After #13 merged, production passed 41 of 41.
+- **#11 rerun:** 39 of 41. One failure was the robots test above (#11 did not have the fix yet). The other was the theme test: the agent saw the light and dark modes switch but could not read the `data-theme` attribute. Its re-added version (HOME-007) checks the visible button label instead.
+- **#14:** 49 of 49, including TIPS-006 for swapping a tip and the seven hidden originals described above.
+
 ## Not yet covered
 
 With `DATABASE_URL` set for Production and Preview, TIPS-001 and TIPS-004 to TIPS-006 cover K10-a, AK-01, P3, RW-04 and TP-04 in TestSprite.
@@ -193,4 +201,32 @@ With `DATABASE_URL` set for Production and Preview, TIPS-001 and TIPS-004 to TIP
 | Invariant | Waiting for |
 | --- | --- |
 | P1, P4, K10-b/c in TestSprite | Not written yet (Vitest covers them) |
-| A1–A3 with the AI switched on | A reviewed risk-phrase list and an OpenRouter key (Vitest already covers the guards) |
+| A1–A3 in TestSprite with AI enabled | TIPS-007/008 and RPT-003 have been added in the portal; their actual preview results are required. Owner-approved phrases and a Vercel key are configured; historical 49/49 runs and mocked CI tests do not establish this new coverage |
+
+### OpenRouter verification (2026-10-20)
+
+- PR #15 preview initially returned HTTP 502 for the notes feature. Its server request now explicitly disables reasoning for the short rewriting task and requests JSON. On preview commit `b5782aa`, the actual notes request returned HTTP 200, displayed its result, and restored the original text on request.
+- The tip pick then met an upstream OpenRouter HTTP 429. Treat provider capacity separately from the account's daily limit: return `503 ai_busy` with a bounded `Retry-After`, retain the manual alternative, and do not retry automatically or change model/privacy settings.
+- `api.test.ts` checks ZDR, input/output risk checks, bounded JSON requests, provider failures, and sanitized logs. `src/lib/ai/client.test.ts` distinguishes provider capacity, daily limits, authentication, and risk responses for both features.
+- Browser verification confirmed consent before any AI request, a risky note opening the crisis screen without an AI request, and the crisis gate surviving reload/direct navigation. Temporary test accounts were deleted.
+- These checks do not replace the TestSprite run. Read the actual PR check result; an old credit error or a queued run is not a pass.
+
+### AI hardening: required remote scenarios (2026-10-21)
+
+Implementation and CI tests were updated for selection-only tips. After the owner enabled browser access, four scenarios were created through the existing TestSprite 3.0 portal: **TIPS-007** (real tip selection and canonical content), **TIPS-008** (risk/crisis), **TIPS-009** (remote failure simulations and cancellation), and **RPT-003** (real notes, separate opt-in and revert). The portal lists 46 tests; the existing 42 and seven hidden historical duplicates were not removed. **Creation is not a pass.** Use the actual preview run and failure bundle as evidence.
+
+PR #15 commit `30d7cea` passed GitHub Actions (lint, typecheck, tests, build) and the existing 49-test TestSprite run `44ce2df0-be0a-41ae-b5ad-bdfea0c1bbcc` (49 passed, 0 failed). That run predates these four AI scenarios and does not prove actual AI selection.
+
+The portal's **Save & Run** action immediately uses its `default` environment (`https://solace-sc.vercel.app`). An initial TIPS-007 manual run was started there while saving its deployment-independent steps; it tests the older production build, not PR #15. Do not mistake that result for a preview regression or weaken the success assertion to accommodate it. The new scenarios must run through the GitHub PR trigger against its Vercel preview. All test steps follow the configured run base URL rather than hardcoding a host. Use synthetic `demo-…` accounts, request cleanup even on failure, and never include real notes, keys or cookies in test inputs/failure bundles.
+
+| Scenario | Remote steps and evidence required |
+| --- | --- |
+| Tips opt-in | Sign in, complete the screening with all-1/safety 0, mark a tip not helpful. Open `tip-ai-pick-*`: no `/api/ai/tips` request before `tip-ai-consent-accept-*`. Decline and verify manual swap still works. Notes consent must not grant tips consent. |
+| Actual AI success | Accept tips consent, use an innocuous synthetic context, submit once. Require HTTP 200 `{tipId}` and `tip-ai-result-*` with `data-source="ai"`; record the actual model, deployment SHA and Run ID. A fallback is **not** success. |
+| Canonical content | Read `data-tip-id` on the result. Match its title/body/steps/sources exactly to `src/data/tips.json` in the tested commit in ID and EN. Use the tip, then restore it; the plan still satisfies K10. |
+| Failures and fallback | In TestSprite's remote browser, if supported, intercept the **Solace API response** to simulate empty/malformed/out-of-candidate JSON, 502, 503 `ai_busy`, 429 `rate_limited`, and a delayed/network-failed response. Require a canonical alternative with `data-source="deterministic"`, a non-AI label, correct error message, working use/close/manual controls and no automatic retries. These simulations prove UI handling, not actual upstream provider behaviour. Do not add production test backdoors. |
+| Cancel and duplicate clicks | Submit twice rapidly: at most one request. Cancel through `tip-ai-cancel-*` or `notes-ai-cancel`; no late result replaces content. Navigate away or trigger `help-now` while waiting: no result shown after cancellation/crisis. |
+| Notes preserved | Submit synthetic notes after separate notes opt-in. During loading edits are disabled; on failure/cancel originals stay intact. On actual success check five answers, empty fields unchanged, then `notes-ai-revert`. |
+| Safety/privacy | Use existing approved risk fixtures: before opt-in no request; after opt-in risk opens `/krisis` without a provider call. Crisis URL/refresh guards remain. Inspect requests: no key, scores, answers, account identifiers in the provider payload; consent metadata stays at Solace. Server-side assertions in CI cover exact ZDR routing and refusing risky/malformed provider output. Never record secret values. |
+
+The expanded `src/server/api.test.ts`, `src/lib/ai/client.test.ts` and `src/lib/ai/tip-pick.test.ts` run only in GitHub Actions, alongside the unchanged Safety Contract suite. No local application tests were run for this change. Match CI, Vercel and bot results to the pushed SHA before reporting verification. Do not trigger duplicate runs while that SHA is pending.

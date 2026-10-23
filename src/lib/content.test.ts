@@ -84,6 +84,12 @@ describe("help directory (DL-01, DL-02, DL-05, P2)", () => {
     }
   });
 
+  it("every entry has been checked against its official source (PRD 9.4)", () => {
+    for (const service of helpDirectory.services) {
+      expect(service.verifiedAt, service.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
   it("phone numbers are dialable and web links are https", () => {
     for (const service of helpDirectory.services) {
       expect(service.channels.length).toBeGreaterThan(0);

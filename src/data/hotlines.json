@@ -1,5 +1,5 @@
 {
-  "todo": "TODO(verify): every entry must be re-verified against its official source before release and every 6 months (PRD 9.4, 21.1). verifiedAt: null means not yet re-verified.",
+  "note": "Every entry was checked against its official source on 2026-10-19 (verifiedAt) and must be checked again every 6 months (PRD 9.4). 119 comes first in Indonesia because Kemenkes says it works in every regency and city, while Komdigi says 112 is still being rolled out region by region.",
   "defaultCountry": "ID",
   "countries": ["ID", "US", "GB"],
   "services": [
@@ -7,14 +7,14 @@
       "id": "id-emergency",
       "country": "ID",
       "category": "emergency",
-      "name": "112 / 119",
+      "name": "119 / 112",
       "type": "government",
       "channels": [
-        { "kind": "phone", "number": "112", "label": "112" },
-        { "kind": "phone", "number": "119", "label": "119" }
+        { "kind": "phone", "number": "119", "label": "119" },
+        { "kind": "phone", "number": "112", "label": "112" }
       ],
-      "sourceUrl": "https://health.detik.com/berita-detikhealth/d-8092544/kemenkes-buka-layanan-konseling-gratis-bagi-warga-62-yang-anxiety-gegara-demo",
-      "verifiedAt": null
+      "sourceUrl": "https://layanan112.komdigi.go.id/tentang",
+      "verifiedAt": "2026-10-19"
     },
     {
       "id": "id-healing119",
@@ -26,8 +26,8 @@
         { "kind": "web", "url": "https://healing119.id", "label": "healing119.id" },
         { "kind": "phone", "number": "119", "label": "119 ext 8" }
       ],
-      "sourceUrl": "https://mediaasuransinews.co.id/news-in-brief/175423/",
-      "verifiedAt": null
+      "sourceUrl": "https://healing119.id/",
+      "verifiedAt": "2026-10-19"
     },
     {
       "id": "us-911",
@@ -36,8 +36,8 @@
       "name": "911",
       "type": "government",
       "channels": [{ "kind": "phone", "number": "911", "label": "911" }],
-      "sourceUrl": "https://988lifeline.org/",
-      "verifiedAt": null
+      "sourceUrl": "https://www.911.gov/",
+      "verifiedAt": "2026-10-19"
     },
     {
       "id": "us-988",
@@ -50,7 +50,7 @@
         { "kind": "web", "url": "https://988lifeline.org/", "label": "988lifeline.org" }
       ],
       "sourceUrl": "https://988lifeline.org/",
-      "verifiedAt": null
+      "verifiedAt": "2026-10-19"
     },
     {
       "id": "gb-999",
@@ -59,8 +59,8 @@
       "name": "999",
       "type": "government",
       "channels": [{ "kind": "phone", "number": "999", "label": "999" }],
-      "sourceUrl": "https://www.samaritans.org/",
-      "verifiedAt": null
+      "sourceUrl": "https://www.nhs.uk/nhs-services/urgent-and-emergency-care-services/when-to-call-999/",
+      "verifiedAt": "2026-10-19"
     },
     {
       "id": "gb-samaritans",
@@ -72,8 +72,8 @@
         { "kind": "phone", "number": "116123", "label": "116 123" },
         { "kind": "web", "url": "https://www.samaritans.org/", "label": "samaritans.org" }
       ],
-      "sourceUrl": "https://www.samaritans.org/",
-      "verifiedAt": null
+      "sourceUrl": "https://www.samaritans.org/how-we-can-help/contact-samaritan/",
+      "verifiedAt": "2026-10-19"
     }
   ]
 }

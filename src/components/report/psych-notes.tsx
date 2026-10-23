@@ -6,6 +6,7 @@ import { useOpenAccount } from "@/components/account/use-account";
 import { Sparkles } from "@/components/icons/sparkles";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAiRequest } from "@/components/use-ai-request";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { hasAiConsent, requestTidyNotes, saveAiConsent } from "@/lib/ai/client";
 import { NOTE_MAX_CHARS, NOTE_QUESTIONS, aiOffer, hasNotes, type NoteAnswers } from "@/lib/ai/notes";
@@ -23,7 +24,7 @@ export interface PsychNotesProps {
   ai: { available: boolean; model: string | null };
 }
 
-type AiStatus = "idle" | "consent" | "working" | "limited" | "error" | "empty";
+type AiStatus = "idle" | "consent" | "working" | "limited" | "busy" | "error" | "empty";
 
 /**
  * Notes for the psychologist (AI-04): five guided questions answered in
@@ -47,16 +48,18 @@ export function PsychNotes({
   const pathname = usePathname();
   const router = useRouter();
   const username = useOpenAccount();
-  const [consented, setConsented] = useState(() => hasAiConsent(username));
+  const [consented, setConsented] = useState(() => hasAiConsent(username, "notes", ai.model));
   const [status, setStatus] = useState<AiStatus>("idle");
   const [original, setOriginal] = useState<string[] | null>(null);
   const consentHeading = useRef<HTMLHeadingElement>(null);
+  const crisisPending = mustShowCrisis(flow);
+  const { begin, finish, cancel } = useAiRequest(JSON.stringify([username, ai.model, ai.available, crisisPending, notes]));
 
   const offer = aiOffer({
     available: ai.available,
     signedIn: Boolean(username),
-    consented: consented && hasAiConsent(username),
-    crisisPending: mustShowCrisis(flow),
+    consented: consented && hasAiConsent(username, "notes", ai.model),
+    crisisPending,
   });
 
   useEffect(() => {
@@ -73,13 +76,20 @@ export function PsychNotes({
   };
 
   const tidy = async () => {
+    if (!username || !ai.available || crisisPending) return;
+    const controller = begin();
+    if (!controller) return;
+    controller.signal.addEventListener("abort", () => setStatus("idle"), { once: true });
     // A2: the browser checks first, so risky words never leave the device.
-    if (notes.some((note) => containsRiskPhrase(note))) {
+    if (notes.some((note) => containsRiskPhrase(note)) || containsRiskPhrase(notes.join("\n"))) {
+      cancel();
       openCrisis();
       return;
     }
     setStatus("working");
-    const result = await requestTidyNotes(notes);
+    const result = await requestTidyNotes(notes, { username, model: ai.model, signal: controller.signal });
+    finish(controller);
+    if (controller.signal.aborted || result.kind === "cancelled") return;
     if (result.kind === "risk") {
       openCrisis();
       return;
@@ -91,7 +101,12 @@ export function PsychNotes({
       setStatus("idle");
       return;
     }
-    setStatus(result.kind === "limited" ? "limited" : "error");
+    if (result.kind === "consent") {
+      setConsented(false);
+      setStatus("consent");
+      return;
+    }
+    setStatus(result.kind === "limited" || result.kind === "busy" ? result.kind : "error");
   };
 
   const startAi = () => {
@@ -100,12 +115,12 @@ export function PsychNotes({
       return;
     }
     if (offer === "consent") setStatus("consent");
-    else void tidy();
+    else if (offer === "ready") void tidy();
   };
 
   const acceptConsent = () => {
-    if (!username) return;
-    saveAiConsent(username);
+    if (!username || !ai.model) return;
+    saveAiConsent(username, "notes", ai.model);
     setConsented(true);
     void tidy();
   };
@@ -138,6 +153,7 @@ export function PsychNotes({
               rows={3}
               maxLength={NOTE_MAX_CHARS}
               value={value}
+              disabled={status === "working"}
               onChange={(event) => setNote(index, event.target.value)}
               aria-describedby={`${id}-${question}-count`}
               className="block w-full resize-y rounded-xl border border-input bg-background px-3.5 py-2.5 text-base leading-relaxed transition-colors hover:border-ink/60"
@@ -238,10 +254,15 @@ export function PsychNotes({
                 {status === "working" ? t("ai.working") : t("ai.button")}
               </Button>
               <p className="text-sm text-muted-foreground">{t("ai.hint")}</p>
+              {status === "working" ? (
+                <Button type="button" variant="outline" size="sm" onClick={() => { cancel(); setStatus("idle"); }} data-testid="notes-ai-cancel">
+                  {t("ai.cancel")}
+                </Button>
+              ) : null}
             </>
           )}
           <p role="status" aria-live="polite" className="text-sm" data-testid="notes-ai-status">
-            {status === "limited" ? t("ai.limited") : status === "error" ? t("ai.error") : status === "empty" ? t("ai.empty") : null}
+            {status === "limited" ? t("ai.limited") : status === "busy" ? t("ai.busy") : status === "error" ? t("ai.error") : status === "empty" ? t("ai.empty") : null}
           </p>
         </div>
       ) : null}

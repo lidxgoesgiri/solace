@@ -51,6 +51,15 @@ export async function SiteFooter() {
                   {t("navHistory")}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href={PATHS.privasi}
+                  className="underline decoration-ink/30 underline-offset-4 hover:text-foreground hover:decoration-ink"
+                  data-testid="footer-privacy"
+                >
+                  {t("navPrivacy")}
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>

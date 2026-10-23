@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { sql } from "drizzle-orm";
 import {
   createAccountKeys,
@@ -11,6 +11,7 @@ import {
   type KdfParams,
 } from "@/lib/crypto/keys";
 import { NOTES_SYSTEM_PROMPT, TIPS_SYSTEM_PROMPT, makePickTip, makeTidyNotes, type AiDeps } from "./api/ai";
+import { aiConsent } from "@/lib/ai/consent";
 import * as auth from "./api/auth";
 import * as metrics from "./api/metrics";
 import * as recordsApi from "./api/records";
@@ -57,7 +58,7 @@ class Client {
       this.cookie = pair.endsWith("=") ? null : pair;
     }
     const text = await response.text();
-    return { status: response.status, body: text ? (JSON.parse(text) as Record<string, unknown>) : null, setCookie };
+    return { status: response.status, body: text ? (JSON.parse(text) as Record<string, unknown>) : null, setCookie, retryAfter: response.headers.get("retry-after") };
   }
 }
 
@@ -381,6 +382,7 @@ describe("metrics (PRD 4) and test reset (PRD 16.3)", () => {
 
 describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
   const NOTES = ["sejak awal semester", "susah tidur", "", "apa yang bisa saya lakukan", "lebih tenang"];
+  const consent = aiConsent("notes", "provider/model-x");
   const RISKY = "kalimat-uji-berisiko";
 
   function fakeAi(reply: unknown = { answers: ["Sejak awal semester.", "Susah tidur.", "diisi model", "Apa yang bisa saya lakukan?", "Lebih tenang."] }) {
@@ -407,13 +409,24 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
     const client = await signedIn("rani.notes");
     const off = makeTidyNotes({ ...fakeAi().deps, config: () => null });
     expect((await client.call(off, { answers: NOTES })).body).toEqual({ error: "ai_disabled" });
-    expect((await client.call(handler, { answers: ["", "", "", "", ""] })).status).toBe(400);
+    expect((await client.call(handler, { answers: ["", "", "", "", ""], consent })).status).toBe(400);
+  });
+
+  it("A1: refuses missing, old, other-feature and other-model opt-in before contacting OpenRouter", async () => {
+    const { handler, calls } = fakeAi();
+    const client = await signedIn("rani.consent");
+    for (const value of [undefined, { ...consent, version: 1 }, { ...consent, feature: "tips" }, { ...consent, model: "other/model" }]) {
+      const response = await client.call(handler, { answers: NOTES, consent: value });
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual({ error: "consent_required" });
+    }
+    expect(calls).toHaveLength(0);
   });
 
   it("A2: risky words never reach the AI", async () => {
     const { handler, calls } = fakeAi();
     const client = await signedIn("rani.risk");
-    const response = await client.call(handler, { answers: [...NOTES.slice(0, 4), `aku ${RISKY}`] });
+    const response = await client.call(handler, { answers: [...NOTES.slice(0, 4), `aku ${RISKY}`], consent });
     expect(response.status).toBe(422);
     expect(response.body).toEqual({ error: "risk_detected" });
     expect(calls).toHaveLength(0);
@@ -422,7 +435,7 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
   it("AI-07: sends only the typed answers, to providers that keep no data", async () => {
     const { handler, calls } = fakeAi();
     const client = await signedIn("rani.data");
-    const response = await client.call(handler, { answers: NOTES, username: "rani.data", scores: [28, 14, 14] });
+    const response = await client.call(handler, { answers: NOTES, consent, username: "rani.data", scores: [28, 14, 14] });
     expect(response.status).toBe(200);
     expect(calls).toHaveLength(1);
     const call = calls[0]!;
@@ -430,19 +443,23 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
     expect(new Headers(call.init.headers).get("authorization")).toBe("Bearer sk-test");
     const body = JSON.parse(String(call.init.body)) as Record<string, unknown>;
     expect(body.model).toBe("provider/model-x");
-    expect(body.provider).toEqual({ data_collection: "deny", zdr: true });
+    expect(body.reasoning).toEqual({ enabled: false });
+    expect(body.response_format).toMatchObject({ type: "json_schema", json_schema: { strict: true, schema: { additionalProperties: false, required: ["answers"] } } });
+    expect(body.provider).toEqual({ data_collection: "deny", zdr: true, require_parameters: true });
     expect(body.messages).toEqual([
       { role: "system", content: NOTES_SYSTEM_PROMPT },
       { role: "user", content: JSON.stringify(NOTES) },
     ]);
     expect(String(call.init.body)).not.toContain("rani.data");
     expect(String(call.init.body)).not.toContain("28");
+    expect(String(call.init.body)).not.toContain("consent");
+    expect(call.init.signal).toBeInstanceOf(AbortSignal);
   });
 
   it("returns the tidied text, and an unanswered question stays empty", async () => {
     const { handler } = fakeAi();
     const client = await signedIn("rani.tidy");
-    const response = await client.call(handler, { answers: NOTES });
+    const response = await client.call(handler, { answers: NOTES, consent });
     expect(response.body).toEqual({
       answers: ["Sejak awal semester.", "Susah tidur.", "", "Apa yang bisa saya lakukan?", "Lebih tenang."],
     });
@@ -450,32 +467,89 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
 
   it("an unusable or risky reply keeps the user's own text", async () => {
     const client = await signedIn("rani.reply");
-    expect((await client.call(fakeAi("not json").handler, { answers: NOTES })).status).toBe(502);
-    expect((await client.call(fakeAi({ answers: ["a", "b"] }).handler, { answers: NOTES })).status).toBe(502);
+    expect((await client.call(fakeAi("not json").handler, { answers: NOTES, consent })).status).toBe(502);
+    expect((await client.call(fakeAi({ answers: ["a", "b"] }).handler, { answers: NOTES, consent })).status).toBe(502);
     const risky = fakeAi({ answers: ["a", `b ${RISKY}`, "", "d", "e"] });
-    expect((await client.call(risky.handler, { answers: NOTES })).body).toEqual({ error: "ai_unavailable" });
+    expect((await client.call(risky.handler, { answers: NOTES, consent })).body).toEqual({ error: "ai_unavailable" });
     const failing = makeTidyNotes({
       ...fakeAi().deps,
       fetch: (async () => {
         throw new Error("offline");
       }) as unknown as typeof fetch,
     });
-    expect((await client.call(failing, { answers: NOTES })).status).toBe(502);
+    expect((await client.call(failing, { answers: NOTES, consent })).status).toBe(502);
   });
 
   it("limits AI requests per user per day", async () => {
     const { handler } = fakeAi();
     const client = await signedIn("rani.limit");
     for (let i = 0; i < LIMITS.aiNotesPerUser.limit; i += 1) {
-      expect((await client.call(handler, { answers: NOTES })).status).toBe(200);
+      expect((await client.call(handler, { answers: NOTES, consent })).status).toBe(200);
     }
-    expect((await client.call(handler, { answers: NOTES })).status).toBe(429);
+    expect((await client.call(handler, { answers: NOTES, consent })).status).toBe(429);
+  });
+
+  it("refuses provider failures without logging secrets, input, output, or error bodies", async () => {
+    const client = await signedIn("rani.provider");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const privateText = "private-provider-error-with-key-and-user-notes";
+    const cases = [
+      { fetch: async () => Response.json({ error: { message: privateText } }, { status: 401 }), expected: { reason: "http", status: 401 } },
+      // A valid-looking object is still unusable if generation was cut short.
+      { fetch: async () => Response.json({ choices: [{ finish_reason: "length", message: { content: JSON.stringify({ answers: NOTES }) } }] }), expected: { reason: "truncated", status: 200, finishReason: "length", contentType: "string", hasChoice: true, hasProviderError: false, hasReasoning: false, completionTokens: null, reasoningTokens: null } },
+      { fetch: async () => Response.json({ choices: [{ message: { content: "", reasoning: privateText } }] }), expected: { reason: "empty_reply", status: 200, finishReason: "missing", contentType: "string", hasChoice: true, hasProviderError: false, hasReasoning: true, completionTokens: null, reasoningTokens: null } },
+      // Neither an unknown finish reason nor a provider error body may leak.
+      { fetch: async () => Response.json({ error: { message: privateText }, choices: [{ finish_reason: privateText, message: { content: null, reasoning: privateText } }], usage: { completion_tokens: 1500, completion_tokens_details: { reasoning_tokens: 1500 } } }), expected: { reason: "empty_reply", status: 200, finishReason: "other", contentType: "null", hasChoice: true, hasProviderError: true, hasReasoning: true, completionTokens: 1500, reasoningTokens: 1500 } },
+      { fetch: async () => new Response(privateText, { status: 200 }), expected: { reason: "invalid_json", status: 200 } },
+      { fetch: async () => { throw new DOMException(privateText, "TimeoutError"); }, expected: { reason: "timeout" } },
+      { fetch: async () => { throw new Error(privateText); }, expected: { reason: "request_failed" } },
+    ];
+    try {
+      for (const testCase of cases) {
+        warn.mockClear();
+        const handler = makeTidyNotes({ ...fakeAi().deps, fetch: testCase.fetch });
+        const response = await client.call(handler, { answers: NOTES, consent });
+        expect(response.status).toBe(502);
+        expect(response.body).toEqual({ error: "ai_unavailable" });
+        expect(warn.mock.calls).toEqual([["AI provider unavailable", testCase.expected]]);
+      }
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("distinguishes provider capacity from the account daily limit in both AI features", async () => {
+    const client = await signedIn("rani.capacity");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      for (const [header, expected] of [["15", "15"], ["999999", "300"], ["not-a-delay", "60"]]) {
+        const fetch = vi.fn(async () => Response.json({ error: { message: "private provider detail" } }, {
+          status: 429, headers: { "Retry-After": header! },
+        }));
+        const deps = { ...fakeAi().deps, fetch };
+        for (const [handler, request] of [
+          [makeTidyNotes(deps), { answers: NOTES, consent }],
+          [makePickTip(deps), { replacedId: "slow-breathing", candidates: ["grounding"], context: "", locale: "id", consent: aiConsent("tips", "provider/model-x") }],
+        ] as const) {
+          fetch.mockClear();
+          const response = await client.call(handler, request);
+          expect(response.status).toBe(503);
+          expect(response.body).toEqual({ error: "ai_busy" });
+          expect(response.retryAfter).toBe(expected);
+          expect(response.setCookie).toContain("HttpOnly");
+          expect(fetch).toHaveBeenCalledTimes(1); // No retries or model fallback.
+        }
+      }
+    } finally {
+      warn.mockRestore();
+    }
   });
 });
 
 describe("AI pick for a tip that did not help (AI-05, AI-07, A2)", () => {
   const RISKY = "kalimat-uji-berisiko";
   const REQUEST = {
+    consent: aiConsent("tips", "provider/model-x"),
     replacedId: "slow-breathing",
     candidates: ["worry-time", "grounding"],
     context: "lagi skripsi dan susah tidur",
@@ -483,8 +557,6 @@ describe("AI pick for a tip that did not help (AI-05, AI-07, A2)", () => {
   };
   const REPLY = {
     tipId: "grounding",
-    reason: "Cara ini bekerja lewat indra, bukan lewat napas.",
-    steps: ["Sebutkan lima hal yang kamu lihat di meja belajarmu.", "Lanjutkan dengan empat hal yang bisa kamu sentuh."],
   };
 
   function fakeAi(reply: unknown = REPLY) {
@@ -529,22 +601,38 @@ describe("AI pick for a tip that did not help (AI-05, AI-07, A2)", () => {
     expect(calls).toHaveLength(0);
   });
 
+  it("A1: no provider call without current, tips-specific opt-in", async () => {
+    const { handler, calls } = fakeAi();
+    const client = await signedIn("rani.tipsconsent");
+    for (const consent of [undefined, { ...REQUEST.consent, version: 1 }, aiConsent("notes", "provider/model-x"), aiConsent("tips", "other/model")]) {
+      expect((await client.call(handler, { ...REQUEST, consent })).status).toBe(403);
+    }
+    expect(calls).toHaveLength(0);
+  });
+
   it("AI-07: sends library text and the context only, to providers that keep no data", async () => {
     const { handler, calls } = fakeAi();
     const client = await signedIn("rani.tipsdata");
     const response = await client.call(handler, { ...REQUEST, username: "rani.tipsdata", scores: [28, 14, 14] });
     expect(response.status).toBe(200);
     const body = JSON.parse(String(calls[0]!.init.body)) as { messages: { content: string }[]; provider: unknown };
-    expect(body.provider).toEqual({ data_collection: "deny", zdr: true });
+    expect(body.provider).toEqual({ data_collection: "deny", zdr: true, require_parameters: true });
+    expect(body).toMatchObject({ reasoning: { enabled: false }, max_tokens: 256, response_format: {
+      type: "json_schema", json_schema: { strict: true, schema: {
+        properties: { tipId: { type: "string", enum: REQUEST.candidates } },
+        required: ["tipId"], additionalProperties: false,
+      } },
+    } });
     expect(body.messages[0]!.content).toBe(TIPS_SYSTEM_PROMPT);
     const sent = JSON.parse(body.messages[1]!.content) as { candidates: { id: string }[]; context: string };
     expect(sent.candidates.map((tip) => tip.id)).toEqual(["worry-time", "grounding"]);
     expect(sent.context).toBe("lagi skripsi dan susah tidur");
     expect(String(calls[0]!.init.body)).not.toContain("rani.tipsdata");
     expect(String(calls[0]!.init.body)).not.toMatch(/moderate|severe|28/);
+    expect(String(calls[0]!.init.body)).not.toContain("consent");
   });
 
-  it("AI-05: returns a library tip with reworded steps, never one outside the candidates", async () => {
+  it("AI-05: returns only a library candidate ID, refuses all generated advice", async () => {
     const client = await signedIn("rani.tipspick");
     expect((await client.call(fakeAi().handler, REQUEST)).body).toEqual(REPLY);
     for (const reply of [
@@ -554,9 +642,33 @@ describe("AI pick for a tip that did not help (AI-05, AI-07, A2)", () => {
       { ...REPLY, steps: ["a", "b", "c", "d", "e"] },
       { ...REPLY, reason: "" },
       { ...REPLY, steps: [`langkah ${RISKY}`] },
+      { ...REPLY, reason: `alasan ${RISKY}` },
+      { ...REPLY, advice: "new advice" },
+      `prose ${JSON.stringify(REPLY)}`,
+      `\`\`\`json\n${JSON.stringify(REPLY)}\n\`\`\``,
+      `${JSON.stringify(REPLY)} ${RISKY}`,
+      "",
       "not json",
     ]) {
       expect((await client.call(fakeAi(reply).handler, REQUEST)).body).toEqual({ error: "ai_unavailable" });
+    }
+  });
+
+  it("keeps provider errors, timeout and empty/truncated replies as errors, not fake AI success", async () => {
+    const client = await signedIn("rani.tipsfailure");
+    for (const fetch of [
+      async () => Response.json({ error: "synthetic failure" }, { status: 500 }),
+      async () => Response.json({ choices: [{ message: { content: "" } }] }),
+      async () => Response.json({ choices: [{ finish_reason: "length", message: { content: JSON.stringify(REPLY) } }] }),
+      async () => { throw new DOMException("synthetic timeout", "TimeoutError"); },
+      async () => { throw new Error("synthetic network failure"); },
+    ]) {
+      const provider = vi.fn(fetch);
+      const handler = makePickTip({ ...fakeAi().deps, fetch: provider });
+      const response = await client.call(handler, REQUEST);
+      expect(response.status).toBe(502);
+      expect(response.body).toEqual({ error: "ai_unavailable" });
+      expect(provider).toHaveBeenCalledTimes(1);
     }
   });
 
