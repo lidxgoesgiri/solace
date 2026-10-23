@@ -99,6 +99,7 @@ export const PATHS = {
   daftar: "/akun/daftar",
   masuk: "/akun/masuk",
   pulihkan: "/akun/pulihkan",
+  privasi: "/privasi",
 } as const;
 
 export type RouteName =

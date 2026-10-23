@@ -27,6 +27,10 @@ export function FlowGuard({ children }: { children: ReactNode }) {
     if (redirectTo && redirectTo !== pathname) router.replace(redirectTo);
   }, [redirectTo, pathname, router]);
 
-  if (needsState && (!hydrated || redirectTo)) return <PageLoading />;
-  return children;
+  if (!needsState) return children;
+  // The page appears only once saved state has loaded. Until then a short
+  // placeholder shows, so the area keeps at least a screen's height: the
+  // footer stays below the fold instead of jumping when the page appears
+  // (CLS, PRD 14).
+  return <div className="min-h-dvh">{!hydrated || redirectTo ? <PageLoading /> : children}</div>;
 }

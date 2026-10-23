@@ -229,7 +229,8 @@ function History({ username }: { username: string }) {
               {t("listTitle")}
             </h2>
             <p className="text-sm text-muted-foreground sm:hidden">{t("tableHint")}</p>
-            <div className="max-w-full overflow-x-auto rounded-xl" role="region" aria-labelledby="list-title" tabIndex={0}>
+            {/* relative: the sr-only header label must scroll with the table, not widen the page. */}
+            <div className="relative max-w-full overflow-x-auto rounded-xl" role="region" aria-labelledby="list-title" tabIndex={0}>
               <table className="w-full text-left text-sm" data-testid="history-table">
                 <caption className="sr-only">{t("tableTitle")}</caption>
                 <thead>

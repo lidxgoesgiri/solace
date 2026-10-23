@@ -5,8 +5,9 @@ import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { ExternalLink } from "@/components/icons/external-link";
 import { Sparkles } from "@/components/icons/sparkles";
 import { Button } from "@/components/ui/button";
+import { useAiRequest } from "@/components/use-ai-request";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { hasAiConsent, requestTipPick, saveAiConsent } from "@/lib/ai/client";
+import { hasAiConsent, requestTipPick, saveAiConsent, tipRecommendation } from "@/lib/ai/client";
 import { aiOffer } from "@/lib/ai/notes";
 import { containsRiskPhrase } from "@/lib/ai/risk-check";
 import { TIP_CONTEXT_MAX_CHARS, TIP_PICK_MAX_CANDIDATES, type TipPick } from "@/lib/ai/tip-pick";
@@ -25,12 +26,12 @@ interface TipAiPickProps {
   onUse: (replacement: Tip) => void;
 }
 
-type Status = "idle" | "consent" | "form" | "working" | "limited" | "error";
+type Status = "idle" | "consent" | "form" | "working" | "limited" | "busy" | "error";
 
 /**
  * "Choose with AI" for a tip that did not help (PRD 20.2, AI-05): the AI
- * picks one of the library candidates and rewords its steps for one
- * optional sentence of context. Hidden unless the AI is switched on; asks
+ * picks only a candidate ID, never rewrites library text.
+ * Hidden unless the AI is switched on; asks
  * for consent first (A1); risky words open the crisis screen instead (A2);
  * never during a crisis (A3). Sources come from the library, not the AI.
  */
@@ -45,19 +46,22 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
   const dispatch = useFlowDispatch();
   const pathname = usePathname();
   const router = useRouter();
-  const [consented, setConsented] = useState(() => hasAiConsent(username));
+  const [consented, setConsented] = useState(() => hasAiConsent(username, "tips", ai.model));
   const [status, setStatus] = useState<Status>("idle");
   const [context, setContext] = useState("");
   const [pick, setPick] = useState<TipPick | null>(null);
+  const [source, setSource] = useState<"ai" | "deterministic">("ai");
   const consentHeading = useRef<HTMLHeadingElement>(null);
   const contextInput = useRef<HTMLInputElement>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
+  const crisisPending = mustShowCrisis(flow);
+  const { begin, finish, cancel } = useAiRequest(JSON.stringify([username, ai.model, ai.available, crisisPending, tip.id, candidates.map((candidate) => candidate.id)]));
 
   const offer = aiOffer({
     available: ai.available && candidates.length > 0,
     signedIn: true,
-    consented: consented && hasAiConsent(username),
-    crisisPending: mustShowCrisis(flow),
+    consented: consented && hasAiConsent(username, "tips", ai.model),
+    crisisPending,
   });
 
   useEffect(() => {
@@ -78,8 +82,16 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    if (offer !== "ready") {
+      setStatus("consent");
+      return;
+    }
+    const controller = begin();
+    if (!controller) return;
+    controller.signal.addEventListener("abort", () => setStatus("idle"), { once: true });
     // A2: the browser checks first, so risky words never leave the device.
     if (context && containsRiskPhrase(context)) {
+      cancel();
       openCrisis();
       return;
     }
@@ -89,17 +101,34 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
       candidates: candidates.slice(0, TIP_PICK_MAX_CANDIDATES).map((candidate) => candidate.id),
       context: context.trim(),
       locale,
-    });
+    }, { username, model: ai.model, signal: controller.signal });
+    finish(controller);
+    if (controller.signal.aborted || result.kind === "cancelled") return;
     if (result.kind === "risk") {
       openCrisis();
       return;
     }
     if (result.kind === "ok") {
       setPick(result.pick);
+      setSource("ai");
       setStatus("idle");
       return;
     }
-    setStatus(result.kind === "limited" ? "limited" : "error");
+    if (result.kind === "consent") {
+      setConsented(false);
+      setStatus("consent");
+      return;
+    }
+    if (result.kind === "signed_out") {
+      setStatus("error");
+      return;
+    }
+    const fallback = tipRecommendation(result, candidates.map((candidate) => candidate.id));
+    if (fallback) {
+      setPick(fallback.pick);
+      setSource(fallback.source);
+    }
+    setStatus(result.kind === "limited" || result.kind === "busy" ? result.kind : "error");
   };
 
   const chosen = pick ? candidates.find((candidate) => candidate.id === pick.tipId) : undefined;
@@ -112,18 +141,20 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
           aria-labelledby={`${id}-result`}
           className="space-y-3 rounded-2xl border bg-card p-4"
           data-testid={`tip-ai-result-${tip.id}`}
+          data-source={source}
+          data-tip-id={chosen.id}
         >
           <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <Sparkles aria-hidden="true" className="size-4" />
-            {t("resultLabel")}
+            {source === "ai" ? t("resultLabel") : t("fallbackLabel")}
           </p>
           <h4 id={`${id}-result`} ref={resultHeading} tabIndex={-1} className="text-lg outline-none">
             {chosen.title[locale]}
           </h4>
-          <p className="leading-relaxed">{pick.reason}</p>
+          <p className="leading-relaxed">{chosen.body[locale]}</p>
           <p className="font-semibold">{t("resultSteps")}</p>
           <ol className="list-decimal space-y-1.5 pl-5 leading-relaxed">
-            {pick.steps.map((step) => (
+            {chosen.howTo[locale].map((step) => (
               <li key={step}>{step}</li>
             ))}
           </ol>
@@ -185,7 +216,8 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
               type="button"
               size="sm"
               onClick={() => {
-                saveAiConsent(username);
+                if (!ai.model) return;
+                saveAiConsent(username, "tips", ai.model);
                 setConsented(true);
                 setStatus("form");
               }}
@@ -209,6 +241,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
             type="text"
             maxLength={TIP_CONTEXT_MAX_CHARS}
             value={context}
+            disabled={status === "working"}
             onChange={(event) => setContext(event.target.value)}
             placeholder={t("contextPlaceholder")}
             data-testid={`tip-ai-context-${tip.id}`}
@@ -219,7 +252,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
               <Sparkles aria-hidden="true" />
               {status === "working" ? t("working") : t("submit")}
             </Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => setStatus("idle")}>
+            <Button type="button" variant="outline" size="sm" onClick={() => { cancel(); setStatus("idle"); }} data-testid={`tip-ai-cancel-${tip.id}`}>
               {t("cancel")}
             </Button>
           </div>
@@ -240,7 +273,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
         </div>
       )}
       <p role="status" aria-live="polite" data-testid={`tip-ai-status-${tip.id}`}>
-        {status === "limited" ? t("limited") : status === "error" ? t("error") : null}
+        {status === "limited" ? t("limited") : status === "busy" ? t("busy") : status === "error" ? t("error") : null}
       </p>
     </div>
   );

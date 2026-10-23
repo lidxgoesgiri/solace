@@ -1,8 +1,7 @@
 /**
  * The AI pick for a tip that did not help (PRD 20.1–20.2, AI-05): the AI
- * chooses one tip from the library's own candidates and adapts its steps to
- * one optional sentence of context. It never writes a new tip and never
- * names a source; sources always come from the library data.
+ * chooses only an ID from the library's own candidates. All displayed
+ * content, including steps and sources, comes unchanged from the library.
  */
 
 import { isLocale, type Locale } from "@/lib/content";
@@ -10,9 +9,6 @@ import type { Tip } from "@/lib/tips";
 
 export const TIP_CONTEXT_MAX_CHARS = 200;
 export const TIP_PICK_MAX_CANDIDATES = 8;
-export const TIP_PICK_MAX_STEPS = 4;
-export const TIP_STEP_MAX_CHARS = 240;
-export const TIP_REASON_MAX_CHARS = 280;
 
 export interface TipPickRequest {
   /** The tip the user marked as not helpful. */
@@ -26,10 +22,6 @@ export interface TipPickRequest {
 
 export interface TipPick {
   tipId: string;
-  /** Why this tip may suit the user, in one plain sentence. */
-  reason: string;
-  /** The chosen tip's own steps, reworded for the user's situation. */
-  steps: string[];
 }
 
 const byId = (library: readonly Tip[]) => new Map(library.map((tip) => [tip.id, tip]));
@@ -51,23 +43,13 @@ export function parseTipPickRequest(input: unknown, library: readonly Tip[]): Ti
   return { replacedId, candidates: candidates as string[], context: context.trim(), locale };
 }
 
-const cleanLine = (value: unknown, max: number): string | null => {
-  if (typeof value !== "string") return null;
-  const line = value.replace(/\s+/g, " ").trim();
-  return line.length > 0 && line.length <= max ? line : null;
-};
-
-/** The model's answer, accepted only when it picks one of the candidates. */
+/** ID only: refuse free text, extra fields, arrays, and out-of-library IDs. */
 export function parseTipPick(value: unknown, candidates: readonly string[]): TipPick | null {
-  if (typeof value !== "object" || value === null) return null;
-  const { tipId, reason, steps } = value as Record<string, unknown>;
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+  if (Object.keys(value).length !== 1 || !Object.hasOwn(value, "tipId")) return null;
+  const { tipId } = value as Record<string, unknown>;
   if (typeof tipId !== "string" || !candidates.includes(tipId)) return null;
-  const cleanReason = cleanLine(reason, TIP_REASON_MAX_CHARS);
-  if (!cleanReason || !Array.isArray(steps)) return null;
-  if (steps.length === 0 || steps.length > TIP_PICK_MAX_STEPS) return null;
-  const cleanSteps = steps.map((step) => cleanLine(step, TIP_STEP_MAX_CHARS));
-  if (cleanSteps.some((step) => step === null)) return null;
-  return { tipId, reason: cleanReason, steps: cleanSteps as string[] };
+  return { tipId };
 }
 
 /** What the model sees: the library's own text, nothing about the user but the context. */

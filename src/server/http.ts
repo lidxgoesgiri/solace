@@ -11,7 +11,9 @@ export type ErrorCode =
   | "forbidden_origin"
   | "too_large"
   | "ai_disabled"
+  | "ai_busy"
   | "ai_unavailable"
+  | "consent_required"
   | "risk_detected"
   | "server_error";
 
