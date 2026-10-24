@@ -659,7 +659,46 @@
     "helpfulYes": "It helped",
     "helpfulNo": "Not yet",
     "progressError": "Your tip notes were not saved. Please try again.",
-    "notHelpfulBody": "That's okay: not every approach suits everyone. You can swap it for another tip that is also backed by evidence.",
+    "feedback": {
+      "helpful": {
+        "activity": "Glad that small activity felt helpful. Any step you take to look after yourself, however small, still counts.",
+        "movement": "Good to hear moving a little felt helpful. You can come back to it any time, at a pace that feels right for your body.",
+        "connection": "Thank you for reaching out to someone. Connections like that are worth tending, one small step at a time.",
+        "breathing": "Glad slower breathing felt helpful. Whenever you need it, a few breaths like these can be a place to pause.",
+        "worry": "Good to hear that setting aside time for worries felt helpful. You can keep adjusting the time until it fits.",
+        "grounding": "Glad grounding felt helpful. If things feel heavy again, you already have one way back to the present.",
+        "problemSolving": "Good to hear that breaking the problem into small steps felt helpful. No need to rush; one step at a time is enough.",
+        "thoughts": "Glad naming that thought felt helpful. If heavy thoughts come back, the same approach can give you a little distance.",
+        "rest": "Glad this sleep routine felt helpful. Small changes to sleep often take time, so go at your own pace.",
+        "selfCompassion": "Thank you for being kind to yourself. You can read those words again whenever you need them.",
+        "mindfulness": "Thank you for making time for yourself. If this practice suits you, you can come back to it whenever you need.",
+        "relaxation": "Glad muscle relaxation felt helpful. The more you practise, the easier it usually is for your body to find that relaxed feeling.",
+        "journaling": "Glad writing down your feelings felt helpful. Notes like these can be short; what matters is being honest with yourself.",
+        "general": "Good to hear you found something that feels helpful. There's no rush; take things at your own pace."
+      },
+      "notHelpful": {
+        "activity": "It's okay if this activity hasn't helped yet. Getting started is hard when your mood is low, and you still gave it a try.",
+        "movement": "It's okay if moving didn't help today. Bodies have different days too.",
+        "connection": "It's okay if reaching out didn't help this time. Sometimes it takes time, or a different person, to feel heard.",
+        "breathing": "It's okay if breathing exercises don't feel right. Not everyone finds calm through the breath, and that's normal.",
+        "worry": "It's okay if worry time didn't help. Anxious thoughts are not easy to put on a schedule.",
+        "grounding": "It's okay if grounding didn't feel right. Everyone has a different way of settling back into the present.",
+        "problemSolving": "It's okay if this didn't help. Some problems are simply too heavy to untangle on your own.",
+        "thoughts": "It's okay if that thought still has a hold on you. Unhooking from heavy thoughts takes practice.",
+        "rest": "It's okay if this sleep routine hasn't helped yet. Sleep patterns often take time to change.",
+        "selfCompassion": "It's okay if being gentle with yourself still feels awkward. For many people, it's something new.",
+        "mindfulness": "It's okay if this practice didn't click. A wandering mind is not a sign you are doing it wrong.",
+        "relaxation": "It's okay if muscle relaxation hasn't helped yet. A tense body sometimes needs a few tries.",
+        "journaling": "It's okay if writing didn't help. Not everyone finds it easy to put feelings into words.",
+        "general": "It's okay if this didn't feel right. Everyone has different ways of feeling more at ease."
+      },
+      "tryAnotherHint": "You can try another activity that is also backed by evidence.",
+      "toolkit": {
+        "breathing": "Practise again with the breathing pacer in the Toolkit",
+        "grounding": "Open the grounding exercise in the Toolkit",
+        "relaxation": "Open the muscle relaxation guide in the Toolkit"
+      }
+    },
     "tryAnother": "Try another tip",
     "noAlternative": "Solace has no other tip for this section yet. An exercise from the toolkit below, or talking to a professional, can be a next step.",
     "swapped": "{old} was swapped for {new}.",
