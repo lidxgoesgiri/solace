@@ -1,12 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { hasAiConsent, requestTipPick, requestTidyNotes, saveAiConsent, tipRecommendation, type AiRequestContext } from "./client";
-import type { AiFeature } from "./consent";
+import { AI_CONSENT_VERSIONS, type AiFeature } from "./consent";
+import { RISK_LIST } from "./risk-check";
+import type { TipPickRequest } from "./tip-pick";
 
 afterEach(() => vi.unstubAllGlobals());
 
 const actions = [
   { name: "notes" as const, run: (ctx: AiRequestContext) => requestTidyNotes(["An example note", "", "", "", ""], ctx) },
-  { name: "tips" as const, run: (ctx: AiRequestContext) => requestTipPick({ replacedId: "slow-breathing", candidates: ["grounding"], context: "", locale: "en" }, ctx) },
+  { name: "tips" as const, run: (ctx: AiRequestContext) => requestTipPick({ replacedId: "slow-breathing", candidates: ["grounding"], context: "", locale: "en", mode: "tip" }, ctx) },
 ];
 
 const context = { username: "synthetic-student", model: "provider/model-x" };
@@ -57,7 +59,7 @@ describe.each(actions)("$name: provider and account limits", ({ name, run }) => 
     expect(await run(context)).toEqual({ kind: "error" });
     expect(fetch).toHaveBeenCalledTimes(1);
     const init = (fetch.mock.calls as unknown as [string, RequestInit][])[0]![1];
-    expect(JSON.parse(String(init.body)).consent).toEqual({ version: 2, feature: name, model: context.model });
+    expect(JSON.parse(String(init.body)).consent).toEqual({ version: AI_CONSENT_VERSIONS[name], feature: name, model: context.model });
     expect(init.signal).toBeInstanceOf(AbortSignal);
     const controller = new AbortController();
     controller.abort();
@@ -77,13 +79,53 @@ it("refuses model prose and out-of-candidate IDs even if a server returns HTTP 2
 });
 
 it("offers the first eligible library ID on failures, clearly marked non-AI, but never over a safety/consent failure", () => {
+  const tip = (candidates: string[]) => ({ candidates, context: "", mode: "tip" as const });
   for (const kind of ["error", "limited", "busy"] as const) {
-    expect(tipRecommendation({ kind }, ["grounding", "worry-time"])).toEqual({ pick: { tipId: "grounding" }, source: "deterministic" });
-    expect(tipRecommendation({ kind }, [])).toBeNull();
+    expect(tipRecommendation({ kind }, tip(["grounding", "worry-time"]))).toEqual({ pick: { tipId: "grounding" }, source: "deterministic" });
+    expect(tipRecommendation({ kind }, tip([]))).toBeNull();
+    // Someone who only wanted to be heard is not handed a tip instead.
+    expect(tipRecommendation({ kind }, { candidates: ["grounding"], context: "capek", mode: "listen" })).toBeNull();
   }
   for (const kind of ["risk", "consent", "signed_out", "cancelled"] as const) {
-    expect(tipRecommendation({ kind }, ["grounding"])).toBeNull();
+    expect(tipRecommendation({ kind }, tip(["grounding"]))).toBeNull();
   }
-  expect(tipRecommendation({ kind: "ok", pick: { tipId: "grounding" } }, ["grounding"])).toEqual({ pick: { tipId: "grounding" }, source: "ai" });
-  expect(tipRecommendation({ kind: "ok", pick: { tipId: "invented" } }, ["grounding"])).toBeNull();
+  expect(tipRecommendation({ kind: "ok", pick: { tipId: "grounding" } }, tip(["grounding"]))).toEqual({ pick: { tipId: "grounding" }, source: "ai" });
+  expect(tipRecommendation({ kind: "ok", pick: { tipId: "invented" } }, tip(["grounding"]))).toBeNull();
+});
+
+describe("the reflection on the user's own sentence", () => {
+  const request = (mode: "tip" | "listen"): TipPickRequest => ({
+    replacedId: "slow-breathing", candidates: ["grounding"], context: "lagi capek banget sama tugas", locale: "id", mode,
+  });
+  const reflection = "Kedengarannya kamu sangat lelah karena tugas yang menumpuk.";
+  const reply = async (body: unknown, mode: "tip" | "listen") => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json(body)));
+    return requestTipPick(request(mode), context);
+  };
+
+  it("shows a checked reflection with the tip, or alone when the user only wants to be heard", async () => {
+    browserConsent("tips");
+    expect(await reply({ tipId: "grounding", reflection }, "tip")).toEqual({ kind: "ok", pick: { tipId: "grounding", reflection } });
+    expect(await reply({ reflection }, "listen")).toEqual({ kind: "ok", pick: { reflection } });
+    const fetch = vi.fn(async () => Response.json({ reflection }));
+    vi.stubGlobal("fetch", fetch);
+    await requestTipPick(request("listen"), context);
+    expect(JSON.parse(String((fetch.mock.calls as unknown as [string, RequestInit][])[0]![1].body)).mode).toBe("listen");
+  });
+
+  it("refuses a missing, extra, or rule-breaking reply even if a server returns HTTP 200", async () => {
+    browserConsent("tips");
+    const risky = RISK_LIST.phrases.id[0]!;
+    for (const [body, mode] of [
+      [{ tipId: "grounding" }, "tip"],
+      [{ reflection }, "tip"],
+      [{ tipId: "grounding", reflection }, "listen"],
+      [{ reflection, steps: ["invented"] }, "listen"],
+      [{ reflection: "Apa yang paling berat buatmu?" }, "listen"],
+      [{ reflection: "Telepon 0800 1234 567 sekarang." }, "listen"],
+      [{ reflection: `Kedengarannya kamu ${risky}.` }, "listen"],
+    ] as const) {
+      expect(await reply(body, mode), JSON.stringify(body)).toEqual({ kind: "error" });
+    }
+  });
 });
