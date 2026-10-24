@@ -164,7 +164,7 @@ The suite was generated in the TestSprite 3.0 portal against https://solace-sc.v
 | Report | RPT-002 | K8 report numbers match the result cards, PDF-03 report language |
 | Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
 | Tips & account | TIPS-001, TIPS-004 to TIPS-006 | K10-a tips by category (TIPS-001), AK-01 sign-up and P3 account deletion (TIPS-004), RW-04 history and daily check-in (TIPS-005), TP-04 swapping a tip that did not help and bringing it back, with TP-02 summaries and A1 for the AI pick (TIPS-006). Each signs up a `demo-…` account and deletes it at the end |
-| AI scenarios added 2026-10-21 | TIPS-007, TIPS-008, TIPS-009, RPT-003 | Actual ID-only selection and canonical content/use/restore; risk and crisis gating; simulated invalid/error/limit/timeout/cancel responses; notes-specific opt-in, real tidy-up and revert. Test existence is not evidence of a pass: read the matching deployment/run report. |
+| AI scenarios added 2026-10-21 | TIPS-007, TIPS-008, TIPS-009 (removed 2026-10-24, see the last section), RPT-003 | Actual ID-only selection and canonical content/use/restore; risk and crisis gating; simulated invalid/error/limit/timeout/cancel responses; notes-specific opt-in, real tidy-up and revert. Test existence is not evidence of a pass: read the matching deployment/run report. |
 
 Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
 
@@ -235,3 +235,29 @@ The portal's **Save & Run** action immediately uses its `default` environment (`
 | Safety/privacy | Use existing approved risk fixtures: before opt-in no request; after opt-in risk opens `/krisis` without a provider call. Crisis URL/refresh guards remain. Inspect requests: no key, scores, answers, account identifiers in the provider payload; consent metadata stays at Solace. Server-side assertions in CI cover exact ZDR routing and refusing risky/malformed provider output. Never record secret values. |
 
 The expanded `src/server/api.test.ts`, `src/lib/ai/client.test.ts` and `src/lib/ai/tip-pick.test.ts` run only in GitHub Actions, alongside the unchanged Safety Contract suite. No local application tests were run for this change. Match CI, Vercel and bot results to the pushed SHA before reporting verification. Do not trigger duplicate runs while that SHA is pending.
+
+## UI-01 cases and suite clean-up (2026-10-24)
+
+The UI-01 cases split the responsive and breathing-pacer acceptance from PR #16 into single checks. TestSprite offers fixed viewport presets per test case (Run Settings → Viewport), so the width cases run at the nearest preset; the exact widths stay in the Playwright job. A case set up for one width reports Blocked, not Passed, when the runner cannot use that width.
+
+| TestSprite ID | Case | Runs at | Exact check in GitHub Actions |
+| --- | --- | --- | --- |
+| SOLACE-001 | UI-01a: keyboard 1–4 and Enter, Back and language switch keep answers | 1920 × 1080 | `e2e/ui-cohesion.e2e.ts`: keys 1–4, Enter, Back |
+| SOLACE-002 | UI-01b: pacer 4/6 countdown, vibration off by default | 1920 × 1080 | e2e: the full 4/6 sequence on `/krisis`, `breathing-vibration` off |
+| SOLACE-004 | UI-01d: pacer resyncs after a hidden tab | 1920 × 1080 | e2e: the countdown advances before the pacer is scrolled into view |
+| SOLACE-005 | UI-01e: no horizontal scroll | 360 × 800, the narrowest preset | 320 px |
+| SOLACE-006 | UI-01f: no horizontal scroll | 390 × 844 | 375 px |
+| SOLACE-007 | UI-01g: no horizontal scroll | 820 × 1180 | 768 px |
+| SOLACE-008 | UI-01h: no horizontal scroll | 1440 × 900 | 1440 px |
+
+Playwright checks for horizontal overflow on the landing page and the screening question at 320, 375, 768, 1024 and 1440 px in both languages and themes, and on the crisis screen and results at 375 and 1440 px.
+
+Three cases were removed from the portal because the runner cannot execute them. They were reported Blocked or Failed on every run, never because of the app:
+
+| Case | Why | Covered in GitHub Actions by |
+| --- | --- | --- |
+| TC-002, UI-01: responsive screening and synchronized 4/6 breathing | It had no steps: a supplemental acceptance for the PR #16 preview that repeated UI-01a–h in one case | The UI-01a–h cases above |
+| SOLACE-003, UI-01c: breathing pacer respects reduced motion | The runner cannot emulate `prefers-reduced-motion` | e2e: `emulateMedia({ reducedMotion: "reduce" })`, then `breathing-circle` has `data-reduced-motion="true"` and no running animation |
+| TIPS-009, AI-05: invalid replies, provider limits, timeout and cancellation | The runner cannot intercept or delay `/api/ai/tips` responses | `src/server/api.test.ts`: provider errors, timeouts and empty or truncated replies stay errors, and provider capacity is told apart from the daily limit. `src/lib/ai/client.test.ts`: out-of-candidate IDs are refused, requests carry a bounded abort signal, and failures offer a library tip clearly marked non-AI |
+
+No Safety Contract case (K1–K11, P1–P4, A1–A3) was changed or removed. Real AI selection stays in TIPS-007 and the A2 risk path in TIPS-008.

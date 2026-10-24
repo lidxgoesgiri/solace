@@ -6,6 +6,9 @@ import { BREATH_CYCLE_MS, breathAt, shouldPulse } from "@/lib/breathing";
 import styles from "./breathing-pacer.module.css";
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+/** On screen the countdown follows the clock closely; off screen once a second is enough. */
+const ON_SCREEN_TICK_MS = 100;
+const OFF_SCREEN_TICK_MS = 1_000;
 const noSubscribe = () => () => {};
 
 function vibrate(milliseconds: number) {
@@ -30,6 +33,8 @@ function usePrefersReducedMotion(): boolean {
 /**
  * TP-05: the countdown and circle share one monotonic clock. Background tabs
  * catch up, without queued vibrations. Reduced motion keeps a static circle.
+ * Off screen the circle and vibration stop, but the countdown text keeps
+ * following the clock, so it is right whenever it is read or scrolled to.
  */
 export function BreathingPacer() {
   const t = useTranslations("crisis");
@@ -70,24 +75,28 @@ export function BreathingPacer() {
       previousSegment = next.segment;
       setBreath((current) => current.segment === next.segment && current.seconds === next.seconds ? current : next);
     };
+    const schedule = () => {
+      timer = setTimeout(tick, visible ? ON_SCREEN_TICK_MS : OFF_SCREEN_TICK_MS);
+    };
     const tick = () => {
-      if (document.hidden || !visible) return;
-      sync(true);
-      timer = setTimeout(tick, 100);
+      if (document.hidden) return;
+      // Vibration only while the pacer is on screen.
+      sync(visible);
+      schedule();
     };
     const visibility = () => {
       clearTimeout(timer);
       if (document.hidden || !visible) {
         animation?.pause();
         if (vibrationEnabled.current) vibrate(0);
-        return;
       }
+      if (document.hidden) return;
       sync(false);
-      if (animation) {
+      if (visible && animation) {
         animation.currentTime = performance.now() - started;
         animation.play();
       }
-      timer = setTimeout(tick, 100);
+      schedule();
     };
     const observer = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(([entry]) => {
       visible = Boolean(entry?.isIntersecting);
