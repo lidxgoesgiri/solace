@@ -5,12 +5,13 @@ import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { ExternalLink } from "@/components/icons/external-link";
 import { Sparkles } from "@/components/icons/sparkles";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioItem } from "@/components/ui/radio-cards";
 import { useAiRequest } from "@/components/use-ai-request";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { hasAiConsent, requestTipPick, saveAiConsent, tipRecommendation } from "@/lib/ai/client";
 import { aiOffer } from "@/lib/ai/notes";
 import { containsRiskPhrase } from "@/lib/ai/risk-check";
-import { TIP_CONTEXT_MAX_CHARS, TIP_PICK_MAX_CANDIDATES, type TipPick } from "@/lib/ai/tip-pick";
+import { TIP_CONTEXT_MAX_CHARS, TIP_PICK_MAX_CANDIDATES, TIP_PICK_MODES, type TipPick, type TipPickMode } from "@/lib/ai/tip-pick";
 import { isLocale } from "@/lib/content";
 import { PATHS, mustShowCrisis } from "@/lib/flow";
 import type { Tip } from "@/lib/tips";
@@ -28,10 +29,19 @@ interface TipAiPickProps {
 
 type Status = "idle" | "consent" | "form" | "working" | "limited" | "busy" | "error";
 
+const modeClass = [
+  "inline-flex min-h-11 items-center rounded-full border bg-card px-4 text-sm font-medium",
+  "transition-colors duration-(--duration-quick) ease-(--ease-calm) hover:border-primary/50",
+  "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
+  "data-[state=checked]:border-primary data-[state=checked]:bg-secondary",
+].join(" ");
+
 /**
  * "Choose with AI" for a tip that did not help (PRD 20.2, AI-05): the AI
- * picks only a candidate ID, never rewrites library text.
- * Hidden unless the AI is switched on; asks
+ * picks only a candidate ID, never rewrites library text. When the user
+ * writes about their situation, the AI reflects it in one or two checked
+ * sentences; a user who only wants to be heard gets the reflection and no
+ * tip. Hidden unless the AI is switched on; asks
  * for consent first (A1); risky words open the crisis screen instead (A2);
  * never during a crisis (A3). Sources come from the library, not the AI.
  */
@@ -49,6 +59,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
   const [consented, setConsented] = useState(() => hasAiConsent(username, "tips", ai.model));
   const [status, setStatus] = useState<Status>("idle");
   const [context, setContext] = useState("");
+  const [mode, setMode] = useState<TipPickMode>("tip");
   const [pick, setPick] = useState<TipPick | null>(null);
   const [source, setSource] = useState<"ai" | "deterministic">("ai");
   const consentHeading = useRef<HTMLHeadingElement>(null);
@@ -96,12 +107,14 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
       return;
     }
     setStatus("working");
-    const result = await requestTipPick({
+    const request = {
       replacedId: tip.id,
       candidates: candidates.slice(0, TIP_PICK_MAX_CANDIDATES).map((candidate) => candidate.id),
       context: context.trim(),
       locale,
-    }, { username, model: ai.model, signal: controller.signal });
+      mode,
+    };
+    const result = await requestTipPick(request, { username, model: ai.model, signal: controller.signal });
     finish(controller);
     if (controller.signal.aborted || result.kind === "cancelled") return;
     if (result.kind === "risk") {
@@ -123,7 +136,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
       setStatus("error");
       return;
     }
-    const fallback = tipRecommendation(result, candidates.map((candidate) => candidate.id));
+    const fallback = tipRecommendation(result, request);
     if (fallback) {
       setPick(fallback.pick);
       setSource(fallback.source);
@@ -131,7 +144,19 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
     setStatus(result.kind === "limited" || result.kind === "busy" ? result.kind : "error");
   };
 
-  const chosen = pick ? candidates.find((candidate) => candidate.id === pick.tipId) : undefined;
+  const chosen = pick?.tipId ? candidates.find((candidate) => candidate.id === pick.tipId) : undefined;
+  const listening = mode === "listen";
+  const reflection = pick?.reflection ? (
+    <div className="space-y-1.5">
+      <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+        <Sparkles aria-hidden="true" className="size-4" />
+        {t("reflectionLabel")}
+      </p>
+      <p className="font-heading text-lg leading-relaxed" data-testid={`tip-ai-reflection-${tip.id}`}>
+        {pick.reflection}
+      </p>
+    </div>
+  ) : null;
 
   return (
     <div className="space-y-3 border-t border-sky/70 pt-3">
@@ -144,6 +169,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
           data-source={source}
           data-tip-id={chosen.id}
         >
+          {reflection}
           <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <Sparkles aria-hidden="true" className="size-4" />
             {source === "ai" ? t("resultLabel") : t("fallbackLabel")}
@@ -178,6 +204,37 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
           <div className="flex flex-wrap gap-2 pt-1">
             <Button type="button" size="sm" onClick={() => onUse(chosen)} data-testid={`tip-ai-use-${tip.id}`}>
               {t("use")}
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => setPick(null)}>
+              {t("dismiss")}
+            </Button>
+          </div>
+        </div>
+      ) : pick?.reflection ? (
+        <div
+          role="group"
+          aria-labelledby={`${id}-heard`}
+          className="space-y-3 rounded-2xl border bg-card p-4"
+          data-testid={`tip-ai-heard-${tip.id}`}
+          data-source="ai"
+        >
+          <h4 id={`${id}-heard`} ref={resultHeading} tabIndex={-1} className="text-lg outline-none">
+            {t("heardTitle")}
+          </h4>
+          {reflection}
+          <p className="leading-relaxed text-muted-foreground">{t("heardSupport")}</p>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => {
+                setPick(null);
+                setMode("tip");
+                setStatus("form");
+              }}
+              data-testid={`tip-ai-ask-tip-${tip.id}`}
+            >
+              {t("askTip")}
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => setPick(null)}>
               {t("dismiss")}
@@ -232,8 +289,30 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
         </div>
       ) : status === "form" || status === "working" ? (
         <form onSubmit={submit} className="space-y-2">
+          <p id={`${id}-mode`} className="font-medium">
+            {t("modeLegend")}
+          </p>
+          <RadioGroup
+            value={mode}
+            values={TIP_PICK_MODES}
+            onValueChange={(next) => setMode(next === "listen" ? "listen" : "tip")}
+            aria-labelledby={`${id}-mode`}
+            className="flex flex-wrap gap-2 pb-1"
+          >
+            {TIP_PICK_MODES.map((value) => (
+              <RadioItem
+                key={value}
+                value={value}
+                disabled={status === "working"}
+                className={modeClass}
+                data-testid={`tip-ai-mode-${value}-${tip.id}`}
+              >
+                {value === "listen" ? t("modeListen") : t("modeTip")}
+              </RadioItem>
+            ))}
+          </RadioGroup>
           <label htmlFor={`${id}-context`} className="block font-medium">
-            {t("contextLabel")}
+            {listening ? t("contextLabelListen") : t("contextLabel")}
           </label>
           <input
             id={`${id}-context`}
@@ -241,6 +320,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
             type="text"
             maxLength={TIP_CONTEXT_MAX_CHARS}
             value={context}
+            required={listening}
             disabled={status === "working"}
             onChange={(event) => setContext(event.target.value)}
             placeholder={t("contextPlaceholder")}
@@ -248,9 +328,16 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
             className="block min-h-11 w-full rounded-xl border border-input bg-background px-3.5 text-base transition-colors hover:border-ink/60"
           />
           <div className="flex flex-wrap gap-2 pt-1">
-            <Button type="submit" size="sm" disabled={status === "working"} data-testid={`tip-ai-submit-${tip.id}`}>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={status === "working" || (listening && !context.trim())}
+              data-testid={`tip-ai-submit-${tip.id}`}
+            >
               <Sparkles aria-hidden="true" />
-              {status === "working" ? t("working") : t("submit")}
+              {status === "working"
+                ? listening ? t("workingListen") : t("working")
+                : listening ? t("submitListen") : t("submit")}
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => { cancel(); setStatus("idle"); }} data-testid={`tip-ai-cancel-${tip.id}`}>
               {t("cancel")}
@@ -273,7 +360,11 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
         </div>
       )}
       <p role="status" aria-live="polite" data-testid={`tip-ai-status-${tip.id}`}>
-        {status === "limited" ? t("limited") : status === "busy" ? t("busy") : status === "error" ? t("error") : null}
+        {status !== "limited" && status !== "busy" && status !== "error"
+          ? null
+          : listening
+            ? t("listenUnavailable")
+            : t(status)}
       </p>
     </div>
   );
