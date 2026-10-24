@@ -6,7 +6,8 @@
 
 import { aiConsent, validAiConsent, type AiFeature } from "./consent";
 import { NOTE_OUTPUT_MAX_CHARS, parseNoteAnswers, type NoteAnswers } from "./notes";
-import { parseTipPick, type TipPick, type TipPickRequest } from "./tip-pick";
+import { containsRiskPhrase } from "./risk-check";
+import { expectedReply, parseTipPick, type TipPick, type TipPickRequest } from "./tip-pick";
 
 const CONSENT_KEY = "solace-ai-consent-v2";
 // Private mode may refuse storage. This contains consent metadata only.
@@ -84,22 +85,34 @@ export async function requestTidyNotes(answers: NoteAnswers, context: AiRequestC
 
 export type TipPickResult = { kind: "ok"; pick: TipPick } | Failure;
 
-/** No model text survives the client boundary either. */
+/**
+ * The browser re-checks the reply with the server's rules: no advice or
+ * steps from the model, only a library ID and a checked reflection. A
+ * reflection with risky words is never shown.
+ */
 export async function requestTipPick(request: TipPickRequest, context: AiRequestContext): Promise<TipPickResult> {
   const result = await send("tips", request, context);
   if (result.kind !== "ok") return result;
-  const pick = parseTipPick(result.body, request.candidates);
-  return pick ? { kind: "ok", pick } : { kind: "error" };
+  const pick = parseTipPick(result.body, request.candidates, expectedReply(request));
+  if (!pick || (pick.reflection && containsRiskPhrase(pick.reflection))) return { kind: "error" };
+  return { kind: "ok", pick };
 }
 
-/** Provider failure is not AI success. Never fall back over consent/auth/risk. */
-export function tipRecommendation(result: TipPickResult, candidates: readonly string[]): { pick: TipPick; source: "ai" | "deterministic" } | null {
+/**
+ * Provider failure is not AI success. Never fall back over consent/auth/risk,
+ * and never push a tip on someone who only wanted to be heard.
+ */
+export function tipRecommendation(
+  result: TipPickResult,
+  request: Pick<TipPickRequest, "candidates" | "context" | "mode">,
+): { pick: TipPick; source: "ai" | "deterministic" } | null {
   if (result.kind === "ok") {
-    const pick = parseTipPick(result.pick, candidates);
+    const pick = parseTipPick(result.pick, request.candidates, expectedReply(request));
     return pick ? { pick, source: "ai" } : null;
   }
-  if ((result.kind === "error" || result.kind === "busy" || result.kind === "limited") && candidates[0]) {
-    return { pick: { tipId: candidates[0] }, source: "deterministic" };
+  const first = request.candidates[0];
+  if (request.mode === "tip" && (result.kind === "error" || result.kind === "busy" || result.kind === "limited") && first) {
+    return { pick: { tipId: first }, source: "deterministic" };
   }
   return null;
 }
