@@ -98,13 +98,15 @@ export function ResultsView() {
             <h1 className="text-4xl leading-tight sm:text-5xl">{t("title")}</h1>
             <p className="font-heading text-xl text-sage-ink italic">{t("thanks")}</p>
           </header>
-          <ResultsRadarChart result={result} />
 
           <Stagger className="space-y-4">
             {SUBSCALES.map((subscale) => (
               <ResultCard key={subscale} subscale={subscale} result={result[subscale]} />
             ))}
           </Stagger>
+
+          {/* A visual summary after the cards, which carry the result in words (HS-02). */}
+          <ResultsRadarChart result={result} />
         </div>
 
         <section aria-labelledby="next-steps-title" className="space-y-6">
