@@ -200,17 +200,13 @@
     "simulator": {
       "title": "Simulasi Hasil Skrining",
       "hint": "Pilih tingkat keparahan untuk melihat contoh bagaimana hasil ditampilkan:",
-      "levels": {
-        "normal": "Normal",
-        "mild": "Ringan",
-        "moderate": "Sedang",
-        "severe": "Tinggi"
-      },
       "scoreLabel": "Skor",
+      "sliderLabel": "Atur contoh skor depresi",
       "contextNormal": "Skor berada pada rentang populasi umum. Mempertahankan rutinitas tidur dan aktivitas positif sangat dianjurkan.",
       "contextMild": "Terdapat indikasi gejala ringan. Mengenali pemicu awal dan menerapkan teknik relaksasi dapat membantu.",
       "contextModerate": "Gejala berada pada tingkat sedang. Disarankan untuk berdiskusi dengan konselor atau psikolog kampus.",
-      "contextSevere": "Gejala menunjukkan beban emosional yang tinggi. Solace mengutamakan akses bantuan dan kontak layanan pendampingan profesional."
+      "contextSevere": "Gejala menunjukkan beban emosional yang tinggi. Solace mengutamakan akses bantuan dan kontak layanan pendampingan profesional.",
+      "contextExtremelySevere": "Gejala berada pada tingkat sangat berat. Kami sarankan bicara dengan profesional; kamu tidak perlu menghadapinya sendirian."
     },
     "scenarios": {
       "kicker": "Konteks Mahasiswa",
@@ -326,6 +322,12 @@
     "thanks": "Terima kasih sudah jujur menjawab.",
     "scoreLabel": "Skor {score} dari 42",
     "categoryLabel": "Tingkat: {severity}",
+    "radar": {
+      "kicker": "Gambaran tiga dimensi",
+      "title": "Keseimbangan emosional",
+      "scale": "Skala DASS-21 (0–42)",
+      "label": "Grafik radar skor DASS-21: depresi {depression}, kecemasan {anxiety}, stres {stress}, masing-masing dari 42."
+    },
     "priorityTitle": "Kami sarankan bicara dengan profesional",
     "priorityBody": "Hasilmu menunjukkan gejala tingkat sangat berat. Bicara dengan profesional bisa sangat membantu untuk kondisi seperti ini. Kamu bisa membawa laporan hasil ini ke psikolog, layanan psikologi kampus, atau Puskesmas.",
     "supportTitle": "Bantuan tetap tersedia",
@@ -524,6 +526,14 @@
     "title": "Akun Solace",
     "homeIntro": "Akun menyimpan riwayat skrining, rencana keselamatan, check-in, dan tips pilihanmu. Semuanya dienkripsi di browsermu sebelum dikirim, sehingga server Solace hanya menyimpan data yang tidak bisa dibacanya.",
     "noEmail": "Tanpa email, nama asli, atau NIM. Cukup nama pengguna dan frasa sandi.",
+    "vault": {
+      "title": "Brankas zero-knowledge",
+      "unlocked": "Terbuka",
+      "signedInAs": "Masuk sebagai",
+      "encrypted": "Terenkripsi end-to-end, tanpa email",
+      "crypto": "Argon2id + libsodium",
+      "autoLock": "Terkunci otomatis setelah {minutes} menit tidak aktif"
+    },
     "signUp": "Buat akun",
     "signIn": "Masuk",
     "recover": "Pulihkan akses dengan kit pemulihan",
@@ -762,6 +772,7 @@
     "trendOnlyOne": "Tren akan muncul setelah kamu punya dua skrining atau lebih.",
     "chartTitle": "Skor {subscale}",
     "chartSummary": "Skor {subscale} dari {count} skrining. Terakhir: {score} ({severity}).",
+    "chartPoint": "{date}: skor {score}, {severity}",
     "chartBands": "Pita latar menunjukkan kategori: normal, ringan, sedang, berat, sangat berat.",
     "tableTitle": "Tabel skor",
     "colDate": "Tanggal",

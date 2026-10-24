@@ -60,15 +60,15 @@ export function ResultsRadarChart({ result }: ResultsRadarChartProps) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
         <div>
           <span className="text-xs font-semibold tracking-wider text-sage-ink uppercase">
-            {t("results.title")} · Tri-Axial Analysis
+            {t("results.radar.kicker")}
           </span>
           <h3 className="font-heading text-xl font-medium tracking-tight text-foreground sm:text-2xl">
-            Keseimbangan Emosional
+            {t("results.radar.title")}
           </h3>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="inline-block size-2 rounded-full bg-primary" />
-          <span>Skala DASS-21 (0–42)</span>
+          <span aria-hidden="true" className="inline-block size-2 rounded-full bg-primary" />
+          <span>{t("results.radar.scale")}</span>
         </div>
       </div>
 
@@ -77,7 +77,11 @@ export function ResultsRadarChart({ result }: ResultsRadarChartProps) {
           viewBox="0 0 320 300"
           className="size-full overflow-visible select-none"
           role="img"
-          aria-label="Grafik Tri-Axial Radar DASS-21"
+          aria-label={t("results.radar.label", {
+            depression: depScore,
+            anxiety: anxScore,
+            stress: strScore,
+          })}
         >
           <defs>
             <radialGradient id={`${id}-glow`} cx="50%" cy="50%" r="50%">

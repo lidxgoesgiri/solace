@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState, type PointerEvent } from "react";
+import { useTranslations } from "next-intl";
+import { useId, useState, type CSSProperties, type PointerEvent } from "react";
 import {
   CUTOFFS,
   MAX_SUBSCALE_SCORE,
@@ -32,6 +33,9 @@ const PLOT_H = H - PAD.top - PAD.bottom;
 
 const y = (score: number) => PAD.top + PLOT_H * (1 - score / MAX_SUBSCALE_SCORE);
 
+// SVG shapes scale from the viewBox origin by default; pulse around the point.
+const PULSE_ORIGIN: CSSProperties = { transformBox: "fill-box", transformOrigin: "center" };
+
 /** Category bands of one subscale on the ×2 scale, from the single CUTOFFS constant. */
 function bands(subscale: Subscale): { severity: Severity; from: number; to: number }[] {
   const starts = [
@@ -57,6 +61,7 @@ interface TrendChartProps {
  * RW-01: one subscale's score over time with Web3 interactive data scrubber.
  */
 export function TrendChart({ subscale, title, summary, points, formatShortDate }: TrendChartProps) {
+  const t = useTranslations();
   const id = useId();
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
@@ -97,7 +102,11 @@ export function TrendChart({ subscale, title, summary, points, formatShortDate }
         </figcaption>
         {activePoint ? (
           <span className="rounded-md border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-            {formatShortDate(activePoint.at)}: {activePoint.score} ({activePoint.severity})
+            {t("history.chartPoint", {
+              date: formatShortDate(activePoint.at),
+              score: activePoint.score,
+              severity: t(`severityInline.${activePoint.severity}`),
+            })}
           </span>
         ) : null}
       </div>
@@ -168,7 +177,8 @@ export function TrendChart({ subscale, title, summary, points, formatShortDate }
                   cx={x(i)}
                   cy={y(point.score)}
                   r={7}
-                  className="fill-primary/20 animate-ping"
+                  className="fill-primary/20 motion-safe:animate-ping"
+                  style={PULSE_ORIGIN}
                 />
               ) : null}
               <circle

@@ -200,17 +200,13 @@
     "simulator": {
       "title": "Interactive Result Preview",
       "hint": "Select a severity level to see an example of how results are presented:",
-      "levels": {
-        "normal": "Normal",
-        "mild": "Mild",
-        "moderate": "Moderate",
-        "severe": "Severe"
-      },
       "scoreLabel": "Score",
+      "sliderLabel": "Set the example depression score",
       "contextNormal": "Scores sit within the general population range. Maintaining sleep routines and positive habits is encouraged.",
       "contextMild": "Mild symptoms are indicated. Spotting early triggers and practicing relaxation techniques can help.",
       "contextModerate": "Symptoms sit at a moderate level. Talking with a campus counselor or mental health professional is recommended.",
-      "contextSevere": "Scores indicate a high emotional burden. Solace prioritises support directories and professional counseling resources."
+      "contextSevere": "Scores indicate a high emotional burden. Solace prioritises support directories and professional counseling resources.",
+      "contextExtremelySevere": "Symptoms sit at an extremely severe level. We recommend talking to a professional; you don't have to face this alone."
     },
     "scenarios": {
       "kicker": "Student Context",
@@ -326,6 +322,12 @@
     "thanks": "Thank you for answering honestly.",
     "scoreLabel": "Score {score} of 42",
     "categoryLabel": "Level: {severity}",
+    "radar": {
+      "kicker": "Three dimensions at a glance",
+      "title": "Emotional balance",
+      "scale": "DASS-21 scale (0–42)",
+      "label": "Radar chart of DASS-21 scores: depression {depression}, anxiety {anxiety}, stress {stress}, each out of 42."
+    },
     "priorityTitle": "We recommend talking to a professional",
     "priorityBody": "Your results show extremely severe symptoms. Talking to a professional can really help with this. You can bring a report of these results to a psychologist, your campus counselling service, or a public health centre.",
     "supportTitle": "Support is still here",
@@ -524,6 +526,14 @@
     "title": "Your Solace account",
     "homeIntro": "An account keeps your screening history, safety plan, check-ins, and chosen tips. Everything is encrypted in your browser before it is sent, so the Solace server only stores data it cannot read.",
     "noEmail": "No email, real name, or student ID. Just a username and a passphrase.",
+    "vault": {
+      "title": "Zero-knowledge vault",
+      "unlocked": "Unlocked",
+      "signedInAs": "Signed in as",
+      "encrypted": "End-to-end encrypted, no email",
+      "crypto": "Argon2id + libsodium",
+      "autoLock": "Locks after {minutes} idle minutes"
+    },
     "signUp": "Create an account",
     "signIn": "Sign in",
     "recover": "Recover access with your recovery kit",
@@ -762,6 +772,7 @@
     "trendOnlyOne": "Trends appear once you have two or more screenings.",
     "chartTitle": "{subscale} score",
     "chartSummary": "{subscale} score across {count} screenings. Latest: {score} ({severity}).",
+    "chartPoint": "{date}: score {score}, {severity}",
     "chartBands": "Background bands show the categories: normal, mild, moderate, severe, extremely severe.",
     "tableTitle": "Score table",
     "colDate": "Date",
