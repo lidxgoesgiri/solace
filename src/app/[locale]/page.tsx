@@ -15,6 +15,10 @@ import { HeroWordmark } from "@/features/landing/hero-wordmark";
 import heroStyles from "@/features/landing/hero-wordmark.module.css";
 import { InteractiveSteps } from "@/features/landing/interactive-steps";
 import { LandingReveal, LandingRevealItem } from "@/features/landing/landing-reveal";
+import { MarqueeRibbon } from "@/features/landing/marquee-ribbon";
+import { ResultSimulator } from "@/features/landing/result-simulator";
+import { StarfieldBackground } from "@/features/landing/starfield-background";
+import { StudentScenarios } from "@/features/landing/student-scenarios";
 import { localeFromParams } from "@/i18n/locale";
 import { Link } from "@/i18n/navigation";
 import { PATHS } from "@/lib/flow";
@@ -31,16 +35,18 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
     { key: "safety", icon: CircleAlert },
     { key: "useful", icon: FileText },
   ] as const;
-  const subscales = ["depression", "anxiety", "stress"] as const;
   const faqs = ["diagnosis", "account", "privacy", "support", "duration"] as const;
 
   return (
     <MotionProvider>
-      <div className="landing-page space-y-24 sm:space-y-32 lg:space-y-36">
+      {/* Ambient Web3-style Starfield & Aurora Mesh Background */}
+      <StarfieldBackground />
+
+      <div className="landing-page relative z-10 space-y-20 sm:space-y-28 lg:space-y-32">
         <section
           aria-labelledby="hero-title"
           data-halftone-hero
-          className={`${heroStyles.surface} relative isolate grid items-center gap-8 py-2 sm:gap-12 sm:py-8 md:min-h-[min(42rem,calc(100svh-10rem))] md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14`}
+          className={`${heroStyles.surface} relative isolate grid items-center gap-8 py-2 sm:gap-12 sm:py-8 md:min-h-[min(44rem,calc(100svh-10rem))] md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:gap-10 lg:gap-14`}
         >
           <HeroWordmark />
           <div className="relative z-10 space-y-6">
@@ -66,7 +72,8 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                 <a href="#how-it-works">{t("seeHow")}</a>
               </Button>
             </div>
-            <div className="flex flex-wrap gap-x-5 gap-y-2 border-t pt-5 text-sm text-muted-foreground">
+
+            <div className="flex flex-wrap gap-x-5 gap-y-2 border-t pt-4 text-xs text-muted-foreground sm:text-sm">
               <span>{t("microTime")}</span>
               <span aria-hidden="true">·</span>
               <span>{t("microAge")}</span>
@@ -76,6 +83,9 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
           </div>
           <SunriseMark />
         </section>
+
+        {/* Continuous looping ribbon banner */}
+        <MarqueeRibbon />
 
         <LandingResume />
 
@@ -91,25 +101,34 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
           </LandingReveal>
         </section>
 
-        <LandingReveal as="section" aria-labelledby="story-title" className="grid gap-8 lg:grid-cols-[0.52fr_1fr] lg:gap-20">
-          <p className="kicker self-start">{t("storyKicker")}</p>
-          <div className="space-y-7">
-            <h2 id="story-title" className="max-w-4xl text-[clamp(2.5rem,5vw,4.8rem)] leading-[1.03] tracking-[-0.035em]">
-              {t("storyTitle")}
-            </h2>
-            <p className="measure ml-auto text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              {t("storyBody")}
-            </p>
-          </div>
-        </LandingReveal>
+        <section className="space-y-16">
+          <LandingReveal as="div" aria-labelledby="story-title" className="grid gap-8 lg:grid-cols-[0.52fr_1fr] lg:gap-20">
+            <p className="kicker self-start">{t("storyKicker")}</p>
+            <div className="space-y-7">
+              <h2 id="story-title" className="max-w-4xl text-[clamp(2.5rem,5vw,4.8rem)] leading-[1.03] tracking-[-0.035em]">
+                {t("storyTitle")}
+              </h2>
+              <p className="measure ml-auto text-lg leading-relaxed text-muted-foreground sm:text-xl">
+                {t("storyBody")}
+              </p>
+            </div>
+          </LandingReveal>
+
+          {/* Student scenarios grid for meaningful context and visual density */}
+          <LandingReveal>
+            <StudentScenarios />
+          </LandingReveal>
+        </section>
 
         <section id="how-it-works" data-testid="how-it-works" aria-labelledby="how-title" className="scroll-mt-28 space-y-10">
-          <LandingReveal className="grid gap-5 md:grid-cols-[0.72fr_1fr] md:items-end">
+          <LandingReveal className="grid gap-6 md:grid-cols-[1.2fr_1fr] md:items-center lg:gap-14">
             <div className="space-y-3">
               <p className="kicker max-w-xs">{t("howKicker")}</p>
-              <h2 id="how-title" className="text-4xl leading-tight sm:text-5xl">{t("howTitle")}</h2>
+              <h2 id="how-title" className="text-3xl leading-[1.12] sm:text-4xl lg:text-5xl">{t("howTitle")}</h2>
             </div>
-            <p className="measure text-lg leading-relaxed text-muted-foreground md:justify-self-end">{t("howIntro")}</p>
+            <div className="md:border-l md:border-border/60 md:pl-8">
+              <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">{t("howIntro")}</p>
+            </div>
           </LandingReveal>
           <LandingReveal><InteractiveSteps /></LandingReveal>
           <p className="flex max-w-2xl items-start gap-3 text-sm text-muted-foreground">
@@ -149,36 +168,22 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
               <p>{t("resultsNote")}</p>
             </div>
           </LandingReveal>
-          <LandingReveal className="paper landing-report rounded-[1.25rem] border bg-[#fffdf9] p-5 shadow-[0_28px_70px_-36px_rgb(31_42_55/0.48)] sm:p-8">
-            <div className="mb-8 flex items-center justify-between gap-4 border-b pb-5">
-              <div>
-                <p className="text-xs font-semibold tracking-[0.14em] text-sage-ink uppercase">Solace</p>
-                <h3 className="mt-1 text-2xl">{t("resultsPreviewHeading")}</h3>
-              </div>
-              <FileText aria-hidden="true" className="size-7 text-sage-ink" />
-            </div>
-            <div className="space-y-3">
-              {subscales.map((subscale, index) => (
-                <div key={subscale} className="landing-preview-row grid grid-cols-[auto_1fr] items-center gap-4 rounded-2xl border bg-white p-4">
-                  <span aria-hidden="true" className="flex size-10 items-center justify-center rounded-full bg-sage-soft font-heading text-lg text-sage-ink">0{index + 1}</span>
-                  <div>
-                    <p className="font-heading text-xl">{t(`subscales.${subscale}`)}</p>
-                    <p className="text-sm text-muted-foreground">{t("resultsPreviewStatus")}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{t("resultsPreviewFooter")}</p>
+
+          {/* Fully interactive Result Simulator */}
+          <LandingReveal>
+            <ResultSimulator />
           </LandingReveal>
         </section>
 
         <section id="features" aria-labelledby="toolkit-title" className="scroll-mt-28 space-y-10">
-          <div className="grid gap-5 md:grid-cols-[0.78fr_1fr] md:items-end">
+          <div className="grid gap-6 md:grid-cols-[1.2fr_1fr] md:items-center lg:gap-14">
             <div className="space-y-3">
               <p className="kicker max-w-xs">{t("toolkitKicker")}</p>
-              <h2 id="toolkit-title" className="text-4xl leading-tight sm:text-5xl">{t("toolkitTitle")}</h2>
+              <h2 id="toolkit-title" className="text-3xl leading-[1.12] sm:text-4xl lg:text-5xl">{t("toolkitTitle")}</h2>
             </div>
-            <p className="measure text-lg leading-relaxed text-muted-foreground md:justify-self-end">{t("toolkitBody")}</p>
+            <div className="md:border-l md:border-border/60 md:pl-8">
+              <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">{t("toolkitBody")}</p>
+            </div>
           </div>
           <LandingReveal stagger className="grid items-stretch gap-5 md:grid-cols-2">
             <LandingRevealItem><BreathingPreview /></LandingRevealItem>
@@ -194,13 +199,19 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
           </div>
           <div className="divide-y border-y">
             {faqs.map((faq, index) => (
-              <details key={faq} className="group py-1" data-testid={`landing-faq-${faq}`}>
-                <summary className="flex min-h-16 cursor-pointer list-none items-center gap-5 py-4 font-heading text-xl marker:content-none sm:text-2xl">
+              <details
+                key={faq}
+                className="group rounded-2xl border border-transparent p-2 transition-colors hover:border-border/60 hover:bg-card/40 open:border-border open:bg-card/70 open:shadow-xs"
+                data-testid={`landing-faq-${faq}`}
+              >
+                <summary className="flex min-h-16 cursor-pointer list-none items-center gap-5 px-3 py-3 font-heading text-xl marker:content-none sm:text-2xl">
                   <span aria-hidden="true" className="numeral text-sm text-sage-ink">0{index + 1}</span>
                   <span className="flex-1">{t(`faq.${faq}.question`)}</span>
-                  <span aria-hidden="true" className="text-2xl font-light transition-transform group-open:rotate-45">+</span>
+                  <span aria-hidden="true" className="text-2xl font-light transition-transform duration-200 group-open:rotate-45">+</span>
                 </summary>
-                <div className="landing-faq-answer"><p className="measure pb-6 pl-10 leading-relaxed text-muted-foreground">{t(`faq.${faq}.answer`)}</p></div>
+                <div className="landing-faq-answer">
+                  <p className="measure px-3 pb-6 pl-10 leading-relaxed text-muted-foreground">{t(`faq.${faq}.answer`)}</p>
+                </div>
               </details>
             ))}
           </div>

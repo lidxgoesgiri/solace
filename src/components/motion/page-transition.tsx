@@ -7,13 +7,24 @@ import { PATHS } from "@/lib/flow";
 // The first page a visitor sees renders without an entrance, so the main
 // content paints at once (LCP) and nothing waits for JavaScript.
 let hasShownFirstPage = false;
+let previousPathname: string | null = null;
 
-function Frame({ children, instant }: { children: ReactNode; instant: boolean }) {
-  const [animate] = useState(() => hasShownFirstPage && !instant);
+function Frame({
+  children,
+  pathname,
+  instant,
+}: {
+  children: ReactNode;
+  pathname: string;
+  instant: boolean;
+}) {
+  const isSamePath = previousPathname === pathname;
+  const [animate] = useState(() => hasShownFirstPage && !instant && !isSamePath);
 
   useEffect(() => {
     hasShownFirstPage = true;
-  }, []);
+    previousPathname = pathname;
+  }, [pathname]);
 
   return <div className={animate ? "animate-page-in" : undefined}>{children}</div>;
 }
@@ -29,7 +40,7 @@ function Frame({ children, instant }: { children: ReactNode; instant: boolean })
 export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   return (
-    <Frame key={pathname} instant={pathname === PATHS.krisis}>
+    <Frame key={pathname} pathname={pathname} instant={pathname === PATHS.krisis}>
       {children}
     </Frame>
   );

@@ -84,7 +84,7 @@ export function ScreeningQuestion({
           <span
             data-testid="progress"
             aria-hidden="true"
-            className="numeral shrink-0 text-lg whitespace-nowrap"
+            className="numeral shrink-0 text-lg font-medium tracking-tight whitespace-nowrap text-foreground"
           >
             {t("progress", { current: n, total: DASS21_ITEM_COUNT })}
           </span>
@@ -99,16 +99,16 @@ export function ScreeningQuestion({
           aria-valuemin={1}
           aria-valuemax={DASS21_ITEM_COUNT}
           aria-valuenow={n}
-          className="h-1.5 overflow-hidden rounded-full bg-ink/10"
+          className="relative h-2 overflow-hidden rounded-full bg-ink/10 dark:bg-muted"
         >
           <div
-            className="h-full origin-left animate-grow rounded-full bg-primary"
+            className="h-full origin-left animate-grow rounded-full bg-gradient-to-r from-primary/80 via-primary to-sky-400 shadow-[0_0_12px_rgba(44,88,116,0.5)]"
             style={{ "--grow-from": progressFrom, "--grow-to": progress } as CSSProperties}
           />
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="glass-surface space-y-4 p-6 sm:p-8">
         <p className="kicker">{t("period")}</p>
         <h1
           ref={headingRef}

@@ -177,7 +177,58 @@
     },
     "finalKicker": "Begin with what is possible today",
     "finalTitle": "You do not have to understand everything at once.",
-    "finalBody": "Take a few minutes to notice what is happening, at a pace you choose for yourself."
+    "finalBody": "Take a few minutes to notice what is happening, at a pace you choose for yourself.",
+    "marquee": {
+      "label": "Solace assurances and commitments",
+      "dass21": "Validated DASS-21 Instrument",
+      "privacy": "100% Anonymous & Private",
+      "noAccount": "No Email or Account Required",
+      "pdf": "Counselor-Ready PDF Report",
+      "encryption": "Browser-Side Encryption",
+      "support": "24/7 Crisis Support Access"
+    },
+    "metrics": {
+      "itemsValue": "21 Items",
+      "itemsLabel": "Validated DASS-21 scale",
+      "timeValue": "~5 Mins",
+      "timeLabel": "Self-paced, no time limit",
+      "privacyValue": "0 Trackers",
+      "privacyLabel": "Data stays on your device",
+      "pdfValue": "PDF Report",
+      "pdfLabel": "Ready for your psychologist"
+    },
+    "simulator": {
+      "title": "Interactive Result Preview",
+      "hint": "Select a severity level to see an example of how results are presented:",
+      "levels": {
+        "normal": "Normal",
+        "mild": "Mild",
+        "moderate": "Moderate",
+        "severe": "Severe"
+      },
+      "scoreLabel": "Score",
+      "contextNormal": "Scores sit within the general population range. Maintaining sleep routines and positive habits is encouraged.",
+      "contextMild": "Mild symptoms are indicated. Spotting early triggers and practicing relaxation techniques can help.",
+      "contextModerate": "Symptoms sit at a moderate level. Talking with a campus counselor or mental health professional is recommended.",
+      "contextSevere": "Scores indicate a high emotional burden. Solace prioritises support directories and professional counseling resources."
+    },
+    "scenarios": {
+      "kicker": "Student Context",
+      "title": "When is Solace typically used?",
+      "intro": "Academic and life burdens often accumulate unnoticed. Screening helps map out what you are experiencing.",
+      "academicTitle": "Academic Pressure & Deadlines",
+      "academicBody": "Back-to-back assignments, thesis revisions, and graduation targets causing persistent tension.",
+      "academicTag": "Related: Anxiety & Stress",
+      "nightTitle": "Racing Thoughts at Night",
+      "nightBody": "When your body is exhausted but your mind will not stop replaying worst-case scenarios and future worries.",
+      "nightTag": "Related: Anxiety",
+      "burnoutTitle": "Loss of Energy & Motivation",
+      "burnoutBody": "Things that once brought joy begin to feel empty, heavy, and emotionally draining.",
+      "burnoutTag": "Related: Depressive Symptoms",
+      "socialTitle": "Social Comparison & Expectations",
+      "socialBody": "Feeling behind compared to peers, or carrying the burden of always needing to appear fine.",
+      "socialTag": "Related: Emotional Strain"
+    }
   },
   "start": {
     "title": "Before you start",

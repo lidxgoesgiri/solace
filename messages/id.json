@@ -177,7 +177,58 @@
     },
     "finalKicker": "Mulai dari yang bisa dilakukan hari ini",
     "finalTitle": "Kamu tidak harus memahami semuanya sekaligus.",
-    "finalBody": "Luangkan beberapa menit untuk melihat apa yang sedang terjadi, dengan ritme yang kamu tentukan sendiri."
+    "finalBody": "Luangkan beberapa menit untuk melihat apa yang sedang terjadi, dengan ritme yang kamu tentukan sendiri.",
+    "marquee": {
+      "label": "Jaminan dan komitmen Solace",
+      "dass21": "Standar Klinis DASS-21",
+      "privacy": "100% Anonim & Privat",
+      "noAccount": "Tanpa Perlu Email atau Akun",
+      "pdf": "Laporan PDF Siap Konseling",
+      "encryption": "Terenkripsi di Peramban",
+      "support": "Akses Dukungan Krisis 24/7"
+    },
+    "metrics": {
+      "itemsValue": "21 Butir",
+      "itemsLabel": "Instrumen DASS-21 tervalidasi",
+      "timeValue": "±5 Menit",
+      "timeLabel": "Mandiri tanpa batasan waktu",
+      "privacyValue": "0 Pelacak",
+      "privacyLabel": "Data tersimpan di perangkat Anda",
+      "pdfValue": "Laporan PDF",
+      "pdfLabel": "Bisa diunduh untuk psikolog"
+    },
+    "simulator": {
+      "title": "Simulasi Hasil Skrining",
+      "hint": "Pilih tingkat keparahan untuk melihat contoh bagaimana hasil ditampilkan:",
+      "levels": {
+        "normal": "Normal",
+        "mild": "Ringan",
+        "moderate": "Sedang",
+        "severe": "Tinggi"
+      },
+      "scoreLabel": "Skor",
+      "contextNormal": "Skor berada pada rentang populasi umum. Mempertahankan rutinitas tidur dan aktivitas positif sangat dianjurkan.",
+      "contextMild": "Terdapat indikasi gejala ringan. Mengenali pemicu awal dan menerapkan teknik relaksasi dapat membantu.",
+      "contextModerate": "Gejala berada pada tingkat sedang. Disarankan untuk berdiskusi dengan konselor atau psikolog kampus.",
+      "contextSevere": "Gejala menunjukkan beban emosional yang tinggi. Solace mengutamakan akses bantuan dan kontak layanan pendampingan profesional."
+    },
+    "scenarios": {
+      "kicker": "Konteks Mahasiswa",
+      "title": "Kapan biasanya Solace digunakan?",
+      "intro": "Beban perkuliahan sering kali bertumpuk tanpa disadari. Skrining membantu memetakan apa yang sebenarnya sedang terjadi.",
+      "academicTitle": "Tuntutan Akademik & Skripsi",
+      "academicBody": "Tumpukan tugas, revisi tanpa henti, dan target kelulusan yang memicu rasa tegang berkepanjangan.",
+      "academicTag": "Terkait: Kecemasan & Stres",
+      "nightTitle": "Pikiran Berputar Larut Malam",
+      "nightBody": "Ketika fisik sudah lelah tetapi kepala terus memutar skenario terburuk dan kekhawatiran masa depan.",
+      "nightTag": "Terkait: Kecemasan",
+      "burnoutTitle": "Kehilangan Energi & Minat",
+      "burnoutBody": "Aktivitas yang biasanya menyenangkan mulai terasa hampa, berat, dan memicu rasa lelah emosional.",
+      "burnoutTag": "Terkait: Gejala Depresi",
+      "socialTitle": "Ekspektasi & Tekanan Sosial",
+      "socialBody": "Perasaan tertinggal dari pencapaian teman sebaya atau beban harus selalu terlihat baik-baik saja.",
+      "socialTag": "Terkait: Beban Emosional"
+    }
   },
   "start": {
     "title": "Sebelum mulai",

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
+import { VaultStatusBadge } from "@/components/account/vault-status-badge";
 import { FormMessage, PassphraseField, TextField } from "@/components/account/fields";
 import { errorCode, useOpenAccount } from "@/components/account/use-account";
 import { ArrowRight } from "@/components/icons/arrow-right";
@@ -35,6 +36,7 @@ export function AccountHome() {
           <p className="measure text-lg leading-relaxed">{t("homeIntro")}</p>
           <p className="text-sm text-muted-foreground">{t("noEmail")}</p>
         </header>
+        <VaultStatusBadge />
         {notice ? (
           <FormMessage tone="info" testId="account-notice">
             {notice}
@@ -86,6 +88,8 @@ export function AccountHome() {
         <p className="measure text-muted-foreground">{t("homeSignedIn")}</p>
       </header>
 
+      <VaultStatusBadge username={username} />
+
       <nav aria-label={t("title")}>
         <ul className="grid items-stretch gap-3 sm:grid-cols-3 sm:gap-4">
           {links.map(({ href, label, description, icon: Icon, testId }) => (
@@ -93,7 +97,7 @@ export function AccountHome() {
               <Link
                 href={href}
                 data-testid={testId}
-                className="surface group grid h-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 p-5 transition-[border-color,box-shadow] hover:border-sage hover:shadow-(--shadow-lift) focus-visible:border-sage sm:flex sm:flex-col sm:items-start sm:p-6"
+                className="glass-surface group grid h-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 p-5 transition-[border-color,box-shadow,transform] hover:border-sage hover:shadow-(--shadow-lift) hover:-translate-y-1 focus-visible:border-sage sm:flex sm:flex-col sm:items-start sm:p-6"
               >
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-sage-soft text-sage-ink">
                   <Icon aria-hidden="true" className="size-5" />

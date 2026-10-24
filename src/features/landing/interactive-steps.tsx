@@ -7,6 +7,7 @@ import { ArrowRight } from "@/components/icons/arrow-right";
 import { Check } from "@/components/icons/check";
 import { ShieldCheck } from "@/components/icons/shield-check";
 import { FileText } from "@/components/icons/file-text";
+import { SPRING_SMOOTH } from "@/components/motion/tokens";
 import { Button } from "@/components/ui/button";
 import { LANDING_REVEAL } from "@/features/landing/motion";
 import { useLandingReducedMotion } from "@/features/landing/motion-preferences";
@@ -65,13 +66,23 @@ export function InteractiveSteps() {
             }}
             className={cn(
               "relative min-h-14 min-w-0 rounded-xl px-2 py-3 text-center text-sm font-medium transition-colors sm:px-4 sm:text-base",
-              active === step ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-card hover:text-foreground",
+              active === step ? "text-primary-foreground" : "text-muted-foreground hover:bg-card hover:text-foreground",
             )}
           >
-            <span aria-hidden="true" className="mb-0.5 block font-heading text-xs opacity-70 sm:mr-3 sm:mb-0 sm:inline sm:text-base">
-              0{stepIndex + 1}
+            {active === step ? (
+              <m.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={reducedMotion ? { duration: 0 } : SPRING_SMOOTH}
+                className="absolute inset-0 rounded-xl bg-primary shadow-(--shadow-soft)"
+              />
+            ) : null}
+            <span className="relative z-10 flex flex-col items-center justify-center sm:flex-row">
+              <span aria-hidden="true" className="mb-0.5 block font-heading text-xs opacity-70 sm:mr-3 sm:mb-0 sm:inline sm:text-base">
+                0{stepIndex + 1}
+              </span>
+              <span>{t(`steps.${step}.tab`)}</span>
             </span>
-            {t(`steps.${step}.tab`)}
           </button>
         ))}
       </div>

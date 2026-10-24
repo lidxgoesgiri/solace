@@ -345,6 +345,51 @@
   .measure {
     max-width: 62ch;
   }
+  /* Solace Glassmorphism and Web3 Utilities */
+  .glass-surface {
+    @apply rounded-2xl border border-border/70 backdrop-blur-xl;
+    background-color: color-mix(in srgb, var(--card) 85%, transparent);
+    box-shadow: var(--shadow-soft), inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+    transition: border-color var(--duration-quick) var(--ease-calm),
+                box-shadow var(--duration-quick) var(--ease-calm),
+                transform var(--duration-quick) var(--ease-calm);
+  }
+  .glass-surface-interactive {
+    @apply rounded-2xl border border-border/70 backdrop-blur-xl cursor-pointer;
+    background-color: color-mix(in srgb, var(--card) 85%, transparent);
+    box-shadow: var(--shadow-soft), inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+    transition: border-color var(--duration-quick) var(--ease-calm),
+                box-shadow var(--duration-quick) var(--ease-calm),
+                transform var(--duration-quick) var(--ease-calm);
+  }
+  .glow-sage {
+    box-shadow: 0 0 35px -8px color-mix(in srgb, var(--brand-sage) 45%, transparent);
+  }
+  .glow-sky {
+    box-shadow: 0 0 35px -8px color-mix(in srgb, var(--brand-sky) 50%, transparent);
+  }
+  .glow-sun {
+    box-shadow: 0 0 35px -8px color-mix(in srgb, var(--brand-sun) 45%, transparent);
+  }
+  .glow-violet {
+    box-shadow: 0 0 35px -8px rgba(129, 140, 248, 0.45);
+  }
+  .shimmer-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer-sweep::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.18), transparent);
+    pointer-events: none;
+    transition: transform 650ms var(--ease-calm);
+  }
+  .shimmer-sweep:hover::after {
+    transform: translateX(100%);
+  }
   .surface {
     @apply rounded-2xl border bg-card;
     box-shadow: var(--shadow-soft);
@@ -366,6 +411,8 @@
     background-size: 100% 1px;
   }
   .landing-cta {
+    @apply shimmer-sweep;
+    box-shadow: 0 0 25px -4px color-mix(in srgb, var(--primary) 40%, transparent);
     transition: box-shadow 240ms, background-color 240ms, translate 240ms var(--ease-calm);
   }
   .landing-cta svg {

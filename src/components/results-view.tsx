@@ -10,6 +10,7 @@ import { HelpDirectory } from "@/components/help-directory";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { Stagger } from "@/components/motion/reveal";
 import { ResultCard } from "@/components/result-card";
+import { ResultsRadarChart } from "@/components/results-radar-chart";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
 import { screeningRecordFromFlow } from "@/lib/account/screening";
@@ -95,6 +96,7 @@ export function ResultsView() {
             <h1 className="text-4xl leading-tight sm:text-5xl">{t("title")}</h1>
             <p className="font-heading text-xl text-sage-ink italic">{t("thanks")}</p>
           </header>
+          <ResultsRadarChart result={result} />
 
           <Stagger className="space-y-4">
             {SUBSCALES.map((subscale) => (

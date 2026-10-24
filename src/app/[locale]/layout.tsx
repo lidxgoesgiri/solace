@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { FlowGuard } from "@/components/flow-guard";
+import { CursorSpotlight } from "@/components/motion/cursor-spotlight";
 import { HtmlLang } from "@/components/html-lang";
 import { PageTransition } from "@/components/motion/page-transition";
 import { SiteFooter } from "@/components/site-footer";
@@ -64,6 +65,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <body className="flex min-h-dvh flex-col">
         <NextIntlClientProvider>
           <HtmlLang />
+          <CursorSpotlight />
           <SiteHeader />
           <main
             id="content"

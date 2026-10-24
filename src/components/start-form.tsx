@@ -17,15 +17,15 @@ const AGE_CHOICES = ["adult", "minor"] as const;
 type AgeChoice = (typeof AGE_CHOICES)[number];
 
 const ageCardClass = cn(
-  "group flex min-h-14 w-full cursor-pointer items-center gap-3.5 rounded-2xl border bg-card px-5 py-3.5 text-left text-base",
-  "transition-[border-color,background-color,box-shadow] duration-(--duration-quick) ease-(--ease-calm)",
-  "hover:border-input hover:shadow-(--shadow-soft)",
+  "group relative flex min-h-14 w-full cursor-pointer items-center gap-3.5 rounded-2xl border bg-card/90 backdrop-blur-md px-5 py-3.5 text-left text-base",
+  "transition-[border-color,background-color,box-shadow,transform] duration-(--duration-quick) ease-(--ease-calm)",
+  "hover:border-primary/50 hover:shadow-(--shadow-soft) hover:translate-x-1 active:scale-[0.985]",
   "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
-  "data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:shadow-(--shadow-soft)",
+  "data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:shadow-[0_0_20px_-3px_color-mix(in_srgb,var(--primary)_30%,transparent)] data-[state=checked]:translate-x-1",
 );
 
 const radioDotClass =
-  "flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-input transition-colors group-data-[state=checked]:border-primary";
+  "flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-input transition-all duration-(--duration-quick) group-data-[state=checked]:border-primary group-data-[state=checked]:scale-105";
 
 /** Age confirmation (LO-04) and consent (LO-05) before the first question. */
 export function StartForm() {
@@ -84,7 +84,7 @@ export function StartForm() {
           data-testid="under-18-panel"
           aria-labelledby="minor-title"
           aria-live="polite"
-          className="animate-rise-in space-y-4 rounded-2xl border border-sun-edge/60 bg-sun-soft p-6 sm:p-8"
+          className="animate-rise-in space-y-4 rounded-2xl border border-sun-edge/60 bg-sun-soft/90 backdrop-blur-md p-6 sm:p-8"
         >
           <h2 id="minor-title" className="text-2xl">
             {t("minorTitle")}
@@ -97,7 +97,7 @@ export function StartForm() {
 
       {age === "adult" ? (
         <div className="animate-rise-in space-y-6">
-          <div className="surface flex items-start gap-3.5 p-5">
+          <div className="glass-surface flex items-start gap-3.5 p-5">
             <Checkbox
               id="consent"
               data-testid="consent-checkbox"
@@ -105,7 +105,7 @@ export function StartForm() {
               onCheckedChange={(checked) => setConsent(checked === true)}
               className="mt-0.5"
             />
-            <label htmlFor="consent" className="text-base leading-snug">
+            <label htmlFor="consent" className="cursor-pointer text-base leading-snug select-none">
               {t("consentLabel")}
             </label>
           </div>
