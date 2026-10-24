@@ -795,6 +795,7 @@
     "moodLegend": "Today's mood",
     "noteLabel": "Note (optional)",
     "noteHint": "Only you can read it.",
+    "notePlaceholder": "For example: I feel anxious about tomorrow's presentation.",
     "checkinSave": "Save check-in",
     "checkinSaved": "Check-in saved.",
     "checkinError": "The check-in was not saved. Please try again.",

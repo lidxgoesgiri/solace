@@ -795,6 +795,7 @@
     "moodLegend": "Suasana hati hari ini",
     "noteLabel": "Catatan (opsional)",
     "noteHint": "Hanya kamu yang bisa membacanya.",
+    "notePlaceholder": "Misalnya: Aku merasa cemas karena presentasi besok.",
     "checkinSave": "Simpan check-in",
     "checkinSaved": "Check-in tersimpan.",
     "checkinError": "Check-in belum tersimpan. Coba lagi.",

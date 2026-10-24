@@ -24,13 +24,17 @@
       },
       "evidence": {
         "summary": {
-          "id": "Meta-analisis 16 uji acak (780 peserta) menemukan bahwa menjadwalkan kegiatan yang menyenangkan mengurangi gejala depresi dengan efek besar, setara dengan terapi kognitif, dan manfaatnya bertahan saat tindak lanjut.",
-          "en": "A meta-analysis of 16 randomised trials (780 participants) found that scheduling pleasant activities reduced depressive symptoms with a large effect, about as much as cognitive therapy, and the benefit lasted at follow-up."
+          "id": "Meta-analisis 16 uji acak (780 peserta) menemukan bahwa menjadwalkan kegiatan yang menyenangkan mengurangi gejala depresi dengan efek besar, setara dengan terapi kognitif dan bertahan saat tindak lanjut, dan meta-analisis 22 uji acak tahun 2023 menemukan bahwa aktivasi perilaku yang dijalankan bersama terapis juga efektif.",
+          "en": "A meta-analysis of 16 randomised trials (780 participants) found that scheduling pleasant activities reduced depressive symptoms with a large effect, about as much as cognitive therapy and lasting at follow-up, and a 2023 meta-analysis of 22 randomised trials found behavioural activation delivered one-to-one by a therapist effective too."
         },
         "sources": [
           {
             "label": "Cuijpers, van Straten & Warmerdam (2007), Clinical Psychology Review 27(3)",
             "url": "https://doi.org/10.1016/j.cpr.2006.11.001"
+          },
+          {
+            "label": "Cuijpers et al. (2023), Psychotherapy Research 33(7)",
+            "url": "https://doi.org/10.1080/10503307.2023.2197630"
           }
         ]
       }
@@ -282,8 +286,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "Panduan stres WHO mengajarkan tiga langkah melepaskan diri dari pikiran yang berat (sadari, beri nama, kembali fokus), dan program Self-Help Plus yang memakainya menurunkan tekanan psikologis dengan efek kecil dalam uji acak.",
-          "en": "WHO's stress guide teaches three steps for unhooking from difficult thoughts (notice, name, refocus), and the Self-Help Plus programme that uses it reduced psychological distress with a small effect in a randomised trial."
+          "id": "Panduan stres WHO mengajarkan tiga langkah melepaskan diri dari pikiran yang berat (sadari, beri nama, kembali fokus), program Self-Help Plus yang memakainya menurunkan tekanan psikologis dengan efek kecil dalam uji acak, dan tinjauan riset menunjukkan bahwa menamai perasaan dapat meredakan intensitasnya.",
+          "en": "WHO's stress guide teaches three steps for unhooking from difficult thoughts (notice, name, refocus), the Self-Help Plus programme that uses it reduced psychological distress with a small effect in a randomised trial, and a research review shows that putting feelings into words can ease how intense they feel."
         },
         "sources": [
           {
@@ -293,6 +297,10 @@
           {
             "label": "Tol et al. (2020), The Lancet Global Health 8(2): Self-Help Plus trial",
             "url": "https://doi.org/10.1016/S2214-109X(19)30504-2"
+          },
+          {
+            "label": "Torre & Lieberman (2018), Emotion Review 10(2)",
+            "url": "https://doi.org/10.1177/1754073917742706"
           }
         ]
       }
@@ -398,8 +406,8 @@
       },
       "evidence": {
         "summary": {
-          "id": "Dua meta-analisis uji acak menemukan bahwa latihan mindfulness lewat bantuan mandiri atau secara daring mengurangi kecemasan dan gejala depresi dengan efek kecil sampai sedang, dan stres dengan efek sedang.",
-          "en": "Two meta-analyses of randomised trials found that self-help and online mindfulness practice reduced anxiety and depressive symptoms with small-to-medium effects, and stress with a moderate effect."
+          "id": "Tiga meta-analisis uji acak, termasuk 34 uji aplikasi mindfulness, menemukan bahwa latihan mindfulness mandiri, daring, atau lewat aplikasi mengurangi stres, kecemasan, dan gejala depresi dengan efek kecil sampai sedang.",
+          "en": "Three meta-analyses of randomised trials, including 34 trials of mindfulness apps, found that self-help, online, and app-based mindfulness practice reduced stress, anxiety, and depressive symptoms with small-to-medium effects."
         },
         "sources": [
           {
@@ -409,6 +417,10 @@
           {
             "label": "Spijkerman, Pots & Bohlmeijer (2016), Clinical Psychology Review 45",
             "url": "https://doi.org/10.1016/j.cpr.2016.03.009"
+          },
+          {
+            "label": "Gál, Ștefan & Cristea (2021), Journal of Affective Disorders 279",
+            "url": "https://doi.org/10.1016/j.jad.2020.09.134"
           }
         ]
       }
@@ -448,6 +460,45 @@
           {
             "label": "WHO (2016), mhGAP Intervention Guide, version 2.0",
             "url": "https://www.who.int/publications/i/item/9789241549790"
+          }
+        ]
+      }
+    },
+    {
+      "id": "name-feelings",
+      "dimensions": ["depression", "stress"],
+      "severity": ["mild", "moderate", "severe", "extremely_severe"],
+      "evidenceLevel": "moderate",
+      "title": { "id": "Tulis dan beri nama perasaanmu", "en": "Write down and name what you feel" },
+      "body": {
+        "id": "Perasaan yang berat sering terasa kabur dan bercampur. Menuliskannya lalu memberinya nama membantumu mengenali apa yang sedang terjadi di dalam dirimu, dan itu sering jadi langkah pertama untuk mengelolanya.",
+        "en": "Heavy feelings often feel blurry and tangled. Writing them down and giving them a name helps you recognise what is going on inside you, which is often a first step towards handling it."
+      },
+      "howTo": {
+        "id": [
+          "Sediakan lima menit, lalu tulis singkat apa yang terjadi hari ini dan bagaimana rasanya di tubuh dan pikiranmu.",
+          "Pilih satu atau dua kata yang paling pas, misalnya sedih, cemas, kesal, lelah, atau kecewa, lalu lengkapi kalimat: \"Aku sedang merasa …\".",
+          "Catat juga satu hal yang kamu lakukan untuk menghadapinya. Check-in harian di halaman Riwayat bisa membantumu melihat polanya dari hari ke hari."
+        ],
+        "en": [
+          "Set aside five minutes and briefly write what happened today and how it feels in your body and mind.",
+          "Choose one or two words that fit best, such as sad, anxious, irritated, tired, or disappointed, and finish the sentence: \"Right now I feel …\".",
+          "Also note one thing you did to cope. The daily check-in on the History page can help you see the pattern from day to day."
+        ]
+      },
+      "evidence": {
+        "summary": {
+          "id": "Dalam uji acak pada anak muda dengan gejala depresi ringan ke atas, mencatat suasana hati, stres, dan cara menghadapinya lewat ponsel meningkatkan kesadaran emosi, yang kemudian berkaitan dengan gejala depresi yang lebih rendah, dan tinjauan riset menunjukkan bahwa menamai perasaan dapat meredakan intensitasnya.",
+          "en": "In a randomised trial with young people who had mild or more depressive symptoms, tracking mood, stress, and coping on a mobile phone increased emotional self-awareness, which in turn was linked to fewer depressive symptoms, and a research review shows that putting feelings into words can ease how intense they feel."
+        },
+        "sources": [
+          {
+            "label": "Kauer et al. (2012), Journal of Medical Internet Research 14(3):e67",
+            "url": "https://doi.org/10.2196/jmir.1858"
+          },
+          {
+            "label": "Torre & Lieberman (2018), Emotion Review 10(2)",
+            "url": "https://doi.org/10.1177/1754073917742706"
           }
         ]
       }

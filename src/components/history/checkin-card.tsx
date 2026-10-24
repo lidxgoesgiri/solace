@@ -93,6 +93,7 @@ export function CheckinCard({ checkins }: { checkins: StoredRecord<"checkin">[] 
             maxLength={NOTE_MAX}
             value={note}
             onChange={(event) => setNote(event.target.value)}
+            placeholder={t("notePlaceholder")}
             aria-describedby={`${noteId}-hint`}
             data-testid="checkin-note"
             className="block w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-base transition-colors hover:border-ink/60"
