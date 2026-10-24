@@ -13,6 +13,7 @@ import {
   resumePath,
 } from "@/lib/flow";
 import { DASS21_ITEM_COUNT } from "@/lib/answers";
+import { clearDrafts } from "@/store/draft-store";
 import { useFlow, useFlowDispatch, useFlowHydrated } from "@/store/flow-store";
 
 const RING_RADIUS = 26;
@@ -100,6 +101,7 @@ export function LandingResume() {
               data-testid="restart-screening"
               onClick={() => {
                 dispatch({ type: "CLEAR_DEVICE_DATA" });
+                clearDrafts();
                 router.push(PATHS.mulai);
               }}
             >

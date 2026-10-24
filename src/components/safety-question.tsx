@@ -12,6 +12,7 @@ import { useRouter } from "@/i18n/navigation";
 import type { AnswerOption, Locale } from "@/lib/content";
 import { PATHS, pathAfterSafety } from "@/lib/flow";
 import type { AnswerValue } from "@/lib/scoring";
+import { restoreSafetyDraft, saveSafetyDraft } from "@/store/draft-store";
 import { useFlow, useFlowDispatch, useFlowStore } from "@/store/flow-store";
 
 /**
@@ -39,7 +40,11 @@ export function SafetyQuestion({
   const flow = useFlow();
   const dispatch = useFlowDispatch();
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [selected, setSelected] = useState<AnswerValue | null>(flow.safetyAnswer);
+  // The choice counts only when submitted; until then it is a draft that
+  // survives a language switch and never touches the crisis gate.
+  const [selected, setSelected] = useState<AnswerValue | null>(
+    () => restoreSafetyDraft(locale) ?? flow.safetyAnswer,
+  );
 
   // PRD 9.5: a gentle check when a positive answer is changed to 0.
   const showWithdrawNote = flow.safetyEverPositive && selected === 0;
@@ -47,6 +52,10 @@ export function SafetyQuestion({
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    saveSafetyDraft(selected, locale);
+  }, [selected, locale]);
 
   const submit = () => {
     if (selected === null) return;
@@ -56,6 +65,7 @@ export function SafetyQuestion({
       at: new Date().toISOString(),
       locale,
     });
+    saveSafetyDraft(null, locale);
     router.push(pathAfterSafety(useFlowStore.getState().flow));
   };
 

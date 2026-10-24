@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowRight } from "@/components/icons/arrow-right";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { HelpDirectory } from "@/components/help-directory";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,10 +11,10 @@ import { useRouter } from "@/i18n/navigation";
 import { trackEvent } from "@/lib/metrics-client";
 import { firstUnansweredItem, hasDraft, isScreeningFinished, resumePath } from "@/lib/flow";
 import { cn } from "@/lib/utils";
+import { clearDrafts, restoreStartDraft, saveStartDraft, type AgeChoice } from "@/store/draft-store";
 import { useFlow, useFlowDispatch, useFlowHydrated, useFlowStore } from "@/store/flow-store";
 
-const AGE_CHOICES = ["adult", "minor"] as const;
-type AgeChoice = (typeof AGE_CHOICES)[number];
+const AGE_CHOICES = ["adult", "minor"] as const satisfies readonly AgeChoice[];
 
 const ageCardClass = cn(
   "group relative flex min-h-14 w-full cursor-pointer items-center gap-3.5 rounded-2xl border bg-card/90 backdrop-blur-md px-5 py-3.5 text-left text-base",
@@ -30,12 +30,19 @@ const radioDotClass =
 /** Age confirmation (LO-04) and consent (LO-05) before the first question. */
 export function StartForm() {
   const t = useTranslations("start");
+  const locale = useLocale();
   const router = useRouter();
   const hydrated = useFlowHydrated();
   const flow = useFlow();
   const dispatch = useFlowDispatch();
-  const [age, setAge] = useState<AgeChoice | null>(null);
-  const [consent, setConsent] = useState(false);
+  // Unsent choices survive a language switch (the page remounts); consent
+  // still counts only when "Mulai" is pressed.
+  const [age, setAge] = useState<AgeChoice | null>(() => restoreStartDraft(locale)?.age ?? null);
+  const [consent, setConsent] = useState(() => restoreStartDraft(locale)?.consent ?? false);
+
+  useEffect(() => {
+    saveStartDraft({ age, consent }, locale);
+  }, [age, consent, locale]);
 
   const canBegin = age === "adult" && consent;
   const draftQuestion = hydrated && hasDraft(flow) ? firstUnansweredItem(flow) : null;
@@ -43,6 +50,7 @@ export function StartForm() {
 
   const begin = () => {
     if (!canBegin) return;
+    clearDrafts();
     dispatch({ type: "BEGIN_SCREENING", at: new Date().toISOString() });
     trackEvent("screening_started");
     router.push(resumePath(useFlowStore.getState().flow));

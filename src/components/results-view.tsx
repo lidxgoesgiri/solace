@@ -19,6 +19,7 @@ import { resultsView } from "@/lib/results";
 import { trackEvent } from "@/lib/metrics-client";
 import { SUBSCALES } from "@/lib/scoring";
 import { isAccountOpen } from "@/store/account-store";
+import { clearDrafts } from "@/store/draft-store";
 import { useFlow, useFlowDispatch, useFlowStore } from "@/store/flow-store";
 
 /**
@@ -53,6 +54,7 @@ export function ResultsView() {
 
   const clearDevice = () => {
     dispatch({ type: "CLEAR_DEVICE_DATA" });
+    clearDrafts();
     router.push(PATHS.landing);
   };
 
