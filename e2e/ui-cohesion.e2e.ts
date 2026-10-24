@@ -168,6 +168,11 @@ for (const locale of locales) {
     await page.getByTestId("safety-submit").click();
     await expect(page.getByTestId("crisis-screen")).toBeVisible();
     await expect(page.getByTestId("crisis-continue")).toBeDisabled();
+    // Before scrolling to it, the countdown text must already follow the clock.
+    const countdown = page.getByTestId("breathing-countdown");
+    await expect(countdown).toBeAttached();
+    const offScreenStart = (await countdown.textContent()) ?? "";
+    await expect(countdown, "countdown keeps time before the pacer is scrolled into view").not.toHaveText(offScreenStart, { timeout: 3_000 });
     await page.getByTestId("breathing-pacer").scrollIntoViewIfNeeded();
     await expect(page.getByTestId("breathing-vibration")).toHaveAttribute("aria-checked", "false");
     const seen = await page.evaluate(async () => {
