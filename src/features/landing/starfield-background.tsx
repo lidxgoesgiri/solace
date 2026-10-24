@@ -106,17 +106,46 @@ export function StarfieldBackground() {
       targetMouseY = (e.clientY / height - 0.5) * 18;
     };
 
+    // With reduced motion no loop repaints the sky, so repaint it on demand.
+    const repaintStill = () => {
+      if (reducedMotion) render();
+    };
+
     const handleResize = () => {
-      setupCanvas();
+      const oldWidth = width;
+      const oldHeight = height;
+      setupCanvas(); // resizing the canvas also clears it
+      if (oldWidth > 0 && oldHeight > 0) {
+        for (const star of stars) {
+          star.x *= width / oldWidth;
+          star.y *= height / oldHeight;
+        }
+      }
+      repaintStill();
     };
 
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     window.addEventListener("resize", handleResize, { passive: true });
 
+    // The moving sky reads the theme every frame; the still one repaints here.
+    const themeObserver = new MutationObserver(repaintStill);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    const colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
+    colorScheme.addEventListener("change", repaintStill);
+
     let isVisible = !document.hidden;
     const handleVisibility = () => {
       isVisible = !document.hidden;
-      if (isVisible && !reducedMotion) {
+      if (!isVisible) return;
+      if (reducedMotion) {
+        render();
+      } else {
+        // A frame queued before the tab was hidden may still be pending;
+        // cancel it so only one loop runs.
+        cancelAnimationFrame(animationFrameId);
         animationFrameId = requestAnimationFrame(render);
       }
     };
@@ -185,6 +214,8 @@ export function StarfieldBackground() {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("resize", handleResize);
+      themeObserver.disconnect();
+      colorScheme.removeEventListener("change", repaintStill);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [isClient, reducedMotion]);

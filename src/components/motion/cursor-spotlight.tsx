@@ -1,53 +1,76 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
+import { usePathname } from "@/i18n/navigation";
+import { PATHS } from "@/lib/flow";
+
+/** Once the light is this close to the pointer (px), the frame loop sleeps. */
+const SETTLE_PX = 0.1;
 
 /**
  * Ambient Ethereal Spotlight that smoothly follows the cursor on desktop.
- * Adds dynamic Web3 spatial lighting without impacting performance or accessibility.
+ * The frame loop runs only while the light catches up with the pointer, and
+ * the light stays off on the crisis screen, which never animates.
  */
 export function CursorSpotlight() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const spotlightRef = useRef<HTMLDivElement | null>(null);
+  const reducedMotion = usePrefersReducedMotion();
+  const onCrisis = usePathname() === PATHS.krisis;
+  const enabled = !reducedMotion && !onCrisis;
 
   useEffect(() => {
-    const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (!isFinePointer || prefersReducedMotion || !containerRef.current) return;
+    const container = containerRef.current;
+    const spotlight = spotlightRef.current;
+    if (!enabled || !container || !spotlight) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
     // Show container
-    containerRef.current.style.display = "block";
+    container.style.display = "block";
 
     let currentX = -1000;
     let currentY = -1000;
     let targetX = -1000;
     let targetY = -1000;
-    let rafId: number;
+    let rafId = 0;
 
-    const onPointerMove = (e: PointerEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
+    const place = () => {
+      spotlight.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
     };
 
     const loop = () => {
       currentX += (targetX - currentX) * 0.12;
       currentY += (targetY - currentY) * 0.12;
 
-      if (spotlightRef.current) {
-        spotlightRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      const settled =
+        Math.abs(targetX - currentX) < SETTLE_PX && Math.abs(targetY - currentY) < SETTLE_PX;
+      if (settled) {
+        currentX = targetX;
+        currentY = targetY;
       }
-      rafId = requestAnimationFrame(loop);
+      place();
+      rafId = settled ? 0 : requestAnimationFrame(loop);
+    };
+
+    // Off-screen until the pointer first moves.
+    place();
+
+    const onPointerMove = (e: PointerEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (rafId === 0) rafId = requestAnimationFrame(loop);
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    rafId = requestAnimationFrame(loop);
 
     return () => {
       window.removeEventListener("pointermove", onPointerMove);
       cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [enabled]);
+
+  if (!enabled) return null;
 
   return (
     <div
