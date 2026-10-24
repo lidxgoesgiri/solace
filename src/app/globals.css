@@ -374,11 +374,14 @@
   .glow-violet {
     box-shadow: 0 0 35px -8px rgba(129, 140, 248, 0.45);
   }
-  .shimmer-sweep {
+  /* Tailwind v4 cannot @apply a plain class, so the CTA shares the selectors. */
+  .shimmer-sweep,
+  .landing-cta {
     position: relative;
     overflow: hidden;
   }
-  .shimmer-sweep::after {
+  .shimmer-sweep::after,
+  .landing-cta::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -387,7 +390,8 @@
     pointer-events: none;
     transition: transform 650ms var(--ease-calm);
   }
-  .shimmer-sweep:hover::after {
+  .shimmer-sweep:hover::after,
+  .landing-cta:hover::after {
     transform: translateX(100%);
   }
   .surface {
@@ -411,7 +415,6 @@
     background-size: 100% 1px;
   }
   .landing-cta {
-    @apply shimmer-sweep;
     box-shadow: 0 0 25px -4px color-mix(in srgb, var(--primary) 40%, transparent);
     transition: box-shadow 240ms, background-color 240ms, translate 240ms var(--ease-calm);
   }
