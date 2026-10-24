@@ -83,6 +83,10 @@
     "howIntro": "Get to know the process before you begin. You can pause and decide what comes next at your own pace.",
     "stepsLabel": "How Solace works",
     "stepsKicker": "Step {current} of 3",
+    "stepsNext": "See the next step",
+    "stepsPreviewPrepare": "Before you begin",
+    "stepsPreviewQuestions": "21 questions, one at a time",
+    "stepsPreviewSafety": "Then, one safety question before your results are shown.",
     "steps": {
       "understand": {
         "tab": "Understand",
@@ -143,6 +147,9 @@
     "groundingTitle": "5-4-3-2-1 grounding",
     "groundingBody": "Gently direct your attention to what you can see, touch, hear, smell, and sense.",
     "groundingLabel": "Grounding sequence from five to one",
+    "groundingPace": "Take the time you need. You can choose any step.",
+    "groundingNext": "Next step",
+    "groundingRestart": "Start again",
     "faqKicker": "Before you begin",
     "faqTitle": "Reasonable questions to ask",
     "faqIntro": "Short answers about Solace's purpose, data, and support.",
@@ -170,7 +177,54 @@
     },
     "finalKicker": "Begin with what is possible today",
     "finalTitle": "You do not have to understand everything at once.",
-    "finalBody": "Take a few minutes to notice what is happening, at a pace you choose for yourself."
+    "finalBody": "Take a few minutes to notice what is happening, at a pace you choose for yourself.",
+    "marquee": {
+      "label": "Solace assurances and commitments",
+      "dass21": "Validated DASS-21 Instrument",
+      "privacy": "100% Anonymous & Private",
+      "noAccount": "No Email or Account Required",
+      "pdf": "Counselor-Ready PDF Report",
+      "encryption": "Browser-Side Encryption",
+      "support": "24/7 Crisis Support Access"
+    },
+    "metrics": {
+      "itemsValue": "21 Items",
+      "itemsLabel": "Validated DASS-21 scale",
+      "timeValue": "~5 Mins",
+      "timeLabel": "Self-paced, no time limit",
+      "privacyValue": "0 Trackers",
+      "privacyLabel": "Data stays on your device",
+      "pdfValue": "PDF Report",
+      "pdfLabel": "Ready for your psychologist"
+    },
+    "simulator": {
+      "title": "Interactive Result Preview",
+      "hint": "Select a severity level to see an example of how results are presented:",
+      "scoreLabel": "Score",
+      "sliderLabel": "Set the example depression score",
+      "contextNormal": "Scores sit within the general population range. Maintaining sleep routines and positive habits is encouraged.",
+      "contextMild": "Mild symptoms are indicated. Spotting early triggers and practicing relaxation techniques can help.",
+      "contextModerate": "Symptoms sit at a moderate level. Talking with a campus counselor or mental health professional is recommended.",
+      "contextSevere": "Scores indicate a high emotional burden. Solace prioritises support directories and professional counseling resources.",
+      "contextExtremelySevere": "Symptoms sit at an extremely severe level. We recommend talking to a professional; you don't have to face this alone."
+    },
+    "scenarios": {
+      "kicker": "Student Context",
+      "title": "When is Solace typically used?",
+      "intro": "Academic and life burdens often accumulate unnoticed. Screening helps map out what you are experiencing.",
+      "academicTitle": "Academic Pressure & Deadlines",
+      "academicBody": "Back-to-back assignments, thesis revisions, and graduation targets causing persistent tension.",
+      "academicTag": "Related: Anxiety & Stress",
+      "nightTitle": "Racing Thoughts at Night",
+      "nightBody": "When your body is exhausted but your mind will not stop replaying worst-case scenarios and future worries.",
+      "nightTag": "Related: Anxiety",
+      "burnoutTitle": "Loss of Energy & Motivation",
+      "burnoutBody": "Things that once brought joy begin to feel empty, heavy, and emotionally draining.",
+      "burnoutTag": "Related: Depressive Symptoms",
+      "socialTitle": "Social Comparison & Expectations",
+      "socialBody": "Feeling behind compared to peers, or carrying the burden of always needing to appear fine.",
+      "socialTag": "Related: Emotional Strain"
+    }
   },
   "start": {
     "title": "Before you start",
@@ -268,6 +322,12 @@
     "thanks": "Thank you for answering honestly.",
     "scoreLabel": "Score {score} of 42",
     "categoryLabel": "Level: {severity}",
+    "radar": {
+      "kicker": "Three dimensions at a glance",
+      "title": "Emotional balance",
+      "scale": "DASS-21 scale (0–42)",
+      "label": "Radar chart of DASS-21 scores: depression {depression}, anxiety {anxiety}, stress {stress}, each out of 42."
+    },
     "priorityTitle": "We recommend talking to a professional",
     "priorityBody": "Your results show extremely severe symptoms. Talking to a professional can really help with this. You can bring a report of these results to a psychologist, your campus counselling service, or a public health centre.",
     "supportTitle": "Support is still here",
@@ -466,6 +526,14 @@
     "title": "Your Solace account",
     "homeIntro": "An account keeps your screening history, safety plan, check-ins, and chosen tips. Everything is encrypted in your browser before it is sent, so the Solace server only stores data it cannot read.",
     "noEmail": "No email, real name, or student ID. Just a username and a passphrase.",
+    "vault": {
+      "title": "Zero-knowledge vault",
+      "unlocked": "Unlocked",
+      "signedInAs": "Signed in as",
+      "encrypted": "End-to-end encrypted, no email",
+      "crypto": "Argon2id + libsodium",
+      "autoLock": "Locks after {minutes} idle minutes"
+    },
     "signUp": "Create an account",
     "signIn": "Sign in",
     "recover": "Recover access with your recovery kit",
@@ -537,6 +605,9 @@
     "linkHistory": "History and trends",
     "linkTips": "Tips for you",
     "linkPlan": "Safety plan",
+    "linkHistoryDescription": "Revisit your results and changes over time.",
+    "linkTipsDescription": "Explore small next steps and exercises to try.",
+    "linkPlanDescription": "Keep the support steps you want to remember.",
     "settingsTitle": "Account settings",
     "changeTitle": "Change passphrase",
     "currentPassphraseLabel": "Current passphrase",
@@ -701,6 +772,7 @@
     "trendOnlyOne": "Trends appear once you have two or more screenings.",
     "chartTitle": "{subscale} score",
     "chartSummary": "{subscale} score across {count} screenings. Latest: {score} ({severity}).",
+    "chartPoint": "{date}: score {score}, {severity}",
     "chartBands": "Background bands show the categories: normal, mild, moderate, severe, extremely severe.",
     "tableTitle": "Score table",
     "colDate": "Date",

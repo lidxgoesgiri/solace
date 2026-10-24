@@ -10,7 +10,7 @@ import { Info } from "@/components/icons/info";
 import { PageLoading } from "@/components/page-loading";
 import { ProfessionalHelp } from "@/components/tips/professional-help";
 import { TipCard, type TipProgress } from "@/components/tips/tip-card";
-import { GroundingList } from "@/components/toolkit/grounding-list";
+import { GroundingChecklist } from "@/components/toolkit/grounding-checklist";
 import { PmrGuide } from "@/components/toolkit/pmr-guide";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -298,15 +298,15 @@ function TipsPlan({ username, ai }: { username: string; ai: AiInfo }) {
           </h2>
           <p className="text-muted-foreground">{t("toolkitIntro")}</p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="surface space-y-4 p-6" data-testid="toolkit-breathing">
-            <h3 className="text-xl">{all("crisis.breathingTitle")}</h3>
+        <div className="grid items-stretch gap-5 md:grid-cols-2">
+          <div className="surface space-y-6 p-4 sm:p-6" data-testid="toolkit-breathing">
+            <h3 className="text-2xl">{all("crisis.breathingTitle")}</h3>
             <BreathingPacer />
           </div>
-          <div className="surface space-y-4 p-6" data-testid="toolkit-grounding">
-            <h3 className="text-xl">{all("crisis.groundingTitle")}</h3>
-            <p className="text-sm text-muted-foreground">{all("crisis.groundingIntro")}</p>
-            <GroundingList />
+          <div className="surface space-y-6 p-4 sm:p-6" data-testid="toolkit-grounding">
+            <h3 className="text-2xl">{all("crisis.groundingTitle")}</h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">{all("crisis.groundingIntro")}</p>
+            <GroundingChecklist />
           </div>
         </div>
         <div className="surface space-y-4 p-6">

@@ -40,7 +40,7 @@ export function TipCard({ tip, progress, onProgress, onReplace, children }: TipC
     <article
       aria-labelledby={titleId}
       data-testid={`tip-card-${tip.id}`}
-      className="surface space-y-5 p-6 sm:p-7"
+      className="glass-surface space-y-5 p-6 sm:p-7 transition-all duration-300 hover:shadow-lift"
     >
       <header className="space-y-2">
         <h3 id={titleId} tabIndex={-1} className="text-2xl outline-none">

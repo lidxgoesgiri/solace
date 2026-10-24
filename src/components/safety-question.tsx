@@ -12,6 +12,7 @@ import { useRouter } from "@/i18n/navigation";
 import type { AnswerOption, Locale } from "@/lib/content";
 import { PATHS, pathAfterSafety } from "@/lib/flow";
 import type { AnswerValue } from "@/lib/scoring";
+import { restoreSafetyDraft, saveSafetyDraft } from "@/store/draft-store";
 import { useFlow, useFlowDispatch, useFlowStore } from "@/store/flow-store";
 
 /**
@@ -39,7 +40,11 @@ export function SafetyQuestion({
   const flow = useFlow();
   const dispatch = useFlowDispatch();
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [selected, setSelected] = useState<AnswerValue | null>(flow.safetyAnswer);
+  // The choice counts only when submitted; until then it is a draft that
+  // survives a language switch and never touches the crisis gate.
+  const [selected, setSelected] = useState<AnswerValue | null>(
+    () => restoreSafetyDraft(locale) ?? flow.safetyAnswer,
+  );
 
   // PRD 9.5: a gentle check when a positive answer is changed to 0.
   const showWithdrawNote = flow.safetyEverPositive && selected === 0;
@@ -47,6 +52,10 @@ export function SafetyQuestion({
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    saveSafetyDraft(selected, locale);
+  }, [selected, locale]);
 
   const submit = () => {
     if (selected === null) return;
@@ -56,6 +65,7 @@ export function SafetyQuestion({
       at: new Date().toISOString(),
       locale,
     });
+    saveSafetyDraft(null, locale);
     router.push(pathAfterSafety(useFlowStore.getState().flow));
   };
 
@@ -71,19 +81,19 @@ export function SafetyQuestion({
         >
           {t("title")}
         </h1>
-        <p id="safety-intro" className="flex items-start gap-3 rounded-2xl bg-sky-soft p-4 sm:p-5">
+        <p id="safety-intro" className="flex items-start gap-3 rounded-2xl border border-sky/40 bg-sky-soft/80 backdrop-blur-md p-4 sm:p-5 shadow-xs">
           <ShieldCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-primary" />
           <span>{t("intro")}</span>
         </p>
       </header>
 
-      <div className="space-y-4">
+      <div className="glass-surface space-y-4 p-6 sm:p-8">
         <p className="text-sm font-semibold text-sage-ink">{t("period")}</p>
         <p className="text-muted-foreground">{stem}</p>
         <p
           id="safety-text"
           data-testid="safety-text"
-          className="font-heading text-[1.6rem] leading-snug sm:text-3xl"
+          className="font-heading text-[1.6rem] leading-snug sm:text-3xl text-foreground"
         >
           {text}
         </p>

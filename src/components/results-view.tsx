@@ -10,6 +10,7 @@ import { HelpDirectory } from "@/components/help-directory";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { Stagger } from "@/components/motion/reveal";
 import { ResultCard } from "@/components/result-card";
+import { ResultsRadarChart } from "@/components/results-radar-chart";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/navigation";
 import { screeningRecordFromFlow } from "@/lib/account/screening";
@@ -18,6 +19,7 @@ import { resultsView } from "@/lib/results";
 import { trackEvent } from "@/lib/metrics-client";
 import { SUBSCALES } from "@/lib/scoring";
 import { isAccountOpen } from "@/store/account-store";
+import { clearDrafts } from "@/store/draft-store";
 import { useFlow, useFlowDispatch, useFlowStore } from "@/store/flow-store";
 
 /**
@@ -52,6 +54,7 @@ export function ResultsView() {
 
   const clearDevice = () => {
     dispatch({ type: "CLEAR_DEVICE_DATA" });
+    clearDrafts();
     router.push(PATHS.landing);
   };
 
@@ -101,6 +104,9 @@ export function ResultsView() {
               <ResultCard key={subscale} subscale={subscale} result={result[subscale]} />
             ))}
           </Stagger>
+
+          {/* A visual summary after the cards, which carry the result in words (HS-02). */}
+          <ResultsRadarChart result={result} />
         </div>
 
         <section aria-labelledby="next-steps-title" className="space-y-6">

@@ -13,10 +13,9 @@ interface Dot {
 }
 
 /**
- * Restored from the original footer (070df97), inspired by Kedhareswer Naidu's
- * MIT-licensed 21st.dev Halftone Wordmark Footer. Sampling, density, spring,
- * damping, repulsion and click ripple are unchanged. Only the palette and
- * input surface adapt to its new place behind the hero content.
+ * Inspired by the original MIT-licensed 21st.dev Halftone Wordmark Footer.
+ * The hero reads pointer input without intercepting links. Both resting and
+ * active dots use theme-aware ink, so interaction stays visible on warm paper.
  */
 export function HalftoneWordmark() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,12 +39,12 @@ export function HalftoneWordmark() {
     let frame = 0;
     let last = 0;
     let restingColor = "#3d5c45";
-    let displacedColor = "#f5d7a1";
+    let displacedColor = "#2c5874";
 
     const updateColors = () => {
       const palette = getComputedStyle(wrapper);
       restingColor = palette.color;
-      displacedColor = palette.getPropertyValue("--brand-sun").trim() || "#f5d7a1";
+      displacedColor = palette.getPropertyValue("--primary").trim() || restingColor;
     };
 
     const fallback = () => {
@@ -164,7 +163,7 @@ export function HalftoneWordmark() {
       pointer.current.active = pointer.current.x >= 0 && pointer.current.x <= box.width
         && pointer.current.y >= 0 && pointer.current.y <= box.height;
     };
-    const leave = () => { pointer.current.active = false; };
+    const leave = () => { pointer.current.active = false; pointer.current.ripple = 0; };
     const press = (event: PointerEvent) => {
       move(event);
       if (pointer.current.active) pointer.current.ripple = 65;
@@ -183,8 +182,10 @@ export function HalftoneWordmark() {
     }, { rootMargin: "60px" });
     intersection.observe(wrapper);
     const preference = () => { leave(); fallback(); build(); };
+    const visibility = () => { leave(); resume(); };
     eligible.addEventListener("change", preference);
-    document.addEventListener("visibilitychange", resume);
+    document.addEventListener("visibilitychange", visibility);
+    window.addEventListener("blur", leave);
     const theme = new MutationObserver(updateColors);
     theme.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class", "style"] });
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
@@ -202,7 +203,8 @@ export function HalftoneWordmark() {
       intersection.disconnect();
       theme.disconnect();
       eligible.removeEventListener("change", preference);
-      document.removeEventListener("visibilitychange", resume);
+      document.removeEventListener("visibilitychange", visibility);
+      window.removeEventListener("blur", leave);
       systemTheme.removeEventListener("change", updateColors);
       hero.removeEventListener("pointermove", move, pointerOptions);
       hero.removeEventListener("pointerdown", press, pointerOptions);

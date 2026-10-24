@@ -1,11 +1,14 @@
 # Testing Solace
 
-Solace is tested in two layers:
+Solace is tested in three complementary layers:
 
 | Layer | Runs on | Covers |
 | --- | --- | --- |
 | **Vitest** (`pnpm test`) | GitHub Actions, every push and PR | Pure logic and the API: DASS-21 scoring, the flow state machine and crisis gate, draft expiry, tip selection, history trends, encryption, the account API (on an in-memory PGlite database), the PDFs, the security headers, offline caching, clinical data and the help directory, message key parity, the health check |
 | **TestSprite 3.0** | Every PR's Vercel preview, through the TestSprite GitHub App | User behaviour on the live app: the flow, the crisis gate, language, directory, accessibility of key controls |
+| **Playwright rendered regressions** | GitHub Actions, production build with an ephemeral Postgres database | Exact 320/375/768/1024/1440px layouts in ID/EN and light/dark, grounding and introduction controls, screening keyboard/autosave/pause, account cards, 4/6 pacer and reduced motion, crisis/history guards and results. Screenshots and failure traces are retained as `ui-evidence` for seven days. |
+
+The rendered suite supplements TestSprite where its viewport presets cannot reproduce an exact width. It uses real UI flows and disposable CI accounts, not production data or AI providers. Screenshot capture is evidence for visual review, not a claim of pixel-perfect approval. The test file uses `.e2e.ts` so Vitest does not collect browser tests.
 
 This file is the scenario plan for the TestSprite suite. Each scenario maps to a Safety Contract invariant (see the README) or a PRD requirement ID.
 

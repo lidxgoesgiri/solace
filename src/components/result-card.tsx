@@ -14,6 +14,14 @@ const SEVERITY_STYLES: Record<Severity, string> = {
   extremely_severe: "bg-sev-extreme border-sev-extreme-edge",
 };
 
+const SEVERITY_AURA: Record<Severity, string> = {
+  normal: "glow-sage border-sev-normal-edge/30",
+  mild: "glow-sky border-sev-mild-edge/30",
+  moderate: "glow-sun border-sev-moderate-edge/30",
+  severe: "glow-violet border-sev-severe-edge/30",
+  extremely_severe: "glow-violet border-sev-extreme-edge/40",
+};
+
 /**
  * Five ascending bars, filled up to the category level one after another.
  * Severity is always shown as text too, so the meter is decorative for
@@ -71,7 +79,7 @@ interface ResultCardProps {
   result: SubscaleResult;
 }
 
-/** One DASS-21 dimension: category in words + meter + tint (HS-02, HS-03). */
+/** One DASS-21 dimension: category in words + meter + tint (HS-02, HS-03) with Web3 ambient aura. */
 export function ResultCard({ subscale, result }: ResultCardProps) {
   const t = useTranslations();
   const { severity, score } = result;
@@ -92,15 +100,18 @@ export function ResultCard({ subscale, result }: ResultCardProps) {
       data-testid={`result-card-${subscale}`}
       data-severity={severity}
       data-score={score}
-      className="surface grid gap-5 p-6 sm:p-8 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-10"
+      className={cn(
+        "glass-surface relative grid gap-5 p-6 sm:p-8 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-10 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift",
+        SEVERITY_AURA[severity],
+      )}
     >
       <div className="space-y-3">
-        <h2 id={titleId} className="text-2xl sm:text-3xl">
+        <h2 id={titleId} className="text-2xl font-medium tracking-tight sm:text-3xl text-foreground">
           {t(`subscale.${subscale}`)}
         </h2>
         <p
           className={cn(
-            "inline-flex max-w-full items-center gap-2.5 rounded-2xl border py-1.5 pr-4 pl-3 text-base font-semibold text-ink",
+            "inline-flex max-w-full items-center gap-2.5 rounded-2xl border py-1.5 pr-4 pl-3 text-base font-semibold text-ink shadow-xs",
             SEVERITY_STYLES[severity],
           )}
           data-testid={`result-severity-${subscale}`}
@@ -109,14 +120,14 @@ export function ResultCard({ subscale, result }: ResultCardProps) {
           <span className="min-w-0">{t(`severity.${severity}`)}</span>
         </p>
         <p
-          className="numeral text-lg text-muted-foreground"
+          className="numeral text-lg font-medium text-muted-foreground"
           data-testid={`result-score-${subscale}`}
         >
           {t("results.scoreLabel", { score })}
         </p>
       </div>
-      <p className="measure leading-relaxed md:border-l md:pl-10">
-        {intro} {t(`explanation.${subscale}`)} {t(`explanation.advice.${severity}`)}
+      <p className="measure leading-relaxed text-muted-foreground md:border-l md:border-border/60 md:pl-10">
+        <span className="text-foreground">{intro}</span> {t(`explanation.${subscale}`)} {t(`explanation.advice.${severity}`)}
       </p>
     </m.article>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { useId } from "react";
+import { useTranslations } from "next-intl";
+import { useId, useState, type CSSProperties, type PointerEvent } from "react";
 import {
   CUTOFFS,
   MAX_SUBSCALE_SCORE,
@@ -32,6 +33,9 @@ const PLOT_H = H - PAD.top - PAD.bottom;
 
 const y = (score: number) => PAD.top + PLOT_H * (1 - score / MAX_SUBSCALE_SCORE);
 
+// SVG shapes scale from the viewBox origin by default; pulse around the point.
+const PULSE_ORIGIN: CSSProperties = { transformBox: "fill-box", transformOrigin: "center" };
+
 /** Category bands of one subscale on the ×2 scale, from the single CUTOFFS constant. */
 function bands(subscale: Subscale): { severity: Severity; from: number; to: number }[] {
   const starts = [
@@ -54,28 +58,66 @@ interface TrendChartProps {
 }
 
 /**
- * RW-01: one subscale's score over time, with the category bands behind the
- * line. Decorative to assistive technology except for its summary; the
- * table under the charts carries every number.
+ * RW-01: one subscale's score over time with Web3 interactive data scrubber.
  */
 export function TrendChart({ subscale, title, summary, points, formatShortDate }: TrendChartProps) {
+  const t = useTranslations();
   const id = useId();
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
   const x = (index: number) =>
     points.length === 1 ? PAD.left + PLOT_W / 2 : PAD.left + (PLOT_W * index) / (points.length - 1);
   const path = points
     .map((point, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(point.score).toFixed(1)}`)
     .join(" ");
 
+  const onPointerMove = (e: PointerEvent<SVGSVGElement>) => {
+    if (points.length === 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * W;
+
+    // Find closest point index
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    for (let i = 0; i < points.length; i++) {
+      const diff = Math.abs(x(i) - svgX);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = i;
+      }
+    }
+    setHoveredIdx(closestIdx);
+  };
+
+  const activePoint = hoveredIdx !== null ? points[hoveredIdx] : null;
+
   return (
-    <figure className="surface space-y-2 p-4" data-testid={`history-chart-${subscale}`}>
-      <figcaption id={`${id}-title`} className="font-heading text-lg">
-        {title}
-      </figcaption>
+    <figure
+      className="glass-surface relative space-y-2 p-4 transition-all hover:shadow-lift"
+      data-testid={`history-chart-${subscale}`}
+    >
+      <div className="flex items-center justify-between">
+        <figcaption id={`${id}-title`} className="font-heading text-lg font-medium text-foreground">
+          {title}
+        </figcaption>
+        {activePoint ? (
+          <span className="rounded-md border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+            {t("history.chartPoint", {
+              date: formatShortDate(activePoint.at),
+              score: activePoint.score,
+              severity: t(`severityInline.${activePoint.severity}`),
+            })}
+          </span>
+        ) : null}
+      </div>
+
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
         aria-labelledby={`${id}-title ${id}-desc`}
-        className="h-auto w-full"
+        className="h-auto w-full cursor-crosshair select-none"
+        onPointerMove={onPointerMove}
+        onPointerLeave={() => setHoveredIdx(null)}
       >
         <desc id={`${id}-desc`}>{summary}</desc>
         {bands(subscale).map((band) => (
@@ -102,23 +144,54 @@ export function TrendChart({ subscale, title, summary, points, formatShortDate }
             {tick}
           </text>
         ))}
+
+        {/* Dynamic Glow Filter for the Line */}
         <path
           d={path}
           fill="none"
-          strokeWidth={2}
+          strokeWidth={2.5}
           className="stroke-primary"
           strokeLinejoin="round"
         />
-        {points.map((point, i) => (
-          <circle
-            key={point.at}
-            cx={x(i)}
-            cy={y(point.score)}
-            r={3.5}
-            strokeWidth={2}
-            className="fill-card stroke-primary"
+
+        {/* Scrubber crosshair line */}
+        {hoveredIdx !== null ? (
+          <line
+            x1={x(hoveredIdx)}
+            y1={PAD.top}
+            x2={x(hoveredIdx)}
+            y2={H - PAD.bottom}
+            stroke="var(--primary)"
+            strokeWidth="1.5"
+            strokeDasharray="2 2"
+            opacity="0.75"
           />
-        ))}
+        ) : null}
+
+        {points.map((point, i) => {
+          const isHovered = hoveredIdx === i;
+          return (
+            <g key={point.at}>
+              {isHovered ? (
+                <circle
+                  cx={x(i)}
+                  cy={y(point.score)}
+                  r={7}
+                  className="fill-primary/20 motion-safe:animate-ping"
+                  style={PULSE_ORIGIN}
+                />
+              ) : null}
+              <circle
+                cx={x(i)}
+                cy={y(point.score)}
+                r={isHovered ? 5 : 3.5}
+                strokeWidth={isHovered ? 2.5 : 2}
+                className="fill-card stroke-primary transition-all duration-150"
+              />
+            </g>
+          );
+        })}
+
         {points.length > 0 ? (
           <>
             <text

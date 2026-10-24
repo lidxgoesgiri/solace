@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowRight } from "@/components/icons/arrow-right";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { HelpDirectory } from "@/components/help-directory";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,31 +11,38 @@ import { useRouter } from "@/i18n/navigation";
 import { trackEvent } from "@/lib/metrics-client";
 import { firstUnansweredItem, hasDraft, isScreeningFinished, resumePath } from "@/lib/flow";
 import { cn } from "@/lib/utils";
+import { clearDrafts, restoreStartDraft, saveStartDraft, type AgeChoice } from "@/store/draft-store";
 import { useFlow, useFlowDispatch, useFlowHydrated, useFlowStore } from "@/store/flow-store";
 
-const AGE_CHOICES = ["adult", "minor"] as const;
-type AgeChoice = (typeof AGE_CHOICES)[number];
+const AGE_CHOICES = ["adult", "minor"] as const satisfies readonly AgeChoice[];
 
 const ageCardClass = cn(
-  "group flex min-h-14 w-full cursor-pointer items-center gap-3.5 rounded-2xl border bg-card px-5 py-3.5 text-left text-base",
-  "transition-[border-color,background-color,box-shadow] duration-(--duration-quick) ease-(--ease-calm)",
-  "hover:border-input hover:shadow-(--shadow-soft)",
+  "group relative flex min-h-14 w-full cursor-pointer items-center gap-3.5 rounded-2xl border bg-card/90 backdrop-blur-md px-5 py-3.5 text-left text-base",
+  "transition-[border-color,background-color,box-shadow,transform] duration-(--duration-quick) ease-(--ease-calm)",
+  "hover:border-primary/50 hover:shadow-(--shadow-soft) hover:translate-x-1 active:scale-[0.985]",
   "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
-  "data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:shadow-(--shadow-soft)",
+  "data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:shadow-[0_0_20px_-3px_color-mix(in_srgb,var(--primary)_30%,transparent)] data-[state=checked]:translate-x-1",
 );
 
 const radioDotClass =
-  "flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-input transition-colors group-data-[state=checked]:border-primary";
+  "flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-input transition-all duration-(--duration-quick) group-data-[state=checked]:border-primary group-data-[state=checked]:scale-105";
 
 /** Age confirmation (LO-04) and consent (LO-05) before the first question. */
 export function StartForm() {
   const t = useTranslations("start");
+  const locale = useLocale();
   const router = useRouter();
   const hydrated = useFlowHydrated();
   const flow = useFlow();
   const dispatch = useFlowDispatch();
-  const [age, setAge] = useState<AgeChoice | null>(null);
-  const [consent, setConsent] = useState(false);
+  // Unsent choices survive a language switch (the page remounts); consent
+  // still counts only when "Mulai" is pressed.
+  const [age, setAge] = useState<AgeChoice | null>(() => restoreStartDraft(locale)?.age ?? null);
+  const [consent, setConsent] = useState(() => restoreStartDraft(locale)?.consent ?? false);
+
+  useEffect(() => {
+    saveStartDraft({ age, consent }, locale);
+  }, [age, consent, locale]);
 
   const canBegin = age === "adult" && consent;
   const draftQuestion = hydrated && hasDraft(flow) ? firstUnansweredItem(flow) : null;
@@ -43,6 +50,7 @@ export function StartForm() {
 
   const begin = () => {
     if (!canBegin) return;
+    clearDrafts();
     dispatch({ type: "BEGIN_SCREENING", at: new Date().toISOString() });
     trackEvent("screening_started");
     router.push(resumePath(useFlowStore.getState().flow));
@@ -84,7 +92,7 @@ export function StartForm() {
           data-testid="under-18-panel"
           aria-labelledby="minor-title"
           aria-live="polite"
-          className="animate-rise-in space-y-4 rounded-2xl border border-sun-edge/60 bg-sun-soft p-6 sm:p-8"
+          className="animate-rise-in space-y-4 rounded-2xl border border-sun-edge/60 bg-sun-soft/90 backdrop-blur-md p-6 sm:p-8"
         >
           <h2 id="minor-title" className="text-2xl">
             {t("minorTitle")}
@@ -97,7 +105,7 @@ export function StartForm() {
 
       {age === "adult" ? (
         <div className="animate-rise-in space-y-6">
-          <div className="surface flex items-start gap-3.5 p-5">
+          <div className="glass-surface flex items-start gap-3.5 p-5">
             <Checkbox
               id="consent"
               data-testid="consent-checkbox"
@@ -105,7 +113,7 @@ export function StartForm() {
               onCheckedChange={(checked) => setConsent(checked === true)}
               className="mt-0.5"
             />
-            <label htmlFor="consent" className="text-base leading-snug">
+            <label htmlFor="consent" className="cursor-pointer text-base leading-snug select-none">
               {t("consentLabel")}
             </label>
           </div>

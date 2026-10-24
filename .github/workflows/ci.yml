@@ -16,6 +16,20 @@ jobs:
     name: Lint, typecheck, test, build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: solace_ui
+          POSTGRES_USER: solace
+          POSTGRES_PASSWORD: ephemeral-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U solace -d solace_ui"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -41,6 +55,26 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          DATABASE_URL: postgresql://solace:ephemeral-ci-only@localhost:5432/solace_ui
 
       - name: Screening JavaScript budget (modern gzip)
         run: node scripts/check-screening-budget.mjs
+
+      - name: Install CI browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Rendered UI regressions (320–1440px, ID/EN, light/dark)
+        run: pnpm exec playwright test
+        env:
+          DATABASE_URL: postgresql://solace:ephemeral-ci-only@localhost:5432/solace_ui
+
+      - name: UI evidence and failure traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-evidence
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

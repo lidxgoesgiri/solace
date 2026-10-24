@@ -16,16 +16,16 @@ interface AnswerOptionsProps {
 }
 
 const itemClass = [
-  "group flex min-h-15 w-full cursor-pointer items-center gap-3 rounded-2xl border bg-card px-3.5 py-3.5 text-left text-base sm:gap-4 sm:px-5",
+  "group relative flex min-h-15 w-full cursor-pointer items-center gap-3 rounded-2xl border bg-card/90 backdrop-blur-md px-3.5 py-3.5 text-left text-base sm:gap-4 sm:px-5",
   "transition-[border-color,background-color,box-shadow,transform] duration-(--duration-quick) ease-(--ease-calm)",
-  "hover:border-input hover:shadow-(--shadow-soft) active:scale-[0.995]",
+  "hover:border-primary/50 hover:shadow-(--shadow-soft) hover:translate-x-1 active:scale-[0.985]",
   "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
-  "data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:shadow-(--shadow-soft)",
+  "data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:shadow-[0_0_25px_-5px_color-mix(in_srgb,var(--primary)_35%,transparent)] data-[state=checked]:translate-x-1",
 ].join(" ");
 
 /**
- * Four large radio cards. Click, touch, arrow keys, or keys 1–4 select an
- * answer; the selected card shows a check icon, not only a colour change.
+ * Four large radio cards with Web3 tactile micro-interactions and smooth spring feedback.
+ * Click, touch, arrow keys, or keys 1–4 select an answer.
  */
 export function AnswerOptions({
   options,
@@ -51,14 +51,14 @@ export function AnswerOptions({
         >
           <kbd
             aria-hidden="true"
-            className="numeral flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-base text-muted-foreground transition-colors duration-(--duration-quick) group-data-[state=checked]:bg-primary group-data-[state=checked]:text-primary-foreground"
+            className="numeral flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-base text-muted-foreground transition-all duration-(--duration-quick) group-data-[state=checked]:scale-110 group-data-[state=checked]:bg-primary group-data-[state=checked]:text-primary-foreground group-data-[state=checked]:shadow-sm"
           >
             {index + 1}
           </kbd>
           <span className="min-w-0 flex-1 leading-relaxed">{option.label}</span>
           <span
             aria-hidden="true"
-            className="flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-input transition-colors duration-(--duration-quick) group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary"
+            className="flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-input transition-all duration-(--duration-quick) group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary group-data-[state=checked]:scale-105"
           >
             {value === option.value ? (
               <Check className="size-4 animate-check-in text-primary-foreground" strokeWidth={3} />
