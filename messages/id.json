@@ -38,7 +38,9 @@
     "navAccount": "Akun",
     "navPlan": "Rencana keselamatan",
     "navHistory": "Riwayat",
-    "navPrivacy": "Privasi"
+    "navPrivacy": "Privasi",
+    "copyright": "© 2026 Solace · Ruang aman kesehatan mental mahasiswa. Diciptakan oleh <author>Ida Bagus Giri Krisnabhawa</author>.",
+    "authorLinkHint": "(profil GitHub, membuka tab baru)"
   },
   "landing": {
     "eyebrow": "Untuk mahasiswa",

@@ -53,4 +53,9 @@ describe("messages (PRD 14: no missing keys in ID or EN)", () => {
   it("keeps the required footer disclaimer (GL-04)", () => {
     expect(flatId.get("footer.disclaimer")).toBe("Solace adalah alat skrining, bukan diagnosis.");
   });
+
+  it("credits the developer in the copyright line, with the name as the only link", () => {
+    expect(flatId.get("footer.copyright")).toBe("© 2026 Solace · Ruang aman kesehatan mental mahasiswa. Diciptakan oleh <author>Ida Bagus Giri Krisnabhawa</author>.");
+    expect(flatEn.get("footer.copyright")).toBe("© 2026 Solace · A safe space for student mental health. Created by <author>Ida Bagus Giri Krisnabhawa</author>.");
+  });
 });

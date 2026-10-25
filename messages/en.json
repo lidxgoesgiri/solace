@@ -38,7 +38,9 @@
     "navAccount": "Account",
     "navPlan": "Safety plan",
     "navHistory": "History",
-    "navPrivacy": "Privacy"
+    "navPrivacy": "Privacy",
+    "copyright": "© 2026 Solace · A safe space for student mental health. Created by <author>Ida Bagus Giri Krisnabhawa</author>.",
+    "authorLinkHint": "(GitHub profile, opens in a new tab)"
   },
   "landing": {
     "eyebrow": "For university students",
