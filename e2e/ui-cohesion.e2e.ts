@@ -114,6 +114,50 @@ for (const locale of locales) for (const width of widths) {
   });
 }
 
+// Scroll reveal on the landing page. Playwright counts opacity 0 as visible,
+// so the computed opacity is checked instead.
+const revealed = ["landing-evidence-intro", "landing-toolkit-intro", "landing-final-cta"] as const;
+
+for (const locale of locales) {
+  test(`${locale}: landing sections reveal on scroll and never stay hidden`, async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto(path(locale));
+    // The hero and its call to action never wait for a reveal.
+    await expect(page.getByTestId("start-screening")).toHaveCSS("opacity", "1");
+
+    for (const id of revealed) {
+      const section = page.getByTestId(id);
+      await section.scrollIntoViewIfNeeded();
+      await expect(section).toHaveCSS("opacity", "1");
+    }
+    const faqItems = page.getByTestId("landing-faq-list").locator(":scope > *");
+    await expect(faqItems).toHaveCount(5);
+    await faqItems.first().scrollIntoViewIfNeeded();
+    for (const item of await faqItems.all()) await expect(item).toHaveCSS("opacity", "1");
+
+    // Revealed content stays interactive: the FAQ opens and the final call to action leads to the screening.
+    const faq = page.getByTestId("landing-faq-diagnosis");
+    await faq.locator("summary").click();
+    await expect(faq).toHaveAttribute("open", "");
+    await expect(page.getByTestId("landing-final-start")).toHaveAttribute("href", path(locale, "mulai"));
+    await noOverflow(page);
+  });
+
+  test(`${locale}: with reduced motion, landing sections show without scrolling`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(path(locale));
+    for (const id of revealed) await expect(page.getByTestId(id)).toHaveCSS("opacity", "1");
+    for (const item of await page.getByTestId("landing-faq-list").locator(":scope > *").all()) {
+      await expect(item).toHaveCSS("opacity", "1");
+    }
+    // Keyboard users reach the final call to action without any scroll-triggered wait.
+    await page.getByTestId("landing-final-start").focus();
+    await expect(page.getByTestId("landing-final-start")).toBeFocused();
+    await expect(page.getByTestId("landing-final-cta")).toHaveCSS("opacity", "1");
+  });
+}
+
 for (const locale of locales) {
   test(`${locale}: real account cards, long username and settings at every width`, async ({ page }, info) => {
     await page.goto(path(locale, "akun/daftar"));

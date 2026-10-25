@@ -140,11 +140,11 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
         <section className="full-bleed bg-[#18333b] text-[#f3f6f3]" aria-labelledby="evidence-title">
           <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
             <div className="grid gap-12 lg:grid-cols-[0.72fr_1fr] lg:gap-20">
-              <div className="space-y-5">
+              <LandingReveal className="space-y-5" data-testid="landing-evidence-intro">
                 <p className="kicker kicker-plain !text-[#b8d0c0]">{t("evidenceKicker")}</p>
                 <h2 id="evidence-title" className="text-4xl leading-tight sm:text-5xl">{t("evidenceTitle")}</h2>
                 <p className="measure leading-relaxed text-[#c9d7d3]">{t("evidenceBody")}</p>
-              </div>
+              </LandingReveal>
               <LandingReveal as="ul" stagger data-testid="privacy-points" className="divide-y divide-white/15 border-y border-white/15">
                 {evidence.map(({ key, icon: Icon }) => (
                   <LandingRevealItem as="li" key={key} className="landing-evidence-row grid gap-3 py-7 sm:grid-cols-[2.75rem_1fr]">
@@ -176,7 +176,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
         </section>
 
         <section id="features" aria-labelledby="toolkit-title" className="scroll-mt-28 space-y-10">
-          <div className="grid gap-6 md:grid-cols-[1.2fr_1fr] md:items-center lg:gap-14">
+          <LandingReveal className="grid gap-6 md:grid-cols-[1.2fr_1fr] md:items-center lg:gap-14" data-testid="landing-toolkit-intro">
             <div className="space-y-3">
               <p className="kicker max-w-xs">{t("toolkitKicker")}</p>
               <h2 id="toolkit-title" className="text-3xl leading-[1.12] sm:text-4xl lg:text-5xl">{t("toolkitTitle")}</h2>
@@ -184,7 +184,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             <div className="md:border-l md:border-border/60 md:pl-8">
               <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">{t("toolkitBody")}</p>
             </div>
-          </div>
+          </LandingReveal>
           <LandingReveal stagger className="grid items-stretch gap-5 md:grid-cols-2">
             <LandingRevealItem><BreathingPreview /></LandingRevealItem>
             <LandingRevealItem><GroundingPreview /></LandingRevealItem>
@@ -197,40 +197,42 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             <h2 id="faq-title" className="text-4xl leading-tight sm:text-5xl">{t("faqTitle")}</h2>
             <p className="measure text-muted-foreground">{t("faqIntro")}</p>
           </div>
-          <div className="divide-y border-y">
+          {/* Only the list reveals: a transformed wrapper would break the sticky heading. */}
+          <LandingReveal stagger className="border-y" data-testid="landing-faq-list">
             {faqs.map((faq, index) => (
-              <details
-                key={faq}
-                className="group rounded-2xl border border-transparent p-2 transition-colors hover:border-border/60 hover:bg-card/40 open:border-border open:bg-card/70 open:shadow-xs"
-                data-testid={`landing-faq-${faq}`}
-              >
-                <summary className="flex min-h-16 cursor-pointer list-none items-center gap-5 px-3 py-3 font-heading text-xl marker:content-none sm:text-2xl">
-                  <span aria-hidden="true" className="numeral text-sm text-sage-ink">0{index + 1}</span>
-                  <span className="flex-1">{t(`faq.${faq}.question`)}</span>
-                  <span aria-hidden="true" className="text-2xl font-light transition-transform duration-200 group-open:rotate-45">+</span>
-                </summary>
-                <div className="landing-faq-answer">
-                  <p className="measure px-3 pb-6 pl-10 leading-relaxed text-muted-foreground">{t(`faq.${faq}.answer`)}</p>
-                </div>
-              </details>
+              <LandingRevealItem key={faq}>
+                <details
+                  className="group rounded-2xl border border-transparent p-2 transition-colors hover:border-border/60 hover:bg-card/40 open:border-border open:bg-card/70 open:shadow-xs"
+                  data-testid={`landing-faq-${faq}`}
+                >
+                  <summary className="flex min-h-16 cursor-pointer list-none items-center gap-5 px-3 py-3 font-heading text-xl marker:content-none sm:text-2xl">
+                    <span aria-hidden="true" className="numeral text-sm text-sage-ink">0{index + 1}</span>
+                    <span className="flex-1">{t(`faq.${faq}.question`)}</span>
+                    <span aria-hidden="true" className="text-2xl font-light transition-transform duration-200 group-open:rotate-45">+</span>
+                  </summary>
+                  <div className="landing-faq-answer">
+                    <p className="measure px-3 pb-6 pl-10 leading-relaxed text-muted-foreground">{t(`faq.${faq}.answer`)}</p>
+                  </div>
+                </details>
+              </LandingRevealItem>
             ))}
-          </div>
+          </LandingReveal>
         </section>
 
         <section className="full-bleed -mb-24 overflow-hidden bg-[#18333b] text-[#f3f6f3] sm:-mb-[7.5rem]" aria-labelledby="final-cta-title">
-          <div className="mx-auto grid max-w-6xl gap-8 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1fr_auto] lg:items-end">
+          <LandingReveal className="mx-auto grid max-w-6xl gap-8 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1fr_auto] lg:items-end" data-testid="landing-final-cta">
             <div className="space-y-5">
               <p className="kicker kicker-plain !text-[#b8d0c0]">{t("finalKicker")}</p>
               <h2 id="final-cta-title" className="max-w-4xl text-[clamp(2.8rem,6vw,5.5rem)] leading-[0.98] tracking-[-0.04em]">{t("finalTitle")}</h2>
               <p className="measure text-lg leading-relaxed text-[#c9d7d3]">{t("finalBody")}</p>
             </div>
             <Button asChild size="lg" className="mb-1 bg-[#f5d7a1] text-[#20313b] hover:bg-[#f0c97f]">
-              <Link href={PATHS.mulai}>
+              <Link href={PATHS.mulai} data-testid="landing-final-start">
                 {t("start")}
                 <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
-          </div>
+          </LandingReveal>
         </section>
       </div>
     </MotionProvider>
