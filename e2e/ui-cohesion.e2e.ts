@@ -125,15 +125,32 @@ for (const locale of locales) {
     // The hero and its call to action never wait for a reveal.
     await expect(page.getByTestId("start-screening")).toHaveCSS("opacity", "1");
 
+    // Before the user scrolls, sections below the fold are really hidden, so
+    // there is something to reveal. Checking only the end state once missed
+    // that they never hid at all.
+    const faqItems = page.getByTestId("landing-faq-list").locator(":scope > *");
+    const privacyItems = page.getByTestId("privacy-points").locator(":scope > *");
+    for (const id of revealed) {
+      await expect(page.getByTestId(id)).toHaveAttribute("data-reveal", "hidden");
+      await expect(page.getByTestId(id)).toHaveCSS("opacity", "0");
+    }
+    await expect(faqItems.first()).toHaveCSS("opacity", "0");
+    await expect(privacyItems.first()).toHaveCSS("opacity", "0");
+
+    await privacyItems.first().scrollIntoViewIfNeeded();
+    for (const item of await privacyItems.all()) await expect(item).toHaveCSS("opacity", "1");
     for (const id of revealed) {
       const section = page.getByTestId(id);
       await section.scrollIntoViewIfNeeded();
       await expect(section).toHaveCSS("opacity", "1");
+      await expect(section).toHaveAttribute("data-reveal", "visible");
     }
-    const faqItems = page.getByTestId("landing-faq-list").locator(":scope > *");
     await expect(faqItems).toHaveCount(5);
     await faqItems.first().scrollIntoViewIfNeeded();
     for (const item of await faqItems.all()) await expect(item).toHaveCSS("opacity", "1");
+    // A revealed section stays visible after scrolling back up.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(page.getByTestId("landing-final-cta")).toHaveCSS("opacity", "1");
 
     // Revealed content stays interactive: the FAQ opens and the final call to action leads to the screening.
     const faq = page.getByTestId("landing-faq-diagnosis");
@@ -147,7 +164,10 @@ for (const locale of locales) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 375, height: 800 });
     await page.goto(path(locale));
-    for (const id of revealed) await expect(page.getByTestId(id)).toHaveCSS("opacity", "1");
+    for (const id of revealed) {
+      await expect(page.getByTestId(id)).toHaveCSS("opacity", "1");
+      await expect(page.getByTestId(id)).toHaveAttribute("data-reveal", "visible");
+    }
     for (const item of await page.getByTestId("landing-faq-list").locator(":scope > *").all()) {
       await expect(item).toHaveCSS("opacity", "1");
     }
