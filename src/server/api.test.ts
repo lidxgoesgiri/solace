@@ -11,7 +11,7 @@ import {
   type KdfParams,
 } from "@/lib/crypto/keys";
 import { LISTEN_SYSTEM_PROMPT, NOTES_SYSTEM_PROMPT, TIPS_REFLECT_SYSTEM_PROMPT, TIPS_SYSTEM_PROMPT, makePickTip, makeTidyNotes, type AiDeps } from "./api/ai";
-import { aiConsent } from "@/lib/ai/consent";
+import { aiConsent, consentModel } from "@/lib/ai/consent";
 import * as auth from "./api/auth";
 import * as metrics from "./api/metrics";
 import * as recordsApi from "./api/records";
@@ -511,7 +511,9 @@ describe("AI notes for the psychologist (AI-02, AI-07, A2)", () => {
         const response = await client.call(handler, { answers: NOTES, consent });
         expect(response.status).toBe(502);
         expect(response.body).toEqual({ error: "ai_unavailable" });
-        expect(warn.mock.calls).toEqual([["AI provider unavailable", testCase.expected]]);
+        // Model, attempt and timing are logged too; never the key, text, or error bodies.
+        expect(warn.mock.calls).toEqual([["AI provider unavailable", { ...testCase.expected, model: "provider/model-x", attempt: "primary", ms: expect.any(Number) }]]);
+        expect(JSON.stringify(warn.mock.calls)).not.toMatch(new RegExp(`${privateText}|sk-test`));
       }
     } finally {
       warn.mockRestore();
@@ -758,5 +760,216 @@ describe("AI pick for a tip that did not help (AI-05, AI-07, A2)", () => {
       expect((await client.call(handler, REQUEST)).status).toBe(200);
     }
     expect((await client.call(handler, REQUEST)).status).toBe(429);
+  });
+});
+
+describe("automatic model fallback: primary first, one fallback attempt", () => {
+  const PRIMARY = "xing/primary-model";
+  const FALLBACK = "nemotron/fallback-model";
+  const RISKY = "kalimat-uji-berisiko";
+  const ROUTE = consentModel(PRIMARY, FALLBACK);
+  const CONTEXT = "lagi capek sama tugas kuliah";
+  const TIP_REQUEST = {
+    consent: aiConsent("tips", ROUTE),
+    replacedId: "slow-breathing",
+    candidates: ["worry-time", "grounding"],
+    context: CONTEXT,
+    locale: "id",
+  };
+  const GOOD = { reflection: "Kedengarannya kamu lelah karena tugas kuliah yang terus menumpuk.", tipId: "grounding" };
+  const NOTES = ["sejak awal semester", "susah tidur", "", "apa yang bisa saya lakukan", "lebih tenang"];
+
+  type Step = () => Response | Promise<Response>;
+  const ok = (body: unknown): Step => () => Response.json({ choices: [{ finish_reason: "stop", message: { content: JSON.stringify(body) } }] });
+  const status = (code: number, headers: Record<string, string> = {}): Step => () =>
+    Response.json({ error: { message: "private-provider-detail" } }, { status: code, headers });
+  const timeout: Step = () => { throw new DOMException("private-timeout-detail", "TimeoutError"); };
+  const offline: Step = () => { throw new TypeError("private-network-detail"); };
+
+  /** A stand-in OpenRouter: answers each model from its own script, and records every call. */
+  function provider(script: Record<string, Step[]>, fallbackModel: string | null = FALLBACK) {
+    const calls: { model: string; body: Record<string, unknown> }[] = [];
+    const fetch = vi.fn(async (_url: string, init: RequestInit) => {
+      const body = JSON.parse(String(init.body)) as Record<string, unknown>;
+      calls.push({ model: String(body.model), body });
+      const step = script[String(body.model)]?.shift();
+      return step ? step() : Response.json({ error: "unexpected call" }, { status: 500 });
+    });
+    const deps: AiDeps = {
+      config: () => ({ apiKey: "sk-test", model: PRIMARY, fallbackModel }),
+      isRisky: (text) => text.includes(RISKY),
+      fetch: fetch as unknown as typeof globalThis.fetch,
+    };
+    return { calls, deps };
+  }
+
+  const signedIn = async (username: string) =>
+    (await registerUser(username, "teh hangat sebelum ujian akhir")).client;
+
+  function quietLogs() {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const info = vi.spyOn(console, "info").mockImplementation(() => {});
+    return { warn, info, restore: () => { warn.mockRestore(); info.mockRestore(); } };
+  }
+
+  it("1: the primary answers, so the fallback is never called", async () => {
+    const logs = quietLogs();
+    try {
+      const { calls, deps } = provider({ [PRIMARY]: [ok(GOOD)] });
+      const client = await signedIn("fb.primary");
+      const response = await client.call(makePickTip(deps), TIP_REQUEST);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(GOOD);
+      expect(calls.map((call) => call.model)).toEqual([PRIMARY]);
+      expect(logs.info.mock.calls).toEqual([["AI provider reply", { model: PRIMARY, attempt: "primary", ms: expect.any(Number) }]]);
+      expect(logs.warn).not.toHaveBeenCalled();
+    } finally {
+      logs.restore();
+    }
+  });
+
+  it("2: a primary timeout goes to the fallback with the very same request", async () => {
+    const logs = quietLogs();
+    try {
+      const { calls, deps } = provider({ [PRIMARY]: [timeout], [FALLBACK]: [ok(GOOD)] });
+      const client = await signedIn("fb.timeout");
+      const response = await client.call(makePickTip(deps), TIP_REQUEST);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(GOOD);
+      expect(calls.map((call) => call.model)).toEqual([PRIMARY, FALLBACK]);
+      // Same prompts, language, schema, token limit and privacy settings; only the model differs.
+      const withoutModel = (body: Record<string, unknown>) => Object.fromEntries(Object.entries(body).filter(([key]) => key !== "model"));
+      const second = withoutModel(calls[1]!.body);
+      expect(second).toEqual(withoutModel(calls[0]!.body));
+      expect(second.provider).toEqual({ data_collection: "deny", zdr: true, require_parameters: true });
+      expect(JSON.parse((second.messages as { content: string }[])[1]!.content)).toMatchObject({ language: "Indonesian", context: CONTEXT });
+      expect(logs.warn.mock.calls).toEqual([["AI provider unavailable", { reason: "timeout", model: PRIMARY, attempt: "primary", ms: expect.any(Number) }]]);
+      expect(logs.info.mock.calls).toEqual([["AI provider reply", { model: FALLBACK, attempt: "fallback", ms: expect.any(Number) }]]);
+      const logged = JSON.stringify([logs.warn.mock.calls, logs.info.mock.calls]);
+      expect(logged).not.toMatch(/sk-test|private-|capek|Kedengarannya/);
+    } finally {
+      logs.restore();
+    }
+  });
+
+  it("3: HTTP 429, 503, 408, other 5xx, a lost connection or an empty reply also fall back", async () => {
+    const logs = quietLogs();
+    try {
+      const client = await signedIn("fb.status");
+      const empty: Step = () => Response.json({ choices: [{ finish_reason: "stop", message: { content: "" } }] });
+      const garbled: Step = () => new Response("not json", { status: 200 });
+      for (const failure of [status(429, { "Retry-After": "30" }), status(503), status(408), status(500), status(502), offline, empty, garbled]) {
+        const { calls, deps } = provider({ [PRIMARY]: [failure], [FALLBACK]: [ok(GOOD)] });
+        const response = await client.call(makePickTip(deps), TIP_REQUEST);
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(GOOD);
+        expect(calls.map((call) => call.model)).toEqual([PRIMARY, FALLBACK]);
+      }
+    } finally {
+      logs.restore();
+    }
+  });
+
+  it("4: when both fail, the user gets the usual safe error and never a provider's message", async () => {
+    const logs = quietLogs();
+    try {
+      const client = await signedIn("fb.bothfail");
+      for (const [primary, fallback, expected] of [
+        [status(503), status(500), { status: 502, body: { error: "ai_unavailable" }, retryAfter: null }],
+        [timeout, offline, { status: 502, body: { error: "ai_unavailable" }, retryAfter: null }],
+        // A rate limit on either side means "try again later", with the longer wait.
+        [status(429, { "Retry-After": "20" }), status(429, { "Retry-After": "90" }), { status: 503, body: { error: "ai_busy" }, retryAfter: "90" }],
+        [status(429, { "Retry-After": "45" }), status(402), { status: 503, body: { error: "ai_busy" }, retryAfter: "45" }],
+      ] as const) {
+        const { calls, deps } = provider({ [PRIMARY]: [primary], [FALLBACK]: [fallback] });
+        const response = await client.call(makePickTip(deps), TIP_REQUEST);
+        expect(response.status).toBe(expected.status);
+        expect(response.body).toEqual(expected.body);
+        expect(response.retryAfter).toBe(expected.retryAfter);
+        expect(JSON.stringify(response.body)).not.toContain("private-");
+        expect(calls).toHaveLength(2); // No retries beyond the one fallback.
+      }
+    } finally {
+      logs.restore();
+    }
+  });
+
+  it("5: after a fallback, the next request starts with the primary again", async () => {
+    const logs = quietLogs();
+    try {
+      const { calls, deps } = provider({ [PRIMARY]: [status(429), ok(GOOD)], [FALLBACK]: [ok(GOOD)] });
+      const client = await signedIn("fb.next");
+      const handler = makePickTip(deps);
+      expect((await client.call(handler, TIP_REQUEST)).status).toBe(200);
+      expect((await client.call(handler, TIP_REQUEST)).status).toBe(200);
+      expect(calls.map((call) => call.model)).toEqual([PRIMARY, FALLBACK, PRIMARY]);
+    } finally {
+      logs.restore();
+    }
+  });
+
+  it("6: a fallback reply passes the same format, language and safety checks", async () => {
+    const logs = quietLogs();
+    try {
+      const client = await signedIn("fb.checks");
+      for (const reply of [
+        { ...GOOD, tipId: "made-up-tip" },
+        { ...GOOD, steps: ["new advice"] },
+        { ...GOOD, reflection: "Sudah coba tidur lebih awal?" },
+        { ...GOOD, reflection: "Hubungi 0800123456 sekarang." },
+        { ...GOOD, reflection: `Kamu ${RISKY}.` },
+        { tipId: "grounding" },
+      ]) {
+        const { calls, deps } = provider({ [PRIMARY]: [status(503)], [FALLBACK]: [ok(reply)] });
+        expect((await client.call(makePickTip(deps), TIP_REQUEST)).body, JSON.stringify(reply)).toEqual({ error: "ai_unavailable" });
+        expect(calls).toHaveLength(2);
+      }
+      // Notes from the fallback keep the user's language and leave unanswered questions empty.
+      const notesClient = await signedIn("fb.notes");
+      const tidied = ["Sejak awal semester.", "Susah tidur.", "diisi model", "Apa yang bisa saya lakukan?", "Lebih tenang."];
+      const { calls, deps } = provider({ [PRIMARY]: [status(503)], [FALLBACK]: [ok({ answers: tidied })] });
+      const response = await notesClient.call(makeTidyNotes(deps), { answers: NOTES, consent: aiConsent("notes", ROUTE) });
+      expect(response.body).toEqual({ answers: ["Sejak awal semester.", "Susah tidur.", "", "Apa yang bisa saya lakukan?", "Lebih tenang."] });
+      expect(calls.map((call) => call.model)).toEqual([PRIMARY, FALLBACK]);
+      expect((calls[1]!.body.messages as { content: string }[])[0]!.content).toBe(NOTES_SYSTEM_PROMPT);
+    } finally {
+      logs.restore();
+    }
+  });
+
+  it("does not fall back for a bad request, the account's key or credit, a refusal, a cut-off or unusable reply", async () => {
+    const logs = quietLogs();
+    try {
+      const client = await signedIn("fb.nofallback");
+      const filtered: Step = () => Response.json({ choices: [{ finish_reason: "content_filter", message: { content: "" } }] });
+      const cut: Step = () => Response.json({ choices: [{ finish_reason: "length", message: { content: JSON.stringify(GOOD) } }] });
+      for (const failure of [status(400), status(401), status(402), status(403), status(404), filtered, cut, ok({ tipId: "made-up-tip" }), ok({ ...GOOD, reflection: `Kamu ${RISKY}.` })]) {
+        const { calls, deps } = provider({ [PRIMARY]: [failure], [FALLBACK]: [ok(GOOD)] });
+        const response = await client.call(makePickTip(deps), TIP_REQUEST);
+        expect(response.status).toBe(502);
+        expect(calls.map((call) => call.model)).toEqual([PRIMARY]);
+      }
+      // With the fallback switched off, a provider failure stays a failure.
+      const { calls, deps } = provider({ [PRIMARY]: [status(503)], [FALLBACK]: [ok(GOOD)] }, null);
+      const consent = aiConsent("tips", PRIMARY);
+      expect((await client.call(makePickTip(deps), { ...TIP_REQUEST, consent })).status).toBe(502);
+      expect(calls.map((call) => call.model)).toEqual([PRIMARY]);
+    } finally {
+      logs.restore();
+    }
+  });
+
+  it("7: consent must cover both models, and risky words still reach neither model (A1, A2)", async () => {
+    const { calls, deps } = provider({ [PRIMARY]: [ok(GOOD)], [FALLBACK]: [ok(GOOD)] });
+    const client = await signedIn("fb.safety");
+    const handler = makePickTip(deps);
+    // Consent given for the primary alone does not cover the fallback.
+    expect((await client.call(handler, { ...TIP_REQUEST, consent: aiConsent("tips", PRIMARY) })).status).toBe(403);
+    const risky = await client.call(handler, { ...TIP_REQUEST, context: `aku ${RISKY}` });
+    expect(risky.status).toBe(422);
+    expect(risky.body).toEqual({ error: "risk_detected" });
+    const listen = await client.call(handler, { ...TIP_REQUEST, mode: "listen", context: `aku ${RISKY}` });
+    expect(listen.body).toEqual({ error: "risk_detected" });
+    expect(calls).toHaveLength(0);
   });
 });

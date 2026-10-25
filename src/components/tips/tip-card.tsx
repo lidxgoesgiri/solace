@@ -1,12 +1,16 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import { type ReactNode, useRef, useState } from "react";
+import { ArrowRight } from "@/components/icons/arrow-right";
 import { BookOpen } from "@/components/icons/book-open";
 import { Check } from "@/components/icons/check";
 import { ExternalLink } from "@/components/icons/external-link";
+import { Flower2 } from "@/components/icons/flower-2";
+import { HeartHandshake } from "@/components/icons/heart-handshake";
 import { Button } from "@/components/ui/button";
 import { isLocale } from "@/lib/content";
+import { feedbackKind, toolkitExerciseFor } from "@/lib/tip-feedback";
 import type { Tip, TipProgressEntry } from "@/lib/tips";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +19,8 @@ export type TipProgress = TipProgressEntry;
 interface TipCardProps {
   tip: Tip;
   progress: TipProgress;
-  onProgress: (next: TipProgress) => void;
+  /** Saves the note; resolves to false when it was not saved. */
+  onProgress: (next: TipProgress) => Promise<boolean>;
   /** Swaps the tip for another one from the library; absent when there is none. */
   onReplace?: () => void;
   /** Shown with the swap offer once the tip is marked as not helpful (the AI pick). */
@@ -27,7 +32,9 @@ const toggleClass =
 
 /**
  * One tip with its steps, its sources (TP-02), and the tried/helpful note
- * (TP-04). A tip marked as not helpful offers another one in its place.
+ * (TP-04). Answering "did it help?" gets a short reply that fits the kind
+ * of activity (`tip-feedback.ts`); a tip marked as not helpful also offers
+ * another one in its place.
  */
 export function TipCard({ tip, progress, onProgress, onReplace, children }: TipCardProps) {
   const t = useTranslations("tips");
@@ -35,6 +42,29 @@ export function TipCard({ tip, progress, onProgress, onReplace, children }: TipC
   const appLocale = useLocale();
   const locale = isLocale(appLocale) ? appLocale : "id";
   const titleId = `tip-${tip.id}-title`;
+  const kind = feedbackKind(tip.id);
+  const exercise = toolkitExerciseFor(kind);
+  // The new note shows at once while it is saved; a failed save shows the saved one again.
+  const [pending, setPending] = useState<TipProgress | null>(null);
+  // Read out only after the user answers, not when saved answers load.
+  const [announced, setAnnounced] = useState<"yes" | "no" | null>(null);
+  const saving = useRef(false);
+  const shown = pending ?? progress;
+  const feedback = shown.tried ? shown.helpful : null;
+
+  /** One save at a time: clicks while a save is on its way send nothing. */
+  const choose = async (next: TipProgress) => {
+    if (saving.current) return;
+    saving.current = true;
+    setPending(next);
+    setAnnounced(next.tried ? next.helpful : null);
+    try {
+      if (!(await onProgress(next))) setAnnounced(null);
+    } finally {
+      saving.current = false;
+      setPending(null);
+    }
+  };
 
   return (
     <article
@@ -102,36 +132,33 @@ export function TipCard({ tip, progress, onProgress, onReplace, children }: TipC
       >
         <button
           type="button"
-          aria-pressed={progress.tried}
+          aria-pressed={shown.tried}
           data-testid={`tip-tried-${tip.id}`}
           onClick={() =>
-            onProgress({
-              ...progress,
-              tried: !progress.tried,
-              helpful: progress.tried ? null : progress.helpful,
+            void choose({
+              ...shown,
+              tried: !shown.tried,
+              helpful: shown.tried ? null : shown.helpful,
             })
           }
           className={toggleClass}
         >
-          {progress.tried ? <Check aria-hidden="true" className="size-4" /> : null}
+          {shown.tried ? <Check aria-hidden="true" className="size-4" /> : null}
           {t("tried")}
         </button>
-        {progress.tried ? (
+        {shown.tried ? (
           <>
             <span className="px-1 text-sm text-muted-foreground">{t("helpfulQuestion")}</span>
             {(["yes", "no"] as const).map((answer) => (
               <button
                 key={answer}
                 type="button"
-                aria-pressed={progress.helpful === answer}
+                aria-pressed={shown.helpful === answer}
                 data-testid={`tip-helpful-${tip.id}-${answer}`}
-                onClick={() =>
-                  onProgress({
-                    ...progress,
-                    tried: true,
-                    helpful: progress.helpful === answer ? null : answer,
-                  })
-                }
+                // The chosen answer stays chosen: clicking it again sends nothing.
+                onClick={() => {
+                  if (shown.helpful !== answer) void choose({ ...shown, tried: true, helpful: answer });
+                }}
                 className={cn(toggleClass)}
               >
                 {answer === "yes" ? t("helpfulYes") : t("helpfulNo")}
@@ -139,24 +166,64 @@ export function TipCard({ tip, progress, onProgress, onReplace, children }: TipC
             ))}
           </>
         ) : null}
+        <p role="status" aria-live="polite" className="sr-only" data-testid={`tip-feedback-status-${tip.id}`}>
+          {announced === "yes"
+            ? t(`feedback.helpful.${kind}`)
+            : announced === "no"
+              ? `${t(`feedback.notHelpful.${kind}`)} ${onReplace ? t("feedback.tryAnotherHint") : t("noAlternative")}`
+              : null}
+        </p>
       </div>
 
-      {progress.tried && progress.helpful === "no" ? (
+      {feedback === "yes" ? (
         <div
-          className="space-y-3 rounded-2xl border border-sky/70 bg-sky-soft/50 p-4 text-sm"
-          data-testid={`tip-alternative-${tip.id}`}
+          key="yes"
+          className="animate-rise-in space-y-2 rounded-2xl border border-sage/70 bg-sage-soft/60 p-4 text-sm"
+          data-testid={`tip-feedback-${tip.id}`}
+          data-answer="yes"
+          data-kind={kind}
         >
-          <p className="leading-relaxed">{t("notHelpfulBody")}</p>
-          {onReplace ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onReplace}
-              data-testid={`tip-try-another-${tip.id}`}
+          <p className="flex items-start gap-3 leading-relaxed">
+            <Flower2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
+            <span>{t(`feedback.helpful.${kind}`)}</span>
+          </p>
+          {exercise ? (
+            <a
+              href={`#toolkit-${exercise}`}
+              className="ml-7 inline-flex min-h-11 items-center gap-1.5 font-medium underline decoration-ink/30 underline-offset-3 hover:decoration-ink"
+              data-testid={`tip-feedback-toolkit-${tip.id}`}
             >
-              {t("tryAnother")}
-            </Button>
+              {t(`feedback.toolkit.${exercise}`)}
+              <ArrowRight aria-hidden="true" className="size-3.5 rotate-90" />
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+
+      {feedback === "no" ? (
+        <div
+          key="no"
+          className="animate-rise-in space-y-3 rounded-2xl border border-sky/70 bg-sky-soft/50 p-4 text-sm"
+          data-testid={`tip-alternative-${tip.id}`}
+          data-kind={kind}
+        >
+          <p className="flex items-start gap-3 leading-relaxed" data-testid={`tip-feedback-${tip.id}`} data-answer="no">
+            <HeartHandshake aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sage-ink" />
+            <span>{t(`feedback.notHelpful.${kind}`)}</span>
+          </p>
+          {onReplace ? (
+            <>
+              <p className="leading-relaxed">{t("feedback.tryAnotherHint")}</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onReplace}
+                data-testid={`tip-try-another-${tip.id}`}
+              >
+                {t("tryAnother")}
+              </Button>
+            </>
           ) : (
             <p className="text-muted-foreground" data-testid={`tip-no-alternative-${tip.id}`}>
               {t("noAlternative")}

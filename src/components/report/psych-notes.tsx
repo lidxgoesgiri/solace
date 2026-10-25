@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAiRequest } from "@/components/use-ai-request";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { hasAiConsent, requestTidyNotes, saveAiConsent } from "@/lib/ai/client";
+import { consentModel } from "@/lib/ai/consent";
 import { NOTE_MAX_CHARS, NOTE_QUESTIONS, aiOffer, hasNotes, type NoteAnswers } from "@/lib/ai/notes";
 import { containsRiskPhrase } from "@/lib/ai/risk-check";
 import { PATHS, mustShowCrisis } from "@/lib/flow";
@@ -21,7 +22,7 @@ export interface PsychNotesProps {
   onAiAssistedChange: (aiAssisted: boolean) => void;
   include: boolean;
   onIncludeChange: (include: boolean) => void;
-  ai: { available: boolean; model: string | null };
+  ai: { available: boolean; model: string | null; fallbackModel?: string | null };
 }
 
 type AiStatus = "idle" | "consent" | "working" | "limited" | "busy" | "error" | "empty";
@@ -48,17 +49,19 @@ export function PsychNotes({
   const pathname = usePathname();
   const router = useRouter();
   const username = useOpenAccount();
-  const [consented, setConsented] = useState(() => hasAiConsent(username, "notes", ai.model));
+  // Consent covers every model a request may reach: the primary and the fallback.
+  const consentId = ai.model ? consentModel(ai.model, ai.fallbackModel) : null;
+  const [consented, setConsented] = useState(() => hasAiConsent(username, "notes", consentId));
   const [status, setStatus] = useState<AiStatus>("idle");
   const [original, setOriginal] = useState<string[] | null>(null);
   const consentHeading = useRef<HTMLHeadingElement>(null);
   const crisisPending = mustShowCrisis(flow);
-  const { begin, finish, cancel } = useAiRequest(JSON.stringify([username, ai.model, ai.available, crisisPending, notes]));
+  const { begin, finish, cancel } = useAiRequest(JSON.stringify([username, consentId, ai.available, crisisPending, notes]));
 
   const offer = aiOffer({
     available: ai.available,
     signedIn: Boolean(username),
-    consented: consented && hasAiConsent(username, "notes", ai.model),
+    consented: consented && hasAiConsent(username, "notes", consentId),
     crisisPending,
   });
 
@@ -87,7 +90,7 @@ export function PsychNotes({
       return;
     }
     setStatus("working");
-    const result = await requestTidyNotes(notes, { username, model: ai.model, signal: controller.signal });
+    const result = await requestTidyNotes(notes, { username, model: consentId, signal: controller.signal });
     finish(controller);
     if (controller.signal.aborted || result.kind === "cancelled") return;
     if (result.kind === "risk") {
@@ -119,8 +122,8 @@ export function PsychNotes({
   };
 
   const acceptConsent = () => {
-    if (!username || !ai.model) return;
-    saveAiConsent(username, "notes", ai.model);
+    if (!username || !consentId) return;
+    saveAiConsent(username, "notes", consentId);
     setConsented(true);
     void tidy();
   };
@@ -219,6 +222,7 @@ export function PsychNotes({
                 <li>{t("ai.consentSent")}</li>
                 <li>{t("ai.consentNotSent")}</li>
                 <li>{t("ai.consentProvider", { model: ai.model ?? "" })}</li>
+                {ai.fallbackModel ? <li>{t("ai.consentFallback", { model: ai.fallbackModel })}</li> : null}
                 <li>
                   {t("ai.consentRetention")}{" "}
                   <a

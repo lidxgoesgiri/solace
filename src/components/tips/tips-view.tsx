@@ -43,6 +43,7 @@ const LazyTipAiPick = lazy(() =>
 interface AiInfo {
   available: boolean;
   model: string | null;
+  fallbackModel?: string | null;
 }
 
 /** /tips: the personal tip plan (TP-01–TP-04) and the toolkit (TP-05–TP-07). */
@@ -69,6 +70,7 @@ function TipsPlan({ username, ai }: { username: string; ai: AiInfo }) {
   const [swapStatus, setSwapStatus] = useState("");
   const focusTip = useRef<string | null>(null);
   const tracked = useRef(false);
+  const saving = useRef(false);
 
   // A saved screening whose crisis screen was never confirmed stays closed (K3).
   const result = useMemo(() => {
@@ -119,7 +121,14 @@ function TipsPlan({ username, ai }: { username: string; ai: AiInfo }) {
     );
   }
 
+  /**
+   * One save at a time. A second save before the first returns would start
+   * from stale progress, and before the record exists would create another
+   * one; it is refused instead, and the card shows the saved state again.
+   */
   const save = async (tips: Record<string, TipProgress>): Promise<boolean> => {
+    if (saving.current) return false;
+    saving.current = true;
     const value: TipProgressRecord = { v: 1, tips };
     try {
       setProgressError(false);
@@ -128,6 +137,8 @@ function TipsPlan({ username, ai }: { username: string; ai: AiInfo }) {
     } catch {
       setProgressError(true);
       return false;
+    } finally {
+      saving.current = false;
     }
   };
 
@@ -299,17 +310,17 @@ function TipsPlan({ username, ai }: { username: string; ai: AiInfo }) {
           <p className="text-muted-foreground">{t("toolkitIntro")}</p>
         </div>
         <div className="grid items-stretch gap-5 md:grid-cols-2">
-          <div className="surface space-y-6 p-4 sm:p-6" data-testid="toolkit-breathing">
+          <div id="toolkit-breathing" className="surface scroll-mt-28 space-y-6 p-4 sm:p-6" data-testid="toolkit-breathing">
             <h3 className="text-2xl">{all("crisis.breathingTitle")}</h3>
             <BreathingPacer />
           </div>
-          <div className="surface space-y-6 p-4 sm:p-6" data-testid="toolkit-grounding">
+          <div id="toolkit-grounding" className="surface scroll-mt-28 space-y-6 p-4 sm:p-6" data-testid="toolkit-grounding">
             <h3 className="text-2xl">{all("crisis.groundingTitle")}</h3>
             <p className="text-sm leading-relaxed text-muted-foreground">{all("crisis.groundingIntro")}</p>
             <GroundingChecklist />
           </div>
         </div>
-        <div className="surface space-y-4 p-6">
+        <div id="toolkit-relaxation" className="surface scroll-mt-28 space-y-4 p-6">
           <h3 className="text-xl">{t("pmrTitle")}</h3>
           <PmrGuide />
         </div>

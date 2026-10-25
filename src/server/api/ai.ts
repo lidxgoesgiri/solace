@@ -12,11 +12,14 @@
  * - Only the five typed answers are sent: no scores, item answers,
  *   username, or account data (AI-07). OpenRouter is asked to route only
  *   to providers that do not collect data, with zero data retention.
+ * - The primary model answers; only if its provider fails (timeout, rate
+ *   limit, outage) is the same request sent once to the fallback model,
+ *   with the same privacy settings and the same checks on the reply.
  * - Prompts and outputs are never logged.
  */
 
 import { containsRiskPhrase } from "@/lib/ai/risk-check";
-import { validAiConsent } from "@/lib/ai/consent";
+import { consentModel, validAiConsent } from "@/lib/ai/consent";
 import { NOTE_MAX_CHARS, NOTE_OUTPUT_MAX_CHARS, hasNotes, parseNoteAnswers } from "@/lib/ai/notes";
 import { expectedReply, parseTipPick, parseTipPickRequest, tipPickPrompt } from "@/lib/ai/tip-pick";
 import { TIPS } from "@/lib/tips";
@@ -30,6 +33,9 @@ import { currentSession } from "../session";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MAX_BODY = 16 * 1024;
 const TIMEOUT_MS = 25_000;
+/** With a fallback model, both attempts fit in the browser's 35 seconds. */
+const PRIMARY_TIMEOUT_MS = 15_000;
+const FALLBACK_TIMEOUT_MS = 15_000;
 
 /** The limits of the task (PRD 20.1): tidy the user's words, nothing more. */
 export const NOTES_SYSTEM_PROMPT = [
@@ -130,7 +136,7 @@ export function makeTidyNotes(deps: AiDeps) {
 
     const input = await readJson(request, MAX_BODY);
     if (input === undefined) return fail(413, "too_large");
-    if (!isRecord(input) || !validAiConsent(input.consent, "notes", config.model)) return fail(403, "consent_required");
+    if (!isRecord(input) || !validAiConsent(input.consent, "notes", consentModel(config.model, config.fallbackModel))) return fail(403, "consent_required");
     const answers = isRecord(input) ? parseNoteAnswers(input.answers, NOTE_MAX_CHARS) : null;
     if (!answers || !hasNotes(answers)) return fail(400, "invalid_request");
 
@@ -155,7 +161,19 @@ export function makeTidyNotes(deps: AiDeps) {
   };
 }
 
-/** One chat completion; null when the call fails. Prompts and replies are never logged. */
+type Attempt =
+  | { content: string }
+  /** `fallback`: the provider failed, so the fallback model may be tried. */
+  | { failure: { fallback: boolean; retryAfter?: number } };
+
+/**
+ * One chat completion with the primary model and, only when the provider
+ * failed it, one attempt with the fallback model: the same request and the
+ * same privacy settings, so the caller checks the reply in the same way
+ * whichever model wrote it. At most two calls and no retries; the next
+ * request starts with the primary again. Prompts and replies are never
+ * logged.
+ */
 async function callModel(
   deps: AiDeps,
   config: AiConfig,
@@ -165,61 +183,100 @@ async function callModel(
   schema: Record<string, unknown>,
   signal: AbortSignal,
 ): Promise<{ content: unknown; retryAfter?: number }> {
+  const body = (model: string) => JSON.stringify({
+    model,
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
+    temperature: 0.2,
+    max_tokens: maxTokens,
+    // These are short rewriting tasks. Reasoning models can otherwise
+    // spend the completion budget on reasoning and return no JSON.
+    reasoning: { enabled: false },
+    response_format: { type: "json_schema", json_schema: { name: "solace_response", strict: true, schema } },
+    // Only providers that do not collect data, with zero data retention.
+    provider: { data_collection: "deny", zdr: true, require_parameters: true },
+  });
+  const fallbackModel = config.fallbackModel ?? null;
+  const first = await attempt(deps, config.apiKey, config.model, "primary", body(config.model), signal,
+    fallbackModel ? PRIMARY_TIMEOUT_MS : TIMEOUT_MS);
+  if ("content" in first) return first;
+  if (!fallbackModel || !first.failure.fallback || signal.aborted) {
+    return { content: null, retryAfter: first.failure.retryAfter };
+  }
+  const second = await attempt(deps, config.apiKey, fallbackModel, "fallback", body(fallbackModel), signal, FALLBACK_TIMEOUT_MS);
+  if ("content" in second) return second;
+  // Both failed; a rate limit on either one means "try again later".
+  const retryAfter = Math.max(first.failure.retryAfter ?? 0, second.failure.retryAfter ?? 0);
+  return { content: null, retryAfter: retryAfter || undefined };
+}
+
+/**
+ * One call to one model. Only provider failures allow the fallback:
+ * timeouts, rate limits, 408 and 5xx, lost connections, and unreadable or
+ * empty replies. A bad request, the account's key or credit, a provider's
+ * content filter, a cut-off reply, or the user cancelling do not.
+ */
+async function attempt(
+  deps: AiDeps,
+  apiKey: string,
+  model: string,
+  role: "primary" | "fallback",
+  body: string,
+  signal: AbortSignal,
+  timeoutMs: number,
+): Promise<Attempt> {
+  const started = Date.now();
+  // Fixed metadata only: never the provider's error body, prompts, key,
+  // or generated text (PRD 13.5, AI-07).
+  const unavailable = (reason: string, details: object = {}) =>
+    console.warn("AI provider unavailable", { reason, ...details, model, attempt: role, ms: Date.now() - started });
   try {
     const response = await deps.fetch(OPENROUTER_URL, {
       method: "POST",
-      headers: { Authorization: `Bearer ${config.apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: config.model,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-        temperature: 0.2,
-        max_tokens: maxTokens,
-        // These are short rewriting tasks. Reasoning models can otherwise
-        // spend the completion budget on reasoning and return no JSON.
-        reasoning: { enabled: false },
-        response_format: { type: "json_schema", json_schema: { name: "solace_response", strict: true, schema } },
-        // Only providers that do not collect data, with zero data retention.
-        provider: { data_collection: "deny", zdr: true, require_parameters: true },
-      }),
-      signal: AbortSignal.any([signal, AbortSignal.timeout(TIMEOUT_MS)]),
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body,
+      signal: AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)]),
     });
     if (!response.ok) {
-      // Fixed metadata only: never the provider's error body, prompts, key,
-      // or generated text (PRD 13.5, AI-07).
-      console.warn("AI provider unavailable", { reason: "http", status: response.status });
+      unavailable("http", { status: response.status });
       if (response.status === 429) {
         const seconds = Number(response.headers.get("retry-after"));
         const retryAfter = Number.isFinite(seconds) && seconds > 0 ? Math.min(300, Math.ceil(seconds)) : 60;
-        return { content: null, retryAfter };
+        return { failure: { fallback: true, retryAfter } };
       }
-      return { content: null };
+      return { failure: { fallback: response.status === 408 || response.status >= 500 } };
     }
     let data: unknown;
     try {
       data = await response.json();
     } catch {
-      console.warn("AI provider unavailable", { reason: "invalid_json", status: response.status });
-      return { content: null };
+      unavailable("invalid_json", { status: response.status });
+      return { failure: { fallback: true } };
     }
     const choices = isRecord(data) && Array.isArray(data.choices) ? data.choices : [];
     const choice = isRecord(choices[0]) ? choices[0] : null;
     const message = choice && isRecord(choice.message) ? choice.message : null;
     if (choice?.finish_reason === "length") {
-      console.warn("AI provider unavailable", { reason: "truncated", ...replyMetadata(response.status, data, choice, message) });
-      return { content: null };
+      unavailable("truncated", replyMetadata(response.status, data, choice, message));
+      return { failure: { fallback: false } };
     }
     if (typeof message?.content !== "string" || !message.content.trim()) {
-      console.warn("AI provider unavailable", { reason: "empty_reply", ...replyMetadata(response.status, data, choice, message) });
-      return { content: null };
+      const metadata = replyMetadata(response.status, data, choice, message);
+      unavailable("empty_reply", metadata);
+      return { failure: { fallback: metadata.finishReason !== "content_filter" } };
     }
+    console.info("AI provider reply", { model, attempt: role, ms: Date.now() - started });
     return { content: message.content };
   } catch (error) {
+    if (signal.aborted) {
+      unavailable("cancelled");
+      return { failure: { fallback: false } };
+    }
     const timedOut = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
-    console.warn("AI provider unavailable", { reason: timedOut ? "timeout" : "request_failed" });
-    return { content: null };
+    unavailable(timedOut ? "timeout" : "request_failed");
+    return { failure: { fallback: true } };
   }
 }
 
@@ -274,7 +331,7 @@ export function makePickTip(deps: AiDeps) {
 
     const input = await readJson(request, MAX_BODY);
     if (input === undefined) return fail(413, "too_large");
-    if (!isRecord(input) || !validAiConsent(input.consent, "tips", config.model)) return fail(403, "consent_required");
+    if (!isRecord(input) || !validAiConsent(input.consent, "tips", consentModel(config.model, config.fallbackModel))) return fail(403, "consent_required");
     const pick = parseTipPickRequest(input, TIPS);
     if (!pick) return fail(400, "invalid_request");
 
