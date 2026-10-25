@@ -3,7 +3,10 @@ import { Logo } from "@/components/logo";
 import { Link } from "@/i18n/navigation";
 import { PATHS } from "@/lib/flow";
 
-/** Disclaimer on every page (GL-04). */
+/** The developer's public profile, linked from the copyright line. */
+const AUTHOR_URL = "https://github.com/lidxgoesgiri";
+
+/** Disclaimer on every page (GL-04), then the copyright line. */
 export async function SiteFooter() {
   const [t, common, header] = await Promise.all([
     getTranslations("footer"),
@@ -76,6 +79,27 @@ export async function SiteFooter() {
             </ul>
           </nav>
         </div>
+      </div>
+      <div className="border-t border-border/60">
+        <p
+          data-testid="footer-copyright"
+          className="mx-auto max-w-6xl px-5 py-5 text-xs leading-relaxed text-muted-foreground sm:px-8 sm:text-sm"
+        >
+          {t.rich("copyright", {
+            author: (name) => (
+              <a
+                href={AUTHOR_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="footer-author"
+                className="font-medium text-foreground underline decoration-sage underline-offset-4 transition-colors duration-(--duration-quick) ease-(--ease-calm) hover:text-sage-ink hover:decoration-sage-ink focus-visible:text-sage-ink"
+              >
+                {name}
+                <span className="sr-only"> {t("authorLinkHint")}</span>
+              </a>
+            ),
+          })}
+        </p>
       </div>
     </footer>
   );
