@@ -43,6 +43,7 @@ const LazyTipAiPick = lazy(() =>
 interface AiInfo {
   available: boolean;
   model: string | null;
+  fallbackModel?: string | null;
 }
 
 /** /tips: the personal tip plan (TP-01–TP-04) and the toolkit (TP-05–TP-07). */
