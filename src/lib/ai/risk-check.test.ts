@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_AI_MODEL, aiConfig } from "@/server/ai";
+import { DEFAULT_AI_FALLBACK_MODEL, DEFAULT_AI_MODEL, aiClientInfo, aiConfig } from "@/server/ai";
 import { RISK_LIST, containsRiskPhrase, normalizeForRisk, riskListReady, type RiskList } from "./risk-check";
 
 /** A stand-in list for testing the matcher; the real list is clinical content. */
@@ -33,12 +33,28 @@ describe("risk check before AI (A2, PRD 20.3)", () => {
     const keys = { OPENROUTER_API_KEY: "key", OPENROUTER_MODEL: "model" } as unknown as NodeJS.ProcessEnv;
     expect(aiConfig(keys, false)).toBeNull();
     expect(aiConfig({} as NodeJS.ProcessEnv, true)).toBeNull();
-    expect(aiConfig(keys, true)).toEqual({ apiKey: "key", model: "model" });
+    expect(aiConfig(keys, true)).toEqual({ apiKey: "key", model: "model", fallbackModel: DEFAULT_AI_FALLBACK_MODEL });
     // Without OPENROUTER_MODEL the owner's chosen free model is used.
     const keyOnly = { OPENROUTER_API_KEY: "key" } as unknown as NodeJS.ProcessEnv;
-    expect(aiConfig(keyOnly, true)).toEqual({ apiKey: "key", model: DEFAULT_AI_MODEL });
+    expect(aiConfig(keyOnly, true)).toEqual({ apiKey: "key", model: DEFAULT_AI_MODEL, fallbackModel: DEFAULT_AI_FALLBACK_MODEL });
     // The list in the repo decides; while it is unreviewed, AI is off.
     expect(aiConfig(keys) !== null).toBe(riskListReady(RISK_LIST));
+  });
+
+  it("keeps Xing4 as the primary, with Nemotron 3 Ultra as the default fallback the owner can change or switch off", () => {
+    const env = (values: Record<string, string>) => ({ OPENROUTER_API_KEY: "key", ...values }) as unknown as NodeJS.ProcessEnv;
+    expect(DEFAULT_AI_MODEL).toBe("xingchen-agi/xing4.0-29b-a4b:free");
+    expect(DEFAULT_AI_FALLBACK_MODEL).toBe("nvidia/nemotron-3-ultra-550b-a55b");
+    expect(aiConfig(env({}), true)?.fallbackModel).toBe(DEFAULT_AI_FALLBACK_MODEL);
+    expect(aiConfig(env({ OPENROUTER_FALLBACK_MODEL: " other/model " }), true)?.fallbackModel).toBe("other/model");
+    expect(aiConfig(env({ OPENROUTER_FALLBACK_MODEL: "off" }), true)?.fallbackModel).toBeNull();
+    expect(aiConfig(env({ OPENROUTER_FALLBACK_MODEL: "OFF" }), true)?.fallbackModel).toBeNull();
+    // A fallback equal to the primary would only repeat the same request.
+    expect(aiConfig(env({ OPENROUTER_MODEL: "same/model", OPENROUTER_FALLBACK_MODEL: "same/model" }), true)?.fallbackModel).toBeNull();
+    // The page learns both model names for the consent screen, never the key.
+    const info = aiClientInfo(env({ OPENROUTER_API_KEY: "sk-secret-value" }));
+    expect(JSON.stringify(info)).not.toContain("sk-secret-value");
+    expect(Object.keys(info).sort()).toEqual(["available", "fallbackModel", "model"]);
   });
 
   it("while the list is not approved, it says so and AI stays off", () => {

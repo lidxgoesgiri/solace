@@ -9,6 +9,7 @@ import { RadioGroup, RadioItem } from "@/components/ui/radio-cards";
 import { useAiRequest } from "@/components/use-ai-request";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { hasAiConsent, requestTipPick, saveAiConsent, tipRecommendation } from "@/lib/ai/client";
+import { consentModel } from "@/lib/ai/consent";
 import { aiOffer } from "@/lib/ai/notes";
 import { containsRiskPhrase } from "@/lib/ai/risk-check";
 import { TIP_CONTEXT_MAX_CHARS, TIP_PICK_MAX_CANDIDATES, TIP_PICK_MODES, type TipPick, type TipPickMode } from "@/lib/ai/tip-pick";
@@ -22,7 +23,7 @@ interface TipAiPickProps {
   tip: Tip;
   /** Library tips that may take its place (`alternativesFor`). */
   candidates: Tip[];
-  ai: { available: boolean; model: string | null };
+  ai: { available: boolean; model: string | null; fallbackModel?: string | null };
   username: string;
   onUse: (replacement: Tip) => void;
 }
@@ -56,7 +57,9 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
   const dispatch = useFlowDispatch();
   const pathname = usePathname();
   const router = useRouter();
-  const [consented, setConsented] = useState(() => hasAiConsent(username, "tips", ai.model));
+  // Consent covers every model a request may reach: the primary and the fallback.
+  const consentId = ai.model ? consentModel(ai.model, ai.fallbackModel) : null;
+  const [consented, setConsented] = useState(() => hasAiConsent(username, "tips", consentId));
   const [status, setStatus] = useState<Status>("idle");
   const [context, setContext] = useState("");
   const [mode, setMode] = useState<TipPickMode>("tip");
@@ -66,12 +69,12 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
   const contextInput = useRef<HTMLInputElement>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
   const crisisPending = mustShowCrisis(flow);
-  const { begin, finish, cancel } = useAiRequest(JSON.stringify([username, ai.model, ai.available, crisisPending, tip.id, candidates.map((candidate) => candidate.id)]));
+  const { begin, finish, cancel } = useAiRequest(JSON.stringify([username, consentId, ai.available, crisisPending, tip.id, candidates.map((candidate) => candidate.id)]));
 
   const offer = aiOffer({
     available: ai.available && candidates.length > 0,
     signedIn: true,
-    consented: consented && hasAiConsent(username, "tips", ai.model),
+    consented: consented && hasAiConsent(username, "tips", consentId),
     crisisPending,
   });
 
@@ -114,7 +117,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
       locale,
       mode,
     };
-    const result = await requestTipPick(request, { username, model: ai.model, signal: controller.signal });
+    const result = await requestTipPick(request, { username, model: consentId, signal: controller.signal });
     finish(controller);
     if (controller.signal.aborted || result.kind === "cancelled") return;
     if (result.kind === "risk") {
@@ -255,6 +258,7 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
             <li>{t("consentSent")}</li>
             <li>{t("consentNotSent")}</li>
             <li>{t("consentProvider", { model: ai.model ?? "" })}</li>
+            {ai.fallbackModel ? <li>{t("consentFallback", { model: ai.fallbackModel })}</li> : null}
             <li>
               {t("consentRetention")}{" "}
               <a
@@ -273,8 +277,8 @@ export function TipAiPick({ tip, candidates, ai, username, onUse }: TipAiPickPro
               type="button"
               size="sm"
               onClick={() => {
-                if (!ai.model) return;
-                saveAiConsent(username, "tips", ai.model);
+                if (!consentId) return;
+                saveAiConsent(username, "tips", consentId);
                 setConsented(true);
                 setStatus("form");
               }}

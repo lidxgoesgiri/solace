@@ -45,7 +45,7 @@ type Status =
  * and the PDF are built from the same model, which takes its scores from
  * the same `resultsView` the results page uses (K8).
  */
-export function ReportBuilder({ ai }: { ai: { available: boolean; model: string | null } }) {
+export function ReportBuilder({ ai }: { ai: { available: boolean; model: string | null; fallbackModel?: string | null } }) {
   const t = useTranslations("report");
   const all = useTranslations();
   const countries = useTranslations("countries");
