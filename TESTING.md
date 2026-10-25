@@ -152,19 +152,19 @@ Without a database these pages show `accounts-unavailable` (and `/tips` shows `t
 
 ## The suite in the TestSprite portal
 
-The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Eight tests were then written by hand for features added later, for **42 tests**. Seven of them stopped showing in the portal's test list after the 41/41 production run on 2026-10-18, so they were added again with the same steps and new IDs (the ones below). The originals turned out to still run in GitHub-triggered runs (PR #14 ran 49 tests: those seven twice), but they can no longer be opened or edited in the portal. Until TestSprite removes them, a run can include both copies.
+The suite was generated in the TestSprite 3.0 portal against https://solace-sc.vercel.app from the plan above, then reviewed by hand: duplicates and tests for features that do not exist yet were removed, two score tests with wrong expectations were corrected to the official cutoffs, and a K9 test was added (34 tests). Eight tests were then written by hand for features added later, for **42 tests**. Seven of them stopped showing in the portal's test list after the 41/41 production run on 2026-10-18, so they were added again with the same steps and new IDs (the ones below). The originals turned out to still run in GitHub-triggered runs (PR #14 ran 49 tests: those seven twice), but they can no longer be opened or edited in the portal. Until TestSprite removes them, a run can include both copies. On 2026-10-25 five of the visible copies were deleted, so those scenarios now run once, as the hidden originals; the two Safety Contract copies were kept (see the last section).
 
 | Use case | TestSprite IDs | Covers |
 | --- | --- | --- |
-| Home & language | HOME-001 to HOME-003, HOME-006, HOME-007 | Landing start button, K9 language switch at question 10, help from the landing page, `robots.txt` (HOME-006), light and dark mode (HOME-007) |
+| Home & language | HOME-001 to HOME-003, HOME-004 and HOME-005 (hidden originals) | Landing start button, K9 language switch at question 10, help from the landing page, `robots.txt` (HOME-004), light and dark mode (HOME-005) |
 | Start & eligibility | STAR-001 to STAR-005 | LO-04 under 18, LO-05 consent, SK-05 resume card |
-| Question flow | QST-001 to QST-005, QST-007 | All-0 and all-3 runs, SK-08 safety question before results, SK-04 back, SK-05 reload, SK-06 pause and continue (QST-007) |
-| Safety & crisis | SAFE-001 to SAFE-008, SAFE-010 | K2 safety answers 1–3, K3 URL/back/refresh gate, K4 both branches, K6 directory by country, SP-01 safety plan without an account (SAFE-010) |
+| Question flow | QST-001 to QST-005, QST-006 (hidden original) | All-0 and all-3 runs, SK-08 safety question before results, SK-04 back, SK-05 reload, SK-06 pause and continue (QST-006) |
+| Safety & crisis | SAFE-001 to SAFE-008, SAFE-009 (hidden original) | K2 safety answers 1–3, K3 URL/back/refresh gate, K4 both branches, K6 directory by country, SP-01 safety plan without an account (SAFE-009) |
 | Results | RESU-001 to RESU-005 | K1 scores (all-0, all-1, all-3), K5 priority panel, K6 in English, K7 disclaimer |
-| Report | RPT-002 | K8 report numbers match the result cards, PDF-03 report language |
+| Report | RPT-002, and its hidden original RPT-001 | K8 report numbers match the result cards, PDF-03 report language. Both copies kept: K8 is a Safety Contract invariant |
 | Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
-| Tips & account | TIPS-001, TIPS-004 to TIPS-006 | K10-a tips by category (TIPS-001), AK-01 sign-up and P3 account deletion (TIPS-004), RW-04 history and daily check-in (TIPS-005), TP-04 swapping a tip that did not help and bringing it back, with TP-02 summaries and A1 for the AI pick (TIPS-006). Each signs up a `demo-…` account and deletes it at the end |
-| AI scenarios added 2026-10-21 | TIPS-007, TIPS-008, TIPS-009 (removed 2026-10-24, see the last section), RPT-003 | Actual ID-only selection and canonical content/use/restore; risk and crisis gating; simulated invalid/error/limit/timeout/cancel responses; notes-specific opt-in, real tidy-up and revert. Test existence is not evidence of a pass: read the matching deployment/run report. |
+| Tips & account | TIPS-001, TIPS-004 and its hidden original TIPS-002, TIPS-003 (hidden original), TIPS-006 | K10-a tips by category (TIPS-001), AK-01 sign-up and P3 account deletion (TIPS-004 and TIPS-002, both kept: P3 is a Safety Contract invariant), RW-04 history and daily check-in (TIPS-003), TP-04 swapping a tip that did not help and bringing it back, with TP-02 summaries and A1 for the AI pick (TIPS-006). Each signs up a `demo-…` account and deletes it at the end |
+| AI scenarios added 2026-10-21 | TIPS-007, TIPS-008, TIPS-011, RPT-003 (TIPS-009 removed 2026-10-24; TIPS-010, RPT-004 and TC-001 removed 2026-10-25, see the last sections) | Actual ID-only selection and canonical content/use/restore; risk and crisis gating; simulated invalid/error/limit/timeout/cancel responses; notes-specific opt-in, real tidy-up and revert. Test existence is not evidence of a pass: read the matching deployment/run report. |
 
 Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
 
@@ -243,12 +243,12 @@ The UI-01 cases split the responsive and breathing-pacer acceptance from PR #16 
 | TestSprite ID | Case | Runs at | Exact check in GitHub Actions |
 | --- | --- | --- | --- |
 | SOLACE-001 | UI-01a: keyboard 1–4 and Enter, Back and language switch keep answers | 1920 × 1080 | `e2e/ui-cohesion.e2e.ts`: keys 1–4, Enter, Back |
-| SOLACE-002 | UI-01b: pacer 4/6 countdown, vibration off by default | 1920 × 1080 | e2e: the full 4/6 sequence on `/krisis`, `breathing-vibration` off |
+| SOLACE-002 | UI-01b: pacer 4/6 countdown, vibration off by default | 1920 × 1080; starts at the run's base URL since 2026-10-25 | e2e: the full 4/6 sequence on `/krisis`, `breathing-vibration` off |
 | SOLACE-004 | UI-01d: pacer resyncs after a hidden tab | 1920 × 1080 | e2e: the countdown advances before the pacer is scrolled into view |
-| SOLACE-005 | UI-01e: no horizontal scroll | 360 × 800, the narrowest preset | 320 px |
-| SOLACE-006 | UI-01f: no horizontal scroll | 390 × 844 | 375 px |
-| SOLACE-007 | UI-01g: no horizontal scroll | 820 × 1180 | 768 px |
-| SOLACE-008 | UI-01h: no horizontal scroll | 1440 × 900 | 1440 px |
+| SOLACE-005 | ~~UI-01e: no horizontal scroll~~ removed 2026-10-25 | 360 × 800, the narrowest preset | 320 px |
+| SOLACE-006 | ~~UI-01f: no horizontal scroll~~ removed 2026-10-25 | 390 × 844 | 375 px |
+| SOLACE-007 | ~~UI-01g: no horizontal scroll~~ removed 2026-10-25 | 820 × 1180 | 768 px |
+| SOLACE-008 | ~~UI-01h: no horizontal scroll~~ removed 2026-10-25 | 1440 × 900 | 1440 px |
 
 Playwright checks for horizontal overflow on the landing page and the screening question at 320, 375, 768, 1024 and 1440 px in both languages and themes, and on the crisis screen and results at 375 and 1440 px.
 
@@ -261,3 +261,21 @@ Three cases were removed from the portal because the runner cannot execute them.
 | TIPS-009, AI-05: invalid replies, provider limits, timeout and cancellation | The runner cannot intercept or delay `/api/ai/tips` responses | `src/server/api.test.ts`: provider errors, timeouts and empty or truncated replies stay errors, and provider capacity is told apart from the daily limit. `src/lib/ai/client.test.ts`: out-of-candidate IDs are refused, requests carry a bounded abort signal, and failures offer a library tip clearly marked non-AI |
 
 No Safety Contract case (K1–K11, P1–P4, A1–A3) was changed or removed. Real AI selection stays in TIPS-007 and the A2 risk path in TIPS-008.
+
+## Suite pruning (2026-10-25)
+
+A full run had grown to 63 tests (about 31.5 credits). Seven scenarios ran twice, four width checks were Blocked on every run because the runner cannot read `scrollWidth`, and three AI diagnostics repeated the main AI cases. Twelve tests were removed: five of the duplicate copies (the two Safety Contract copies stay), the four width checks and the three diagnostics. The Blocked width checks also turned the "TestSprite V3" status red on runs with no failed test (PR #24: 57 passed, 0 failed, 6 blocked). They were removed from the portal:
+
+| Removed | Why | Coverage that remains |
+| --- | --- | --- |
+| HOME-006 robots.txt, HOME-007 theme, QST-007 SK-06, SAFE-010 SP-01 + SP-03, TIPS-005 RW-04 | Visible copies of the hidden originals HOME-004, HOME-005, QST-006, SAFE-009 and TIPS-003, which still run in every GitHub-triggered run | The same steps, once, in the hidden originals |
+| SOLACE-005 to SOLACE-008 (UI-01e to UI-01h, no horizontal scroll) | Blocked on every run: the runner cannot measure document width | `e2e/ui-cohesion.e2e.ts` checks overflow at 320, 375, 768, 1024 and 1440 px in both languages and themes |
+| TC-001 DIAG-PR15: strict real notes and tips responses | A one-off diagnostic from PR #15 that repeats TIPS-007 and RPT-003 | TIPS-007 (real tip selection), RPT-003 (notes opt-in, real tidy-up, revert) |
+| TIPS-010 AI-05 focused continuation | Repeats TIPS-007; Blocked when the runner cannot see the response | TIPS-007, and `src/server/api.test.ts` for the reply checks |
+| RPT-004 AI-04 focused continuation | Repeats RPT-003 | RPT-003, and `src/server/api.test.ts` |
+
+Kept on purpose, although they overlap: RPT-002 and its hidden original RPT-001 (K8), TIPS-004 and its hidden original TIPS-002 (P3), and TIPS-011 next to TIPS-008 (A2). No Safety Contract case (K1–K11, P1–P4, A1–A3) was changed or removed.
+
+Fixed: SOLACE-002 (UI-01b) opened the PR #16 preview `solace-git-feat-ui-ida-bagus.vercel.app` instead of the run's base URL, so it always tested that old build. It now starts at the base URL of the run.
+
+A run now has 51 tests (about 25.5 credits), and the portal lists 44. The hidden originals cannot be opened or edited in the portal; if one of them needs new steps, add it again and ask TestSprite support to remove the old copy.
