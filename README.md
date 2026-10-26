@@ -6,165 +6,394 @@
 
 <p align="center"><em>You are not alone.</em></p>
 
-Solace is a mental health screening web app for university students. It runs the 21-item **DASS-21** plus one separate **safety question**, shows results instantly, and then offers two paths: download a report to bring to a psychologist, or sign in (no email) for research-based tips. Available in **Bahasa Indonesia** (default) and **English**.
+Solace is a mental health screening web application for university students aged 18 and over. It combines the 21-item Depression Anxiety Stress Scales (**DASS-21**) with a separate safety question, immediate results, a downloadable report for a psychologist, and optional account-based self-help tools.
 
-Built for **TestSprite Hackathon Season 4**. Every pull request gets its own Vercel preview, and the TestSprite GitHub App runs the project suite against that preview; every push to `main` runs it again against production. The portal now lists 46 tests, including four new AI scenarios whose results must be checked separately; GitHub runs previously included seven hidden duplicates. Blocking PRs (the merge gate) is not switched on.
+Screening and report generation work without an account. Users who create an account can keep encrypted screening history, follow source-backed tips, record daily check-ins, and save a safety plan. The interface supports **Bahasa Indonesia** by default and **English**.
 
-- **Live URL:** https://solace-sc.vercel.app
-- **Health check:** https://solace-sc.vercel.app/api/health
-- **Privacy policy:** https://solace-sc.vercel.app/privasi
-- **Test plan and suite coverage:** [TESTING.md](TESTING.md)
+**Solace is a screening tool, not a diagnosis.** Clinical review of parts of the content and safety flow remains pending; see [Clinical content and known limitations](#clinical-content-and-known-limitations).
 
-## What TestSprite found
+[Live application](https://solace-sc.vercel.app) · [English interface](https://solace-sc.vercel.app/en) · [Privacy policy](https://solace-sc.vercel.app/en/privasi) · [Test plan](TESTING.md)
 
-The suite was generated in the TestSprite 3.0 portal, reviewed by hand, and grown as features landed. Its runs found real problems and taught us to write clearer tests; the full history and pending AI coverage are in [TESTING.md](TESTING.md).
+Originally built for **TestSprite Hackathon Season 4**.
 
-- **A real bug (first run):** leaving right after giving age and consent, before question 1, left no way to continue from the landing page (STAR-004). Fixed on the same branch.
-- **A real gap:** `/robots.txt` answered with the HTML "page not found" screen. The robots test failed on production until the fix in [#13](https://github.com/lidxgoesgiri/solace/pull/13), and has passed since.
-- **Tests, not the app:** on [#11](https://github.com/lidxgoesgiri/solace/pull/11) four score and crisis tests failed. The run logs showed the agent clicking the answer button whose number badge matched the value in the step ("answer 1") while badges run 1–4 and values 0–3. The app was right; the steps were rewritten to name the test id, value, position and badge, and all of them passed.
-- **Green since:** production passed 41 of 41 after #13, and [#14](https://github.com/lidxgoesgiri/solace/pull/14) passed 49 of 49.
+## Contents
 
-## Principles
+- [Key features](#key-features)
+- [Technology stack](#technology-stack)
+- [System architecture](#system-architecture)
+- [Project structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation and setup](#installation-and-setup)
+- [Environment configuration](#environment-configuration)
+- [Running and building](#running-and-building)
+- [Usage guide](#usage-guide)
+- [API reference](#api-reference)
+- [Testing and quality assurance](#testing-and-quality-assurance)
+- [Safety Contract](#safety-contract)
+- [Security and privacy](#security-and-privacy)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
+- [Development and contributing](#development-and-contributing)
+- [Clinical content and known limitations](#clinical-content-and-known-limitations)
+- [License and credits](#license-and-credits)
 
-1. **Safety first.** The safety question and crisis screen come before every result and cannot be skipped.
-2. **Evidence-based.** Scoring uses the official DASS-21 cutoffs; every tip cites its source (a DOI or a WHO/NICE guideline).
-3. **Independent.** No clinics, private hospitals, or practices are named. The help directory lists only public, government, or nonprofit services.
-4. **Private end to end.** No email login, account data encrypted in the browser, no tracking analytics.
-5. **Screening, not diagnosis.** Results say "symptoms of … at … level", never "you have …".
+## Key features
 
-## What works today
+| Area | Implemented behavior | Requirements |
+| --- | --- | --- |
+| Screening | Age and consent checks; 21 questions with progress, back navigation, keyboard shortcuts, autosave, and resume. Unfinished drafts expire after seven days. | Browser storage; no account |
+| Safety support | Separate PHQ-9 item 9 safety question; any answer above zero opens crisis support before results. Includes breathing, grounding, safety-plan prompts, and a country-based help directory. | No account |
+| Results and reports | Depression, anxiety, and stress scores with severity labels; professional-help panels; browser-generated PDF with optional nickname, safety information, and five guided notes for a psychologist. Report language can differ from interface language. | Completed screening and cleared crisis gate |
+| Accounts | Username and passphrase without email; recovery kit, sign-in/out, idle lock, passphrase changes, JSON export, and account deletion. Record contents are encrypted in the browser. | Configured database |
+| Tips and history | Tips selected by category and severity from a 13-tip library; source citations, feedback, manual alternatives and restoration; relaxation toolkit, trend charts, past reports, daily mood check-ins, and a 14-day re-screening reminder. | Signed-in account |
+| Safety plan | Six sections and a downloadable PDF. Signed-in users can save the plan encrypted; unsigned plans remain in page memory until navigation or reload. | Account required only for saving |
+| Optional AI | Tidy the user's psychologist notes; select an eligible alternative library tip with an optional brief reflection; or return a reflection alone in listening mode. Separate consent is required for notes and tips. | Signed-in account, AI configuration, and consent |
+| Interface and offline support | ID/EN language switch, system/light/dark themes, reduced-motion support, help and quick-exit controls, and a production service worker for cached screening pages. | Offline use requires a prior online visit and completed caching |
 
-| Area | Status |
+## Technology stack
+
+| Technology | Role |
 | --- | --- |
-| Landing, age check (18+), consent | ✅ |
-| DASS-21, one question per screen, progress, back, autosave, keys 1–4 | ✅ |
-| Pause and continue later; unfinished answers are deleted after 7 days | ✅ |
-| Safety question (PHQ-9 item 9), binary crisis trigger | ✅ |
-| Crisis screen: emergency and support numbers by country, breathing, grounding, safety-plan prompts, the user's own plan, confirm to continue | ✅ |
-| Crisis gate in the router (`/hasil`, `/laporan`, `/tips`, `/riwayat`) | ✅ |
-| Results: 3 cards (text + icon + colour), explanations, disclaimer, priority panel, help directory | ✅ |
-| "I need help now", quick exit (button or Esc twice), ID ↔ EN switch without reload | ✅ |
-| PDF report for a psychologist: made in the browser, 2 pages (3 with notes), fonts bundled, report language, optional nickname and safety note (`/laporan`) | ✅ |
-| Accounts without email: passphrase, recovery kit, sign in/out, 30-minute idle lock, change passphrase, export, delete (`/akun`) | ✅ when a database is configured |
-| End-to-end encryption: keys from the passphrase (Argon2id) in the browser; the server stores only ciphertext | ✅ |
-| Tips plan by category and severity, each with its source and a one-sentence evidence summary; breathing, grounding, and muscle relaxation toolkit (`/tips`) | ✅ needs an account |
-| A tip marked "not helpful" can be swapped for another library tip that fits the same section ("Coba tips lain"), and swapped tips can be brought back | ✅ needs an account |
-| Six-part safety plan, kept on the device or encrypted in the account, with a PDF (`/rencana-keselamatan`) | ✅ |
-| History: trends by category, re-screening reminder after 14 days, worsening warning, daily check-in, past reports (`/riwayat`) | ✅ needs an account |
-| Anonymous daily totals for the product goals (no identifiers, nothing during a crisis) | ✅ |
-| Content Security Policy and security headers | ✅ |
-| Dark mode: follows the system, or pick light or dark with the header switch (remembered on the device); offline screening after the first visit (PWA) | ✅ |
-| Health check (`/api/health`) | ✅ |
-| Privacy policy: what is stored, where, and who can see it; its numbers are tied to the code by a test (`/privasi`) | ✅ |
-| Notes for the psychologist: five guided questions in the user's own words, printed as page 3 of the report; kept in the page only (`/laporan`) | ✅ |
-| Optional AI tidy-up of those notes (OpenRouter): signed-in users only, after a consent screen, risk check before and after, nothing during a crisis, daily limit | 🟡 Built and tested; on once `OPENROUTER_API_KEY` is set in Vercel |
-| Optional AI pick for a tip that did not help. The user chooses "find another tip" or "I just want to be heard". The response is one eligible library ID and, if the user wrote a sentence, a one- or two-sentence AI reflection on it, labelled as AI and not professional advice; "just be heard" returns the reflection only, with no tip. A reflection with risk phrases, questions, links, contact details, long numbers, diagnoses, disorder names, medicine or emoji is rejected. Titles, explanations, steps and sources are rendered unchanged from the approved library. Extra fields or out-of-candidate IDs are rejected. Provider failure offers the first eligible manual alternative, clearly labelled **not an AI result**, but never a tip in "just be heard" mode | 🟡 Hardened implementation; new end-to-end AI coverage still requires TestSprite verification |
+| Next.js 16.4.1, React 19.3, TypeScript | App Router pages, Route Handlers, Turbopack builds, and strict type checking |
+| Tailwind CSS 4, in-house UI components, Framer Motion | Styling, controls, and selectively loaded animation |
+| next-intl 4 | Indonesian and English routing and compiled messages |
+| Zustand 5 | Browser screening state, preferences, and in-memory account state |
+| libsodium | Browser Argon2id key derivation and XChaCha20-Poly1305 record encryption |
+| Drizzle ORM, postgres, PGlite | PostgreSQL access; embedded PostgreSQL for development and API tests |
+| pdf-lib, fontkit | Client-side reports with bundled Inter and Lora fonts |
+| OpenRouter | Optional server-side AI requests |
+| Vitest 5, Playwright, ESLint 9 | Logic/API tests, rendered browser regressions, and linting |
 
-AI opt-in is separate for notes and tips, and bound to the selected model and consent-copy version. The browser refuses to send without consent; the server also requires the matching consent descriptor. That descriptor is an explicit request prerequisite, not proof of a clinical review. Both features keep input/output risk checks, daily limits and crisis gating. Requests use strict JSON Schema with `provider: {data_collection: "deny", zdr: true, require_parameters: true}`; no failure ever triggers a less-private route. If the primary model's provider fails (timeout, HTTP 429, 408 or 5xx, a lost connection, or an empty or unreadable reply), the same request is sent once to a fallback model with the same privacy settings, and its reply passes the same checks. Bad requests, key or credit errors, content-filter refusals, cut-off or invalid replies, and user cancellation never fall back. Consent names both models. Requests are bounded (25 seconds upstream for one model, 15 + 15 seconds with the fallback, 35 seconds in the browser), cancellable, and make at most these two calls; the next request starts with the primary again. Keys remain server-side; fixed error metadata only is logged. Provider/account logging policies must still be checked independently; a configuration flag alone is not end-to-end verification.
+Dependency ranges and the pinned package manager are defined in [package.json](package.json); [pnpm-lock.yaml](pnpm-lock.yaml) records resolved dependencies.
+
+## System architecture
+
+Solace is a single Next.js application. Localized page shells load interactive browser components, while Route Handlers delegate database and AI work to server modules.
+
+```mermaid
+flowchart LR
+    Pages["Localized Next.js pages"] --> Flow["Browser flow, scoring, and crisis guard"]
+    Flow <--> Drafts[("Browser localStorage")]
+    Flow --> PDF["Browser PDF generation"]
+    Pages --> Vault["Browser account client and encryption"]
+    Vault <-->|"Auth protocol and encrypted records"| API["Next.js Route Handlers"]
+    API <--> DB[("PostgreSQL through Drizzle / local PGlite")]
+    Pages -->|"Opt-in notes or tip context"| API
+    API -->|"Optional AI requests"| OpenRouter["OpenRouter"]
+```
+
+- [scoring.ts](src/lib/scoring.ts) sums seven items per DASS-21 subscale and doubles each sum to a score from 0 to 42. Results, reports, and history reuse this logic. The safety answer is separate from these scores.
+- [flow.ts](src/lib/flow.ts) defines the screening state machine. [FlowGuard](src/components/flow-guard.tsx) enforces browser navigation rules, including the pending crisis gate on results, reports, tips, and history.
+- [The account client](src/lib/account/client.ts) encrypts record contents before API storage. The server retains account and record metadata alongside ciphertext.
+- Optional AI is a separate data path: consented notes or tip context reach the Solace server and OpenRouter as readable text. Account-record encryption does not cover these requests.
+- Aggregate product events use the same-origin metrics API and require database storage. Screening itself does not require a database.
+
+## Project structure
+
+```text
+solace/
+├── .github/workflows/ci.yml   # Quality checks and rendered UI tests
+├── e2e/                      # Playwright regression scenarios
+├── messages/                 # English and Indonesian interface messages
+├── public/                   # Brand assets, app icons, and service worker
+├── scripts/                  # Asset generation and screening JS budget check
+├── src/
+│   ├── app/[locale]/         # Localized App Router pages
+│   ├── app/api/              # HTTP Route Handlers
+│   ├── components/           # Screening, accounts, reports, tips, and toolkit UI
+│   ├── data/                 # Instruments, tips, risk phrases, and help directory
+│   ├── features/landing/     # Landing-page interactions and visuals
+│   ├── hooks/                # Keyboard and motion helpers
+│   ├── i18n/                 # Locale routing and message loading
+│   ├── lib/                  # Scoring, flow, crypto, reports, and domain logic
+│   ├── server/               # API services, schema, database, sessions, and limits
+│   ├── store/                # Browser state and persistence
+│   └── proxy.ts              # Locale routing proxy
+├── TESTING.md                # Safety scenarios and external test history
+├── next.config.ts            # Build, localization, and security headers
+└── package.json              # Scripts, dependencies, and pnpm version
+```
+
+Tests are generally colocated with the modules they verify as `*.test.ts`.
+
+## Prerequisites
+
+- **Node.js 24.x (24.7.0 or later)**, matching CI's major version. Although the manifest declares `>=20.9`, server authentication imports `crypto.argon2` (introduced in Node 24.7), and the installed Vitest toolchain has newer runtime requirements.
+- **pnpm 12.11.2**, as pinned in `package.json`.
+- **Git** to clone the repository and a modern browser for the interface.
+- **PostgreSQL** for hosted account persistence. Local development uses PGlite automatically when `DATABASE_URL` is absent; it does not need a separate database service. CI uses PostgreSQL 17.
+- An OpenRouter key only if testing the optional AI features.
+
+## Installation and setup
+
+```bash
+git clone https://github.com/lidxgoesgiri/solace.git
+cd solace
+npm install --global pnpm@12.11.2
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000), or [http://localhost:3000/en](http://localhost:3000/en) for English.
+
+No environment file is needed for baseline development. Without an existing `DATABASE_URL`, development accounts use persistent PGlite storage at `.data/pglite`. If an environment file already exists, review its database selection before starting: `DATABASE_URL` always takes precedence over PGlite.
+
+Tables are created with idempotent SQL when the database is first opened. There is no separate migration command or seed step.
+
+## Environment configuration
+
+Create or update `.env.local` in the repository root for local configuration; it is ignored by Git. No `.env.example` is included. Keep credentials in that file or the deployment host's environment settings.
+
+| Variable | Purpose and default |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string. Takes precedence over embedded storage; needed for hosted accounts, records, and metrics. |
+| `SOLACE_LOCAL_DB` | Set to `pglite` to enable embedded storage outside development, such as a local production build. Development enables it automatically when no PostgreSQL URL exists. |
+| `SOLACE_PGLITE_DIR` | Optional PGlite storage directory; defaults to `.data/pglite`. |
+| `SOLACE_SERVER_SECRET` | Recommended independent random secret for stable decoy salts for unknown usernames. Otherwise derived from `DATABASE_URL`, or a fixed local-development value. |
+| `OPENROUTER_API_KEY` | Optional server-only key. AI remains unavailable without it or when the risk-phrase list is not ready. |
+| `OPENROUTER_MODEL` | Primary model ID; configured default: `xingchen-agi/xing4.0-29b-a4b:free`. |
+| `OPENROUTER_FALLBACK_MODEL` | Fallback model ID; configured default: `nvidia/nemotron-3-ultra-550b-a55b`. Set to `off` to disable fallback. |
+| `SOLACE_TEST_RESET_TOKEN` | Optional local/preview automation token for deleting `demo-*` accounts through the reset endpoint. Leave unset on every production host. |
+
+For a hosted database, replace these placeholders with your own values:
+
+```dotenv
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/solace"
+SOLACE_SERVER_SECRET="replace-with-a-long-random-secret"
+```
+
+Use the connection and TLS settings required by your database host. For a local production run with embedded storage instead, omit `DATABASE_URL` and set:
+
+```dotenv
+SOLACE_LOCAL_DB=pglite
+```
+
+Configure database and AI availability **before building and while running**: pages include these availability flags during prerendering. Rebuild or redeploy after changing them. Next.js manages `NODE_ENV`; Vercel supplies `VERCEL_ENV` and the optional `VERCEL_GIT_COMMIT_SHA` used in the health response.
+
+The model IDs above are source defaults, not confirmation of current provider availability. Requests require strict structured output and the privacy settings described below.
+
+## Running and building
+
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Start the development server on port 3000 |
+| `pnpm build` | Create the production build |
+| `pnpm start` | Serve an existing production build on port 3000 |
+| `pnpm lint` | Run ESLint |
+| `pnpm typecheck` | Generate Next.js route types, then run `tsc --noEmit` |
+| `pnpm test` | Run Vitest once |
+| `pnpm test:watch` | Run Vitest in watch mode |
+| `pnpm icons` | Regenerate branded app icons |
+| `pnpm report-assets` | Regenerate embedded PDF fonts, logo, and font licenses |
+| `pnpm ui-icons` | Regenerate icon components from Lucide assets |
+
+After configuring the desired storage mode, run a local production build with:
+
+```bash
+pnpm build
+pnpm start
+```
+
+A production build/run with neither `DATABASE_URL` nor explicit PGlite mode supports screening and reports but disables accounts, tips, history, and database-backed APIs. Asset generation commands rewrite generated files and are only needed when their source assets change.
+
+## Usage guide
+
+1. Start at `/` or `/en`. Confirm that you are 18 or older and accept consent at `/mulai`.
+2. Answer the 21 questions at `/skrining/1` through `/skrining/21`. Keys **1–4** select answer values **0–3**; **Enter** advances. You can go back, pause, switch language, and resume saved answers.
+3. Submit the separate safety question at `/keamanan`. Any answer above zero opens `/krisis`; results remain gated until the crisis screen is acknowledged.
+4. View the three subscale results at `/hasil`, then open `/laporan` to choose the report language, add optional notes, and download a PDF. Notes remain in page memory and are not saved to the account.
+5. Optionally create an account at `/akun/daftar`, save the recovery kit, and use `/tips`, `/riwayat`, and `/rencana-keselamatan`. Use `/akun` to export data, change the passphrase, or delete the account.
+
+English uses the same path names with an `/en` prefix, for example `/en/hasil`. Indonesian is the default; browser language detection is intentionally ignored. Help-directory country selection is independent of interface language.
+
+The header offers help and quick exit. Quick exit, also triggered by pressing **Esc twice within one second**, replaces the current page with Google; it does not erase the browser's full history or saved screening data.
+
+## API reference
+
+Route entry points live in [src/app/api](src/app/api); implementation and validation live in [src/server/api](src/server/api). These are application APIs, with authentication and encryption coordinated by the browser client.
+
+Except for the health check, APIs require configured database storage and otherwise return `503 {"error":"accounts_disabled"}`. Failures use `{"error":"<code>"}`. Authenticated routes use the `solace_session` cookie; requests with an explicitly mismatched origin are rejected for state changes.
+
+| Method and endpoint | Request and response summary | Access |
+| --- | --- | --- |
+| `GET /api/health` | Returns `status`, `service`, `version`, and ISO `time`; no database probe | Public |
+| `POST /api/auth/salt` | `{username}` → `{salt, kdfParams}`; unknown names receive a decoy salt | Public |
+| `POST /api/auth/register` | Username, derived authentication/recovery keys, salt, KDF parameters, and wrapped data keys → `201 {username}` and session cookie | Public |
+| `POST /api/auth/login` | `{username, authKey}` → `{username, wrappedKeyPassphrase}` and session cookie | Public |
+| `POST /api/auth/logout` | Ends the supplied session → `{ok:true}` | Session cookie if present |
+| `GET /api/auth/session` | Returns `{username}` and refreshes a valid session | Session |
+| `POST /api/auth/recover/start` | `{username, recoveryAuthKey}` → `{wrappedKeyRecovery}` | Recovery credential |
+| `POST /api/auth/recover/finish` | Recovery credentials and new passphrase-derived key material → `{username}` and a new session | Recovery credential |
+| `POST /api/auth/passphrase` | Current authentication key and replacement passphrase-derived key material → `{ok:true}` | Session and current key |
+| `GET /api/records` | Returns `{records:[...]}` containing encrypted records and metadata | Session; own records |
+| `POST /api/records` | `{kind, nonce, ciphertext}` → `201 {record}` | Session |
+| `PUT /api/records/:id` | `{nonce, ciphertext}` → `{record}` | Session; own record |
+| `DELETE /api/records/:id` | Deletes an owned record → `{ok:true}` | Session; own record |
+| `DELETE /api/account` | `{confirmUsername}` → `{ok:true}`; cascades to records and sessions | Session |
+| `POST /api/ai/notes` | `{answers:[five strings], consent}` → `{answers:[five strings]}` | Session, AI enabled, notes consent |
+| `POST /api/ai/tips` | `{replacedId, candidates, context, locale, mode?, consent}` → eligible `tipId`, `reflection`, or both, depending on mode/context | Session, AI enabled, tips consent |
+| `POST /api/metrics` | `{event}` → `204` for an accepted aggregate event | Public |
+| `GET /api/metrics` | Returns `{metrics:[{day,event,count}]}`, up to 500 recent rows | Public |
+| `POST /api/test/reset` | Deletes `demo-*` accounts → `{deleted:number}` | Matching `x-solace-test-token`; local/preview use only |
+
+Record kinds are `screening`, `safety_plan`, `checkin`, and `tip_progress`. Use [the account client](src/lib/account/client.ts) and [crypto helpers](src/lib/crypto/keys.ts) to construct encrypted payloads; never submit a plaintext passphrase, screening answers, or scores as a record body. Records expose IDs, kind, timestamps, nonce, and ciphertext.
+
+AI consent is `{version, feature, model}` and is validated against the current feature and configured primary/fallback model descriptor. Build it with [the consent helpers](src/lib/ai/consent.ts). Tips support `mode: "tip"` (default) and `mode: "listen"`; listening requires context and returns a reflection without a tip. Exact request limits and validation are in [notes.ts](src/lib/ai/notes.ts), [tip-pick.ts](src/lib/ai/tip-pick.ts), and [validate.ts](src/server/validate.ts).
+
+Example health request:
+
+```bash
+curl http://localhost:3000/api/health
+```
+
+Example response outside Vercel; `time` varies per request:
+
+```json
+{"status":"ok","service":"solace","version":"dev","time":"2026-10-26T00:00:00.000Z"}
+```
+
+Common errors include `400 invalid_request`, `401 unauthorized` or `invalid_credentials`, `403 consent_required` or `forbidden_origin`, `413 too_large`, and `429 rate_limited`. AI additionally returns `422 risk_detected`, `502 ai_unavailable`, or `503 ai_disabled` / `ai_busy`. Provider capacity and an account's daily allowance are separate limits; `Retry-After` is supplied where applicable.
+
+## Testing and quality assurance
+
+Run the standard checks with the installed dependencies:
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+node scripts/check-screening-budget.mjs
+```
+
+Vitest covers scoring boundaries, flow and crisis rules, draft expiry, tips, history, cryptography, PDFs, content, message parity, privacy, and server APIs. API tests use in-memory PGlite and mocked AI-provider dependencies; they do not establish live OpenRouter availability.
+
+[GitHub Actions](.github/workflows/ci.yml) runs on every push and pull request: frozen dependency installation, lint, type checking, Vitest, production build, screening JavaScript budget, and Playwright. The budget script checks selected screening/crisis routes in both languages against a strict **150 KiB gzip** limit for modern initial JavaScript.
+
+The rendered suite runs `pnpm exec playwright test` in CI against a production build and ephemeral PostgreSQL 17. It starts its own server on port 3000, uses Chromium, and blocks service workers. It covers selected flows and viewports from 320 to 1440 pixels in both languages and themes, including keyboard interactions, crisis guards, and breathing/reduced-motion behavior. Screenshots and failure traces are uploaded as `ui-evidence` for seven days.
+
+TestSprite is managed separately through its GitHub App against Vercel previews and production. [TESTING.md](TESTING.md) records scenarios, historical findings, and remaining verification work. Test counts and older passing runs are not evidence that a new deployment or AI scenario has passed; consult the report for the matching revision. The repository does not configure the external merge gate.
+
+### What the TestSprite suite covers
+
+The suite was built in the TestSprite 3.0 portal against the live app and runs on every pull request preview and every push to `main`. The portal lists 43 tests; a GitHub-triggered run executes 50, because seven earlier copies that the portal no longer shows still run. On 2026-10-26 the latest result of each of the 43 portal tests was Passed, including real AI replies for notes (RPT-003) and the tip pick (TIPS-007).
+
+| Area | Tests | What they check |
+| --- | --- | --- |
+| Home and language | HOME-001 to 003 (+ HOME-004, 005) | Start from the landing page, K9 answers kept when switching language at question 10, help from the landing page, `robots.txt`, light/dark theme |
+| Start and eligibility | STAR-001 to 005 | Adult start, under-18 guidance and redirect, consent gate, resume card |
+| Questionnaire | QST-001 to 005 (+ QST-006) | All-lowest and all-highest runs, safety question before results, back navigation, resume, pause and continue |
+| Safety and crisis | SAFE-001 to 008 (+ SAFE-009) | K2 any safety answer above zero opens crisis support, K3 the gate holds on direct URLs, history and reload, K4 both branches, K6 directory by country, continuation after acknowledgement, safety plan without an account |
+| Results | RESU-001 to 005 | K1 official cutoffs (all-0, all-1, all-3), K5 priority panel, K6 English hotline, K7 disclaimer |
+| Report | RPT-002 (+ RPT-001), RPT-003 | K8 PDF numbers match the results, report language, AI notes with their own consent and revert |
+| Help and exit | HELP-001 to 007 | K11 help on every step, quick exit in both languages |
+| Tips and account | TIPS-001, 004, 006, 007, 008 (+ TIPS-002, 003) | K10 tips by category, sign-up without email and P3 account deletion, daily check-in, swapping and restoring a tip, A1 consent, real AI tip pick with canonical library content, A2/A3 risky text never reaching the AI |
+| Interaction | SOLACE-001, 002, 004 | Keyboard answers 1–4 and Enter, the 4/6 breathing pacer, resync after a hidden tab |
+
+P1 (ciphertext only) and P4 (recovery restores data) are covered by Vitest, not yet by TestSprite. Exact steps, the Safety Contract mapping, and the run history are in [TESTING.md](TESTING.md).
+
+What the suite found along the way:
+
+- **A real bug:** leaving right after age and consent, before question 1, left no way to continue from the landing page (STAR-004, [#1](https://github.com/lidxgoesgiri/solace/pull/1)). Fixed on the same branch, then 34/34.
+- **A real gap:** `/robots.txt` returned the "page not found" screen until [#13](https://github.com/lidxgoesgiri/solace/pull/13).
+- **Tests, not the app:** several failures came from ambiguous steps, such as answer badges 1–4 versus values 0–3 ([#11](https://github.com/lidxgoesgiri/solace/pull/11)) or a test that opened an old preview URL. The steps were rewritten; the app was unchanged.
 
 ## Safety Contract
 
-These invariants must never break. Each one gets an automated test (Vitest, TestSprite, or both). Once Blocking PRs is switched on in TestSprite, a failing check holds the merge. The scenario for each invariant is in [TESTING.md](TESTING.md).
+These identifiers are shared with [TESTING.md](TESTING.md). They describe required behavior; verification status belongs to the corresponding test and deployment report.
 
-| # | Invariant | Layer | Test scenario | Status |
-| --- | --- | --- | --- | --- |
-| K1 | Scores and categories match the official cutoffs | Vitest + TestSprite | Every category boundary; known answer pattern → result cards | ✅ Vitest (`scoring.test.ts`) · ✅ TestSprite (RESU-001, RESU-002, RESU-003) |
-| K2 | A safety answer > 0 always opens the crisis screen | TestSprite | Answer 1, 2, 3 → crisis screen before results | ✅ TestSprite (SAFE-001, SAFE-002) · logic in `flow.test.ts` |
-| K3 | The crisis screen cannot be skipped | Vitest (`flow.ts`) + TestSprite | Back, refresh, and direct URLs to `/hasil` and `/tips` return to the crisis screen | ✅ Vitest (`flow.test.ts`) · ✅ TestSprite (SAFE-004, SAFE-008) |
-| K4 | The crisis gate covers both branches | TestSprite | Download and sign-up branches both pass through the crisis first | ✅ TestSprite (SAFE-005) · logic in `flow.test.ts` |
-| K5 | Extremely severe scores show the Priority panel on top | TestSprite | Depression ≥ 28 → professional-help panel before tips | ✅ TestSprite (RESU-003) · logic in `flow.test.ts` |
-| K6 | The help directory follows country, not language | TestSprite | EN + Indonesia → Healing119; ID + United Kingdom → Samaritans | ✅ TestSprite (SAFE-006, RESU-004) · data in `content.test.ts` |
-| K7 | A disclaimer is always shown before results | TestSprite | Present on the results page and in the PDF | ✅ Results page (TestSprite RESU-005) · ✅ PDF page 1 (Vitest `pdf.test.ts`, `labels.test.ts`) |
-| K8 | The PDF shows the same numbers as the results screen | TestSprite | Compare scores and categories on screen vs PDF text | ✅ Vitest (`model.test.ts`, `pdf.test.ts` read the PDF text) · report preview has the same testids for TestSprite |
-| K9 | Switching language keeps answers | TestSprite | Switch ID → EN at question 10; answers 1–9 kept | ✅ TestSprite (HOME-002) |
-| K10 | Tips match category and severity, each with a DOI source | Vitest (`selectTips`) + TestSprite | Multi-dimension, all normal, severe; every tip card links its source | ✅ Vitest (`tips.test.ts`: all 125 category combinations, and every "try another tip" swap in each of them stays in its section and can be undone; every tip links a DOI or WHO/NICE guideline) · ✅ TestSprite (TIPS-001; swapping and bringing a tip back in TIPS-006) |
-| K11 | "I need help now" is on every page | TestSprite | Landing, screening, results, tips, history | ✅ TestSprite (HELP-001 to HELP-005) · tips, history, account, and safety-plan pages share the same header |
-| P1 | The server only receives ciphertext | TestSprite (API) | `records` payloads and responses contain no answer text or scores | ✅ Vitest (`api.test.ts`: stored rows hold only ciphertext; `keys.test.ts`) · ⏳ TestSprite |
-| P2 | No trackers, no commercial referrals | TestSprite | No analytics/ad requests; no CSP violations; every directory entry is public, government, or nonprofit | ✅ Vitest (`security-headers.test.ts`: CSP allows only Solace's origin, no tracker code; directory types in `content.test.ts`) · ⏳ TestSprite |
-| P3 | Deleting an account deletes all data | TestSprite (API + UI) | After deletion, sign-in fails and `records` is empty | ✅ Vitest (`api.test.ts`) · ✅ TestSprite (TIPS-004: sign-in fails after deletion) |
-| P4 | Recovery kit restores data | Vitest + TestSprite | Sign up → save kit → recover with a new passphrase → history intact | ✅ Vitest (`api.test.ts`, `keys.test.ts`) · ⏳ TestSprite |
-| A1 | AI is off by default | TestSprite | New accounts see no AI feature until they accept the consent screen | ✅ Vitest (`notes.test.ts`: off unless switched on, consent first; `risk-check.test.ts`: switched off while the risk list is not approved); the notes and the tip pick share these rules · ✅ TestSprite (TIPS-006: no AI pick while the AI is off) |
-| A2 | Risky phrases trigger the crisis screen, not the AI | Vitest (`risk-check.ts`) + TestSprite | Phrases from the test list → crisis screen; AI endpoint not called | ✅ Vitest (`risk-check.test.ts`: the list catches its sources' own wording and none of its neutral sentences; `api.test.ts`: a risky note or tip context gets `risk_detected` and OpenRouter is never called) · the list is drawn from published instruments and approved by the project owner, not by a clinician |
-| A3 | AI is unavailable during a crisis | TestSprite | While `crisis_pending`, AI buttons and routes are unreachable | ✅ Vitest (`notes.test.ts`: hidden while a crisis is pending); `/laporan` and `/tips` are behind the crisis gate · ⏳ TestSprite |
+| ID | Required behavior |
+| --- | --- |
+| K1 | DASS-21 scores and severity categories match the implemented cutoff table. |
+| K2 | Every safety answer above zero opens crisis support. |
+| K3 | Pending crisis support gates results and follow-up navigation. |
+| K4 | Both report-download and account/tips paths pass through the safety flow. |
+| K5 | Extremely severe depression or anxiety triggers the priority professional-help panel. |
+| K6 | Help-directory entries follow the selected country, independently of language. |
+| K7 | Results and the PDF include the screening disclaimer. |
+| K8 | PDF scores match the results screen. |
+| K9 | Changing interface language preserves screening answers. |
+| K10 | Tips and manual alternatives fit their category/severity section and retain source citations. |
+| K11 | Help remains available throughout the user-facing flow. |
+| P1 | Account record contents reach storage encrypted; optional AI text follows its separate consented path. |
+| P2 | No third-party trackers or commercial referrals are included. |
+| P3 | Account deletion removes its records and sessions. |
+| P4 | The recovery kit restores access to encrypted account data. |
+| A1 | AI requires explicit, feature-specific consent. |
+| A2 | Matching risky input opens the crisis flow instead of invoking the AI provider. |
+| A3 | The interface hides or blocks AI while a crisis is pending. |
 
-✅ done · 🟡 partly done · ⏳ not yet
+The crisis gate is browser behavior, not server authorization. AI endpoints independently enforce sessions, consent, limits, and phrase checks; they do not receive the browser's crisis state.
 
-## Run locally
+## Security and privacy
 
-Requirements: Node.js ≥ 20.9 (CI uses Node 24) and pnpm 12 (`npm install -g pnpm`).
+- **Local screening:** screening state is persisted in browser `localStorage`; results are computed from its saved answers. This storage is not encrypted by the account vault. Seven-day expiry applies to unfinished drafts, not completed results.
+- **Account encryption:** Argon2id derives separate authentication and wrapping keys in the browser. XChaCha20-Poly1305 encrypts record contents with a random data key, wrapped separately for the passphrase and recovery key. Decrypted keys and records remain in memory and are cleared on reload/sign-out; the client locks after 30 idle minutes.
+- **Visible metadata:** usernames, authentication/recovery hashes, KDF parameters, wrapped keys, record kinds/timestamps, and session metadata are stored server-side. The passphrase, recovery code, and decrypted data key are not sent to the server.
+- **Sessions and access:** tokens are random and stored server-side as hashes. Cookies use `HttpOnly`, `Secure`, and `SameSite=Strict`, with a sliding 30-minute expiry. Record operations enforce ownership; state changes reject explicitly mismatched origins.
+- **Limits and headers:** authentication has IP and username limits; AI has per-user limits. IP counters are process-local rather than shared across instances. [Security headers](src/lib/security-headers.ts) include a Content Security Policy and framing restrictions.
+- **Aggregate metrics:** the server stores daily counts for screening starts, result/report/tips views, and account creation, without a stored person identifier or crisis event. This is separate from third-party tracking.
+- **Optional AI:** consented text is readable by the Solace server and provider. Requests ask for `data_collection: "deny"`, `zdr: true`, and `require_parameters: true`, with strict output schemas. One fallback model may be tried on qualifying provider failures using the same privacy settings. No less-private fallback is configured; provider policies still require independent review.
+- **AI safeguards:** input/output phrase checks, constrained library IDs, cancellation, and daily limits are implemented. Notes allow 10 requests and tips 20 per user per 24-hour window. Diagnostics record fixed failure metadata rather than prompts, replies, or keys.
+- **Test reset:** keep `SOLACE_TEST_RESET_TOKEN` unset in production. The reset handler explicitly rejects `VERCEL_ENV=production`; a self-hosted production server without that flag must not rely on it as a universal production block.
 
-```bash
-pnpm install
-pnpm dev          # http://localhost:3000
-pnpm lint         # ESLint
-pnpm typecheck    # route types + tsc --noEmit
-pnpm test         # Vitest
-pnpm build        # production build
-pnpm icons        # regenerate app icons from public/brand
-```
+The in-app privacy policy is available at `/privasi` and `/en/privasi`. Its retention-related numbers are checked against implementation constants by [privacy.test.ts](src/lib/privacy.test.ts).
 
-GitHub Actions runs `lint`, `typecheck`, `test`, and `build` on every push and pull request.
+## Deployment
 
-### Accounts and environment variables
+The existing application is hosted on Vercel. A server deployment must support Next.js Route Handlers and Node 24.7 or newer within the 24.x line; a static-only export cannot provide account or AI APIs.
 
-The screening, results, PDF, and safety plan work without any server storage. Accounts (and with them tips and history) need a Postgres database; without one, those pages say accounts are not available yet and the API answers `503`.
+For Vercel, use the pinned pnpm version, install dependencies, and build with `pnpm build`. Set `DATABASE_URL` and an independent `SOLACE_SERVER_SECRET` for each environment where accounts should work. Set optional AI variables before the build if enabling AI, and redeploy after availability changes. Use managed PostgreSQL for hosted persistence; PGlite is intended for local development and tests.
 
-| Variable | Needed for | Notes |
-| --- | --- | --- |
-| `DATABASE_URL` | Accounts in production and previews | Any managed Postgres (for example through the Vercel Marketplace). Tables are created on first use. |
-| `SOLACE_SERVER_SECRET` | Accounts (recommended) | A long random string that keeps decoy salts for unknown usernames stable. Without it, a value derived from `DATABASE_URL` is used. |
-| `SOLACE_TEST_RESET_TOKEN` | Optional, previews only | Lets automated tests delete `demo-*` accounts through `POST /api/test/reset`. Never works in production. |
-| `SOLACE_LOCAL_DB=pglite` | Optional, local `pnpm start` | Uses an embedded PGlite database in `.data/` instead of Postgres. `pnpm dev` does this automatically. |
-| `OPENROUTER_API_KEY` | Optional, AI notes and tip pick | Server-only key; set a credit limit on it in OpenRouter. Without it, the AI stays off. |
-| `OPENROUTER_MODEL` | Optional, AI notes and tip pick | OpenRouter model id, shown on the consent screen. Default: `xingchen-agi/xing4.0-29b-a4b:free`. Requests only go to providers that collect no data (`data_collection: "deny"`, `zdr: true`), so the model needs a zero-data-retention endpoint on OpenRouter. |
-| `OPENROUTER_FALLBACK_MODEL` | Optional, AI notes and tip pick | Tried once when the primary model's provider fails. Default: `nvidia/nemotron-3-ultra-550b-a55b` (paid; its zero-data-retention endpoints on DeepInfra support the request parameters, checked 2026-10-25). Set `off` to disable. Needs OpenRouter credit. |
+For a Node server with the same prerequisites and environment configuration, use `pnpm build` followed by `pnpm start`. The database user must be able to create tables and indexes on first use. Use HTTPS for deployed session cookies.
 
-Account pages are prerendered, so set these before building; on Vercel, redeploy after changing them. Keep every value in Vercel's environment settings or a local `.env.local` (ignored by git).
+`GET /api/health` checks application responsiveness and reports the deployment's short commit SHA on Vercel; it does **not** validate database connectivity or AI-provider health. CI performs validation; deployment and TestSprite integrations are managed outside the checked-in workflow. No Dockerfile or deployment script is included.
 
-### AI verification and availability
+## Troubleshooting
 
-On 2026-10-20, PR #15 preview commit `b5782aa` completed a real OpenRouter notes request (HTTP 200), displayed the result, and restored the original notes on request. The tip pick encountered an upstream HTTP 429. Provider capacity is reported separately from the account's daily allowance; notes and manual library swaps remain available. Requests are not retried and never fall back to weaker privacy settings. Since 2026-10-25 a provider failure on the primary model is answered by one call to the fallback model (see `OPENROUTER_FALLBACK_MODEL`).
+| Symptom | What to check |
+| --- | --- |
+| Runtime, Argon2, or Vitest errors on an older Node version | Switch to Node 24.7 or newer within the 24.x line and install dependencies with the pinned pnpm version. |
+| Accounts unavailable or `503 accounts_disabled` | Confirm storage was configured at build time and runtime. Development uses PGlite automatically; local `pnpm start` needs `SOLACE_LOCAL_DB=pglite` or `DATABASE_URL`. Rebuild after changing availability. |
+| Expected PGlite but PostgreSQL is used | An existing `DATABASE_URL` takes precedence, including values loaded from `.env.local`. |
+| Database initialization fails | Check connection/TLS settings or PGlite directory permissions, and ensure the database user can create tables. |
+| AI controls are missing or return `ai_disabled` | Check the server key, ready risk list, account sign-in, build-time availability, and separate consent for the requested feature. |
+| AI returns `ai_busy`, `rate_limited`, or `ai_unavailable` | Provider capacity, the daily account allowance, and rejected/invalid output are distinct cases. Respect `Retry-After`; notes remain intact and manual tip alternatives remain available. |
+| Reloading or opening a results URL returns to crisis support | A pending crisis is intentionally persisted and must be acknowledged through the crisis screen. |
+| Offline screening fails during development | The service worker is registered only in production. Visit the built application online and allow precaching to complete first; APIs are never cached. |
+| Plan or psychologist notes disappear after leaving the page | Unsigned safety plans and report notes are page-memory only. Download the PDF, or sign in and save the safety plan before leaving. |
+| Account locks after inactivity or reload | Decryption keys are memory-only. Sign in again; use the saved recovery kit if the passphrase is lost. |
+| Playwright cannot start its server | The production build and configured test database are prerequisites, and port 3000 must be free. The checked-in workflow provisions PostgreSQL and Chromium. |
 
-Both features request JSON with reasoning disabled for these short rewriting tasks. Server diagnostics contain only fixed failure categories, HTTP status codes, the model id, primary or fallback attempt, and response time, never keys, prompts, replies, or provider error bodies. Mocked integration tests and a configured key alone do not establish that a live provider request works.
+## Development and contributing
 
-## How it is built
+Use TypeScript's strict settings and the `@/*` alias for `src/*`. Keep scoring, flow, and selection rules in their domain modules; keep API entry points thin and perform server work in `src/server`. Update both message catalogs when changing interface text, and preserve the instrument wording and source metadata in `src/data`.
 
-- **Next.js 16** (App Router, Turbopack) + TypeScript strict, **Tailwind CSS 4** with small in-house UI primitives (radio cards, checkbox, button) to stay inside the JavaScript budget
-- **next-intl**: `id` (default, unprefixed URLs) and `en` (`/en/...`). The browser language is ignored; only the language switch changes it.
-- **Zustand + persist**: screening answers are autosaved in `localStorage` and never leave the device.
-- **libsodium** (loaded only when an account is used): Argon2id key derivation and XChaCha20-Poly1305 encryption in the browser. The data key is wrapped twice, by the passphrase and by the recovery key.
-- **Drizzle ORM** on Postgres (PGlite locally and in tests). The server keeps an Argon2id hash of a key derived from the passphrase, never the passphrase or the data key.
-- **pdf-lib**: reports and the safety plan are made in the browser.
-- **Vitest** for pure logic and the API:
-  - `src/lib/scoring.ts`: DASS-21 scoring, one cutoff constant
-  - `src/lib/flow.ts`: flow state machine and crisis gate
-  - `src/lib/tips.ts`: `selectTips`
-  - `src/lib/crypto/`: key derivation, wrapping, record encryption
-  - `src/server/api.test.ts`: the account API against an in-memory database
-  - `src/lib/content.ts`: clinical data and help directory
-  - message key parity between `messages/id.json` and `messages/en.json`
+Read [AGENTS.md](AGENTS.md) and the relevant installed Next.js guide under `node_modules/next/dist/docs/` before changing framework behavior. Follow the existing tests and the stable `data-testid` conventions described in [TESTING.md](TESTING.md), especially the distinction between answer values 0–3 and visible badges 1–4.
 
-**JavaScript budget (PRD 14):** the screening pages (`/mulai`, `/skrining/*`, `/keamanan`, `/krisis`) load under 150 KB of gzipped JavaScript in modern browsers (147.5–149.7 KB; legacy polyfills for old browsers are separate). Encryption, PDF, and animation code load only on the pages that use them.
+There is no dedicated `CONTRIBUTING.md`, code of conduct, or security-reporting policy in this checkout. Open an issue to discuss contribution scope, run the applicable quality checks, and update documentation when behavior or configuration changes. Asset generation and application tests are separate from documentation-only validation.
 
-**Measured (Lighthouse mobile, 2026-10-19, local production build):** layout shift 0 and performance 99–100 on `/skrining`, `/keamanan`, `/hasil` and `/laporan`; accessibility 100 on `/krisis` and `/privasi` in light and dark mode. No page scrolls sideways at 320, 360, 768, 1024 or 1440 px (23 pages, signed out and signed in).
+## Clinical content and known limitations
 
-**Preview verification (2026-10-20, commit `1c37aba`):** Lighthouse mobile measured CLS 0 and accessibility 100 on `/skrining/1`, `/keamanan`, `/hasil` and `/laporan` (performance 88–94); `/privasi` scored 100 in both categories. The crisis-page performance audit hit Lighthouse's `NO_NAVSTART` error, so no performance score is claimed for that run. Viewport probes covered 95 signed-out and 20 signed-in page/width combinations without document overflow; the history table deliberately scrolls inside its container on narrow screens.
+Source citations and review notes are kept with the content rather than inferred from the interface.
 
-The crisis decision happens only in the browser. A client-side router guard (`src/components/flow-guard.tsx`) asks `guardRoute()` on every navigation, so back, refresh, and typed URLs cannot reach results while a crisis is pending.
+| Content | Source and review status recorded in the repository |
+| --- | --- |
+| English DASS-21 | [Instrument data](src/data/dass21.en.json) cites Lovibond & Lovibond (1995) and the official UNSW form. Scoring is centralized in `src/lib/scoring.ts`. |
+| Indonesian DASS-21 | [Instrument data](src/data/dass21.id.json) uses items selected from Damanik's Indonesian DASS-42 translation. Separate validation of this 21-item selection and psychologist review remain pending. |
+| Safety question | [English](src/data/safety-question.en.json) and [Indonesian](src/data/safety-question.id.json) files attribute PHQ-9 item 9. Clinical review of the flow remains required. |
+| Tips | [The library](src/data/tips.json) contains DOI or WHO/NICE guideline citations and evidence summaries. Psychologist review is pending. |
+| AI risk phrases | [The phrase list](src/data/risk-phrases.json) is compiled from PHQ-9 item 9, the C-SSRS screener and Indonesian Ministry of Health warning signs, with sources recorded in the file. It has not been reviewed by a clinician. Deterministic phrase matching is a guard, not a clinical risk assessment. |
+| Help directory | [Directory data](src/data/hotlines.json) covers Indonesia, the United States, and the United Kingdom, with source URLs and verification dates. Entries require periodic rechecking. |
 
-## Clinical content and sources
+Toolkit, safety-plan, crisis-screen, and psychologist-note wording also await clinical review. No clinician is named as a reviewer in the repository.
 
-| Content | Source | Status |
-| --- | --- | --- |
-| DASS-21, English | Lovibond & Lovibond (1995), [doi:10.1016/0005-7967(94)00075-U](https://doi.org/10.1016/0005-7967(94)00075-U); wording checked against the [official UNSW form](https://www2.psy.unsw.edu.au/dass/) | ✅ Verbatim |
-| DASS-21, Indonesian | Damanik, Faculty of Psychology, Universitas Indonesia: the Indonesian DASS-42 listed on the [official DASS translations page](https://www2.psy.unsw.edu.au/dass/Indonesian/Damanik.htm) (the DASS is public domain). The 21 DASS-21 items are taken from it by matching the official English DASS21 and DASS42 wording item by item | ✅ Verbatim · ⏳ no separate validation of this 21-item selection; clinical review pending |
-| Safety question, English | PHQ-9 item 9, [official form](https://www.phqscreeners.com/) | ✅ Verbatim |
-| Safety question, Indonesian | PHQ-9 item 9, official [Indonesian for Indonesia form](https://www.phqscreeners.com/select-screener) ("free to reproduce, translate, display or distribute") | ✅ Verbatim |
-| Help directory | Indonesia, United States, United Kingdom (`src/data/hotlines.json`), each entry linked to its official source: Komdigi (112), Kemenkes (119, Healing119), 911.gov, 988lifeline.org, NHS (999), Samaritans | ✅ Every entry checked on 2026-10-19 (`verifiedAt`); check again every 6 months. 119 is listed before 112 because Kemenkes says it works in every regency and city, while 112 is still being rolled out |
-| Tips (`src/data/tips.json`) | 12 tips. Each cites a DOI or a WHO/NICE guideline, checked against Crossref and the publishers' pages | ✅ Every source was opened and read (the abstract, or the guideline text itself) before its one-sentence summary was written (2026-10-18); claims stay at the size the sources report. A gratitude tip was left out because its meta-analysis judged the effect too modest. The tips have not been reviewed by a psychologist, and the app does not say they were |
-| Toolkit and safety-plan prompts | Breathing, grounding, muscle relaxation, and the six safety-plan sections | ⏳ Wording to be reviewed by a psychologist |
-| Risk phrases for the AI check (`src/data/risk-phrases.json`) | Indonesian and English phrases that send the user to the crisis screen instead of the AI (PRD 20.3), drawn from PHQ-9 item 9 (official Indonesian form), the [C-SSRS screener](https://cssrs.columbia.edu/) and the [Kemenkes list of suicide warning signs](https://keslan.kemkes.go.id/view_artikel/3590/mari-mencegah-bunuh-diri-mulailah-bicara) | ✅ Approved by the project owner (2026-10-19), not reviewed by a clinician. It leans towards catching too much: a false match only opens the help screen |
-| Questions for the psychologist notes | Five guided questions (PRD 20.2) | ⏳ Wording to be reviewed by a psychologist |
-| Clinical review | Safety question, crisis screen, and flow | ⏳ Reviewer to be named here |
+Other current limits are explicit: offline support covers successfully cached page shells and assets, while accounts and AI require connectivity; browser storage can be cleared or unavailable; local IP limits are not distributed; and provider privacy/availability and external end-to-end passes must be verified against the actual deployment. Unfinished clinical review and pending test scenarios are review work, not shipped guarantees. See [TESTING.md](TESTING.md) for the detailed verification backlog; no dated release roadmap is included.
 
-Solace is a screening tool, not a diagnosis.
+## License and credits
+
+No project-level `LICENSE` file or license field is currently included. The package is marked `private`, and no license has been chosen yet. Bundled PDF fonts have their own included licenses: [Inter](src/lib/report/licenses/Inter-OFL.txt) and [Lora](src/lib/report/licenses/Lora-OFL.txt).
+
+Created by **[Ida Bagus Giri Krisnabhawa](https://github.com/lidxgoesgiri)**, as credited in the application footer. Repository: [lidxgoesgiri/solace](https://github.com/lidxgoesgiri/solace). A dedicated maintenance or security contact is not documented.
+
+Acknowledgements: the DASS and PHQ instrument authors/translators credited in the data files, the cited tip sources, Inter and Lora, Lucide icons, and the open-source projects listed in the technology stack. TestSprite provides the externally managed browser-testing integration.
