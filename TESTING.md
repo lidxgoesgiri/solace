@@ -12,6 +12,8 @@ The rendered suite supplements TestSprite where its viewport presets cannot repr
 
 This file is the scenario plan for the TestSprite suite. Each scenario maps to a Safety Contract invariant (see the README) or a PRD requirement ID.
 
+> ✅ **Verified preview run:** [PR #26 at `fc8b369`](https://github.com/lidxgoesgiri/solace/pull/26#issuecomment-6411838100) passed **50/50 TestSprite tests** on 2026-10-26. [Run details and revision](#pr-26-verified-preview-run-2026-10-26).
+
 - **Production:** https://solace-sc.vercel.app
 - **PR previews:** `https://solace-git-{branch-slug}-ida-bagus.vercel.app`
 - **Health check:** `GET /api/health` → `200 {"status":"ok"}`
@@ -288,8 +290,23 @@ After the pruning, the PR #25 run reported 49 of 51 passed, with UI-01d failed a
 - **TIPS-011 (A2 focused continuation), a Safety Contract case, was removed.** Its central assertion, that risky input sends no request to `/api/ai/tips`, requires inspecting network traffic. The TestSprite runner does not expose network requests, so the case was reported Blocked on every run and never produced a verdict. A2 remains covered in two places: end to end by TIPS-008, where risky text in the tip and notes AI flows opens the crisis screen and the results, report and tips routes stay locked; and in CI by `src/server/api.test.ts`, which asserts that risky input returns `422 risk_detected` with no call to the primary or fallback model.
 - **Setup only, assertions unchanged:** RPT-003, TIPS-007 and TIPS-008 no longer download the recovery kit, which timed out in the runner; they tick `recovery-kit-saved`, since the code is shown on screen. The checkbox does not require the download.
 - **TIPS-007 now matches the current app:** with a context sentence the reply is `{tipId, reflection}` (since PR #19), the labelled reflection may be shown, and the canonical tips are read from `tips.json` at `8a3b47b` instead of an older commit. It still requires a real AI result, not a fallback.
-- **HOME-002 (K9) on PR #26:** the agent confirmed that the switch kept question 10 and the earlier answer, but could not read the `html` element's `lang` attribute, so the case failed. The server renders `lang="en"` on `/en` routes and `HtmlLang` keeps it in sync after a client-side switch. Step 3 now also names visible English text as evidence when attributes cannot be read; `lang` must still be `en` when it can be read, and the K9 assertions are unchanged. Rerun: Passed.
-- **RW-04 (hidden original TIPS-003) on PR #26:** Blocked because every username the agent tried at sign-up was already taken by `demo-…` accounts left by earlier runs. This is test data in the preview database, not an app defect; removing leftover `demo-*` accounts (`POST /api/test/reset` on previews) clears it. The hidden original cannot be edited in the portal.
+- **HOME-002 (K9), earlier PR #26 attempt:** the agent confirmed that the switch kept question 10 and the earlier answer, but could not read the `html` element's `lang` attribute, so the case failed. The server renders `lang="en"` on `/en` routes and `HtmlLang` keeps it in sync after a client-side switch. Step 3 now also names visible English text as evidence when attributes cannot be read; `lang` must still be `en` when it can be read, and the K9 assertions are unchanged. Rerun: Passed.
+- **RW-04 (hidden original TIPS-003), earlier PR #26 attempt:** Blocked because every username the agent tried at sign-up was already taken by `demo-…` accounts left by earlier runs. This is test data in the preview database, not an app defect; removing leftover `demo-*` accounts (`POST /api/test/reset` on previews) clears it. The hidden original cannot be edited in the portal. It passed in the verified run below.
 - **Known wording issue:** TIPS-006 step 5 still describes the AI as switched off and expects no `tip-ai-pick-` button, while the AI is enabled on previews and production. The case passed in the latest runs; its step text is outdated and is due for revision.
 
 Result on 2026-10-26: the latest result of all 43 portal tests is Passed, including real AI replies in RPT-003 and TIPS-007. A GitHub-triggered run has 50 tests (about 25 credits).
+
+### PR #26 verified preview run (2026-10-26)
+
+The completed GitHub-triggered run for [PR #26](https://github.com/lidxgoesgiri/solace/pull/26) passed **50 of 50 tests**. This is a single preview run tied to a revision, separate from the latest individual results of the 43 visible portal tests above.
+
+| Evidence | Recorded value |
+| --- | --- |
+| Tested revision | [`fc8b3697bd7355419999ca575aa0a31f7a19f7b6`](https://github.com/lidxgoesgiri/solace/commit/fc8b3697bd7355419999ca575aa0a31f7a19f7b6) |
+| Environment | PR #26 Vercel preview |
+| Commit status | `TestSprite V3`: **success**, 50/50 passed |
+| Public result | [TestSprite's PR report](https://github.com/lidxgoesgiri/solace/pull/26#issuecomment-6411838100), including individual test results |
+| Full execution report | [Run `3046ea20-3c20-46f1-88e3-931cc203452f`](https://www.testsprite.com/dashboard-v3/o/4cf96ee1-a52c-5e5f-ab1c-8d18c0a16644/projects/0cd84b9b-fb15-4123-b4f8-a30ee082702d/execution/3046ea20-3c20-46f1-88e3-931cc203452f) |
+| Repository CI | [Lint, typecheck, test and build: passed](https://github.com/lidxgoesgiri/solace/actions/runs/40294088003/job/121475800901) |
+
+The 50 executions include the seven hidden historical copies described above; they are not 50 distinct portal scenarios. This result documents the tested preview revision and does not establish a pass for later commits or production deployments.
