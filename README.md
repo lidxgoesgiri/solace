@@ -371,7 +371,7 @@ Use TypeScript's strict settings and the `@/*` alias for `src/*`. Keep scoring, 
 
 Read [AGENTS.md](AGENTS.md) and the relevant installed Next.js guide under `node_modules/next/dist/docs/` before changing framework behavior. Follow the existing tests and the stable `data-testid` conventions described in [TESTING.md](TESTING.md), especially the distinction between answer values 0–3 and visible badges 1–4.
 
-There is no dedicated `CONTRIBUTING.md`, code of conduct, or security-reporting policy in this checkout. Discuss contribution scope with the repository owner, run the applicable quality checks, and update documentation when behavior or configuration changes. Asset generation and application tests are separate from documentation-only validation.
+There is no dedicated `CONTRIBUTING.md`, code of conduct, or security-reporting policy in this checkout. Open an issue to discuss contribution scope, run the applicable quality checks, and update documentation when behavior or configuration changes. Asset generation and application tests are separate from documentation-only validation.
 
 ## Clinical content and known limitations
 
@@ -383,7 +383,7 @@ Source citations and review notes are kept with the content rather than inferred
 | Indonesian DASS-21 | [Instrument data](src/data/dass21.id.json) uses items selected from Damanik's Indonesian DASS-42 translation. Separate validation of this 21-item selection and psychologist review remain pending. |
 | Safety question | [English](src/data/safety-question.en.json) and [Indonesian](src/data/safety-question.id.json) files attribute PHQ-9 item 9. Clinical review of the flow remains required. |
 | Tips | [The library](src/data/tips.json) contains DOI or WHO/NICE guideline citations and evidence summaries. Psychologist review is pending. |
-| AI risk phrases | [The phrase list](src/data/risk-phrases.json) records project-owner approval, explicitly not clinician review. Deterministic phrase matching is a guard, not a clinical risk assessment. |
+| AI risk phrases | [The phrase list](src/data/risk-phrases.json) is compiled from PHQ-9 item 9, the C-SSRS screener and Indonesian Ministry of Health warning signs, with sources recorded in the file. It has not been reviewed by a clinician. Deterministic phrase matching is a guard, not a clinical risk assessment. |
 | Help directory | [Directory data](src/data/hotlines.json) covers Indonesia, the United States, and the United Kingdom, with source URLs and verification dates. Entries require periodic rechecking. |
 
 Toolkit, safety-plan, crisis-screen, and psychologist-note wording also await clinical review. No clinician is named as a reviewer in the repository.
@@ -392,7 +392,7 @@ Other current limits are explicit: offline support covers successfully cached pa
 
 ## License and credits
 
-No project-level `LICENSE` file or license field is currently included. The package is marked `private`; a project license needs confirmation from the owner. Bundled PDF fonts have their own included licenses: [Inter](src/lib/report/licenses/Inter-OFL.txt) and [Lora](src/lib/report/licenses/Lora-OFL.txt).
+No project-level `LICENSE` file or license field is currently included. The package is marked `private`, and no license has been chosen yet. Bundled PDF fonts have their own included licenses: [Inter](src/lib/report/licenses/Inter-OFL.txt) and [Lora](src/lib/report/licenses/Lora-OFL.txt).
 
 Created by **[Ida Bagus Giri Krisnabhawa](https://github.com/lidxgoesgiri)**, as credited in the application footer. Repository: [lidxgoesgiri/solace](https://github.com/lidxgoesgiri/solace). A dedicated maintenance or security contact is not documented.
 
