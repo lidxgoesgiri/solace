@@ -1,22 +1,41 @@
+<a id="top"></a>
+
 <p align="center">
-  <img src="public/brand/logo.png" alt="Solace" width="96" />
+  <img src="public/brand/logo.png" alt="Solace" width="112" />
 </p>
 
 <h1 align="center">Solace</h1>
 
-<p align="center"><em>You are not alone.</em></p>
+<p align="center"><strong>🌿 A calmer space to check in with yourself.</strong><br /><em>You are not alone.</em></p>
 
-Solace is a mental health screening web application for university students aged 18 and over. It combines the 21-item Depression Anxiety Stress Scales (**DASS-21**) with a separate safety question, immediate results, a downloadable report for a psychologist, and optional account-based self-help tools.
+<p align="center">
+  <a href="https://solace-sc.vercel.app"><img src="https://img.shields.io/badge/Try_Solace-live-B5C9B7?style=flat-square" alt="Try Solace live" /></a>
+  <a href="https://github.com/lidxgoesgiri/solace/pull/26#issuecomment-6411838100"><img src="https://img.shields.io/badge/TestSprite_PR_26-50%2F50_passed-B5C9B7?style=flat-square" alt="TestSprite PR 26: 50 of 50 passed" /></a>
+  <a href="#technology-stack"><img src="https://img.shields.io/badge/Built_with-Next.js_16-A8C5DA?style=flat-square" alt="Built with Next.js 16" /></a>
+  <a href="https://solace-sc.vercel.app/en"><img src="https://img.shields.io/badge/Languages-ID_%2F_EN-F5D7A1?style=flat-square" alt="Available in Indonesian and English" /></a>
+</p>
 
-Screening and report generation work without an account. Users who create an account can keep encrypted screening history, follow source-backed tips, record daily check-ins, and save a safety plan. The interface supports **Bahasa Indonesia** by default and **English**.
+<p align="center">
+  <a href="https://solace-sc.vercel.app"><strong>🚀 Try the app</strong></a> ·
+  <a href="https://solace-sc.vercel.app/en">🌐 Explore in English</a> ·
+  <a href="TESTING.md">🧪 Test evidence</a> ·
+  <a href="#installation-and-setup">🛠️ Run locally</a>
+</p>
 
-**Solace is a screening tool, not a diagnosis.** Clinical review of parts of the content and safety flow remains pending; see [Clinical content and known limitations](#clinical-content-and-known-limitations).
+Solace helps **university students aged 18 and over** check in on their mental health through the 21-item Depression Anxiety Stress Scales (**DASS-21**), a separate safety question, and immediate results. Take a screening, download a report for a psychologist, and explore optional self-help tools at your own pace.
 
-[Live application](https://solace-sc.vercel.app) · [English interface](https://solace-sc.vercel.app/en) · [Privacy policy](https://solace-sc.vercel.app/en/privasi) · [Test plan](TESTING.md)
+| 📝 Start without an account | 🔐 Keep a personal history | 🌏 Choose your language |
+| --- | --- | --- |
+| Complete the screening and download your report. | Create an optional account for encrypted screening history, source-backed tips, daily check-ins, and a saved safety plan. | Bahasa Indonesia by default, with English available throughout the flow. |
 
-Originally built for **TestSprite Hackathon Season 4**.
+> [!IMPORTANT]
+> **Solace is a screening tool, not a diagnosis.** Clinical review of parts of the content and safety flow remains pending. See [clinical content and known limitations](#clinical-content-and-known-limitations).
 
-## Contents
+> [!TIP]
+> **Here for the TestSprite Hackathon Season 4?** [PR #26 at `fc8b369`](https://github.com/lidxgoesgiri/solace/pull/26#issuecomment-6411838100) passed **50/50 TestSprite tests** on 2026-10-26. Jump to [testing and quality assurance](#testing-and-quality-assurance) for coverage and [the recorded run](TESTING.md#pr-26-verified-preview-run-2026-10-26) for provenance. This badge records that preview run.
+
+<details>
+<summary><strong>🧭 Explore the README</strong> — features, setup, testing, and implementation details</summary>
 
 - [Key features](#key-features)
 - [Technology stack](#technology-stack)
@@ -37,25 +56,31 @@ Originally built for **TestSprite Hackathon Season 4**.
 - [Clinical content and known limitations](#clinical-content-and-known-limitations)
 - [License and credits](#license-and-credits)
 
-## Key features
+</details>
+
+<a id="key-features"></a>
+
+## ✨ Key features
 
 | Area | Implemented behavior | Requirements |
 | --- | --- | --- |
-| Screening | Age and consent checks; 21 questions with progress, back navigation, keyboard shortcuts, autosave, and resume. Unfinished drafts expire after seven days. | Browser storage; no account |
-| Safety support | Separate PHQ-9 item 9 safety question; any answer above zero opens crisis support before results. Includes breathing, grounding, safety-plan prompts, and a country-based help directory. | No account |
-| Results and reports | Depression, anxiety, and stress scores with severity labels; professional-help panels; browser-generated PDF with optional nickname, safety information, and five guided notes for a psychologist. Report language can differ from interface language. | Completed screening and cleared crisis gate |
-| Accounts | Username and passphrase without email; recovery kit, sign-in/out, idle lock, passphrase changes, JSON export, and account deletion. Record contents are encrypted in the browser. | Configured database |
-| Tips and history | Tips selected by category and severity from a 13-tip library; source citations, feedback, manual alternatives and restoration; relaxation toolkit, trend charts, past reports, daily mood check-ins, and a 14-day re-screening reminder. | Signed-in account |
-| Safety plan | Six sections and a downloadable PDF. Signed-in users can save the plan encrypted; unsigned plans remain in page memory until navigation or reload. | Account required only for saving |
-| Optional AI | Tidy the user's psychologist notes; select an eligible alternative library tip with an optional brief reflection; or return a reflection alone in listening mode. Separate consent is required for notes and tips. | Signed-in account, AI configuration, and consent |
-| Interface and offline support | ID/EN language switch, system/light/dark themes, reduced-motion support, help and quick-exit controls, and a production service worker for cached screening pages. | Offline use requires a prior online visit and completed caching |
+| 📝 Screening | Age and consent checks; 21 questions with progress, back navigation, keyboard shortcuts, autosave, and resume. Unfinished drafts expire after seven days. | Browser storage; no account |
+| 🛟 Safety support | Separate PHQ-9 item 9 safety question; any answer above zero opens crisis support before results. Includes breathing, grounding, safety-plan prompts, and a country-based help directory. | No account |
+| 📄 Results and reports | Depression, anxiety, and stress scores with severity labels; professional-help panels; browser-generated PDF with optional nickname, safety information, and five guided notes for a psychologist. Report language can differ from interface language. | Completed screening and cleared crisis gate |
+| 🔐 Accounts | Username and passphrase without email; recovery kit, sign-in/out, idle lock, passphrase changes, JSON export, and account deletion. Record contents are encrypted in the browser. | Configured database |
+| 🌱 Tips and history | Tips selected by category and severity from a 13-tip library; source citations, feedback, manual alternatives and restoration; relaxation toolkit, trend charts, past reports, daily mood check-ins, and a 14-day re-screening reminder. | Signed-in account |
+| 🤝 Safety plan | Six sections and a downloadable PDF. Signed-in users can save the plan encrypted; unsigned plans remain in page memory until navigation or reload. | Account required only for saving |
+| 💬 Optional AI | Tidy the user's psychologist notes; select an eligible alternative library tip with an optional brief reflection; or return a reflection alone in listening mode. Separate consent is required for notes and tips. | Signed-in account, AI configuration, and consent |
+| 🎨 Interface and offline support | ID/EN language switch, light/dark themes, reduced-motion support, help and quick-exit controls, and a production service worker for cached screening pages. The theme follows the system until the user pins light or dark; the switch has no option to return to system mode. | Offline use requires a prior online visit and completed caching |
 
-## Technology stack
+<a id="technology-stack"></a>
+
+## 🧰 Technology stack
 
 | Technology | Role |
 | --- | --- |
 | Next.js 16.4.1, React 19.3, TypeScript | App Router pages, Route Handlers, Turbopack builds, and strict type checking |
-| Tailwind CSS 4, in-house UI components, Framer Motion | Styling, controls, and selectively loaded animation |
+| Tailwind CSS 4, shadcn CSS, in-house UI components, Framer Motion | `globals.css` imports `shadcn/tailwind.css` as a styling base; controls are in-house components without Radix UI; animation is selectively loaded |
 | next-intl 4 | Indonesian and English routing and compiled messages |
 | Zustand 5 | Browser screening state, preferences, and in-memory account state |
 | libsodium | Browser Argon2id key derivation and XChaCha20-Poly1305 record encryption |
@@ -66,7 +91,9 @@ Originally built for **TestSprite Hackathon Season 4**.
 
 Dependency ranges and the pinned package manager are defined in [package.json](package.json); [pnpm-lock.yaml](pnpm-lock.yaml) records resolved dependencies.
 
-## System architecture
+<a id="system-architecture"></a>
+
+## 🏗️ System architecture
 
 Solace is a single Next.js application. Localized page shells load interactive browser components, while Route Handlers delegate database and AI work to server modules.
 
@@ -89,6 +116,9 @@ flowchart LR
 - Aggregate product events use the same-origin metrics API and require database storage. Screening itself does not require a database.
 
 ## Project structure
+
+<details>
+<summary><strong>📂 Open the repository map</strong></summary>
 
 ```text
 solace/
@@ -116,6 +146,8 @@ solace/
 
 Tests are generally colocated with the modules they verify as `*.test.ts`.
 
+</details>
+
 ## Prerequisites
 
 - **Node.js 24.x (24.7.0 or later)**, matching CI's major version. Although the manifest declares `>=20.9`, server authentication imports `crypto.argon2` (introduced in Node 24.7), and the installed Vitest toolchain has newer runtime requirements.
@@ -124,7 +156,9 @@ Tests are generally colocated with the modules they verify as `*.test.ts`.
 - **PostgreSQL** for hosted account persistence. Local development uses PGlite automatically when `DATABASE_URL` is absent; it does not need a separate database service. CI uses PostgreSQL 17.
 - An OpenRouter key only if testing the optional AI features.
 
-## Installation and setup
+<a id="installation-and-setup"></a>
+
+## 🚀 Installation and setup
 
 ```bash
 git clone https://github.com/lidxgoesgiri/solace.git
@@ -196,7 +230,11 @@ pnpm start
 
 A production build/run with neither `DATABASE_URL` nor explicit PGlite mode supports screening and reports but disables accounts, tips, history, and database-backed APIs. Asset generation commands rewrite generated files and are only needed when their source assets change.
 
-## Usage guide
+<a id="usage-guide"></a>
+
+## 🧭 Usage guide
+
+**📝 Check in → 🛟 Complete the safety step → 📊 See results → 📄 Take your report → 🌱 Explore self-help**
 
 1. Start at `/` or `/en`. Confirm that you are 18 or older and accept consent at `/mulai`.
 2. Answer the 21 questions at `/skrining/1` through `/skrining/21`. Keys **1–4** select answer values **0–3**; **Enter** advances. You can go back, pause, switch language, and resume saved answers.
@@ -209,6 +247,9 @@ English uses the same path names with an `/en` prefix, for example `/en/hasil`. 
 The header offers help and quick exit. Quick exit, also triggered by pressing **Esc twice within one second**, replaces the current page with Google; it does not erase the browser's full history or saved screening data.
 
 ## API reference
+
+<details>
+<summary><strong>🔌 Explore endpoints, payloads, and response examples</strong></summary>
 
 Route entry points live in [src/app/api](src/app/api); implementation and validation live in [src/server/api](src/server/api). These are application APIs, with authentication and encryption coordinated by the browser client.
 
@@ -254,7 +295,21 @@ Example response outside Vercel; `time` varies per request:
 
 Common errors include `400 invalid_request`, `401 unauthorized` or `invalid_credentials`, `403 consent_required` or `forbidden_origin`, `413 too_large`, and `429 rate_limited`. AI additionally returns `422 risk_detected`, `502 ai_unavailable`, or `503 ai_disabled` / `ai_busy`. Provider capacity and an account's daily allowance are separate limits; `Retry-After` is supplied where applicable.
 
-## Testing and quality assurance
+</details>
+
+<a id="testing-and-quality-assurance"></a>
+
+## 🧪 Testing and quality assurance
+
+### Verified TestSprite result
+
+| Result | Tested revision | Evidence |
+| --- | --- | --- |
+| ✅ **50/50 passed** · 2026-10-26 · PR #26 Vercel preview | [`fc8b369`](https://github.com/lidxgoesgiri/solace/commit/fc8b3697bd7355419999ca575aa0a31f7a19f7b6) | [Public TestSprite report](https://github.com/lidxgoesgiri/solace/pull/26#issuecomment-6411838100) · [Run details](TESTING.md#pr-26-verified-preview-run-2026-10-26) |
+
+The commit's `TestSprite V3` status is **success**. This is a recorded preview result for that revision; later commits and production deployments need their own verification.
+
+### Run the local checks
 
 Run the standard checks with the installed dependencies:
 
@@ -276,7 +331,7 @@ TestSprite is managed separately through its GitHub App against Vercel previews 
 
 ### What the TestSprite suite covers
 
-The suite was built in the TestSprite 3.0 portal against the live app and runs on every pull request preview and every push to `main`. The portal lists 43 tests; a GitHub-triggered run executes 50, because seven earlier copies that the portal no longer shows still run. On 2026-10-26 the latest result of each of the 43 portal tests was Passed, including real AI replies for notes (RPT-003) and the tip pick (TIPS-007).
+The suite was built in the TestSprite 3.0 portal against the live app and runs on every pull request preview and every push to `main`. The portal lists **43 tests**; a GitHub-triggered run executes **50**, because seven earlier copies that the portal no longer shows still run. The verified PR #26 run above passed all 50 executions. Separately, on 2026-10-26 the latest result of each of the 43 visible portal tests was Passed, including real AI replies for notes (RPT-003) and the tip pick (TIPS-007).
 
 | Area | Tests | What they check |
 | --- | --- | --- |
@@ -298,9 +353,14 @@ What the suite found along the way:
 - **A real gap:** `/robots.txt` returned the "page not found" screen until [#13](https://github.com/lidxgoesgiri/solace/pull/13).
 - **Tests, not the app:** several failures came from ambiguous steps, such as answer badges 1–4 versus values 0–3 ([#11](https://github.com/lidxgoesgiri/solace/pull/11)) or a test that opened an old preview URL. The steps were rewritten; the app was unchanged.
 
-## Safety Contract
+<a id="safety-contract"></a>
+
+## 🛟 Safety Contract
 
 These identifiers are shared with [TESTING.md](TESTING.md). They describe required behavior; verification status belongs to the corresponding test and deployment report.
+
+<details>
+<summary><strong>View the safety, privacy, and AI requirements</strong> — K1–K11, P1–P4, A1–A3</summary>
 
 | ID | Required behavior |
 | --- | --- |
@@ -323,9 +383,13 @@ These identifiers are shared with [TESTING.md](TESTING.md). They describe requir
 | A2 | Matching risky input opens the crisis flow instead of invoking the AI provider. |
 | A3 | The interface hides or blocks AI while a crisis is pending. |
 
+</details>
+
 The crisis gate is browser behavior, not server authorization. AI endpoints independently enforce sessions, consent, limits, and phrase checks; they do not receive the browser's crisis state.
 
-## Security and privacy
+<a id="security-and-privacy"></a>
+
+## 🔐 Security and privacy
 
 - **Local screening:** screening state is persisted in browser `localStorage`; results are computed from its saved answers. This storage is not encrypted by the account vault. Seven-day expiry applies to unfinished drafts, not completed results.
 - **Account encryption:** Argon2id derives separate authentication and wrapping keys in the browser. XChaCha20-Poly1305 encrypts record contents with a random data key, wrapped separately for the passphrase and recovery key. Decrypted keys and records remain in memory and are cleared on reload/sign-out; the client locks after 30 idle minutes.
@@ -337,7 +401,7 @@ The crisis gate is browser behavior, not server authorization. AI endpoints inde
 - **AI safeguards:** input/output phrase checks, constrained library IDs, cancellation, and daily limits are implemented. Notes allow 10 requests and tips 20 per user per 24-hour window. Diagnostics record fixed failure metadata rather than prompts, replies, or keys.
 - **Test reset:** keep `SOLACE_TEST_RESET_TOKEN` unset in production. The reset handler explicitly rejects `VERCEL_ENV=production`; a self-hosted production server without that flag must not rely on it as a universal production block.
 
-The in-app privacy policy is available at `/privasi` and `/en/privasi`. Its retention-related numbers are checked against implementation constants by [privacy.test.ts](src/lib/privacy.test.ts).
+The in-app privacy policy is available in [Bahasa Indonesia](https://solace-sc.vercel.app/privasi) and [English](https://solace-sc.vercel.app/en/privasi). Its retention-related numbers are checked against implementation constants by [privacy.test.ts](src/lib/privacy.test.ts).
 
 ## Deployment
 
@@ -350,6 +414,9 @@ For a Node server with the same prerequisites and environment configuration, use
 `GET /api/health` checks application responsiveness and reports the deployment's short commit SHA on Vercel; it does **not** validate database connectivity or AI-provider health. CI performs validation; deployment and TestSprite integrations are managed outside the checked-in workflow. No Dockerfile or deployment script is included.
 
 ## Troubleshooting
+
+<details>
+<summary><strong>🔧 Find a symptom and its next step</strong></summary>
 
 | Symptom | What to check |
 | --- | --- |
@@ -364,6 +431,8 @@ For a Node server with the same prerequisites and environment configuration, use
 | Plan or psychologist notes disappear after leaving the page | Unsigned safety plans and report notes are page-memory only. Download the PDF, or sign in and save the safety plan before leaving. |
 | Account locks after inactivity or reload | Decryption keys are memory-only. Sign in again; use the saved recovery kit if the passphrase is lost. |
 | Playwright cannot start its server | The production build and configured test database are prerequisites, and port 3000 must be free. The checked-in workflow provisions PostgreSQL and Chromium. |
+
+</details>
 
 ## Development and contributing
 
@@ -390,10 +459,14 @@ Toolkit, safety-plan, crisis-screen, and psychologist-note wording also await cl
 
 Other current limits are explicit: offline support covers successfully cached page shells and assets, while accounts and AI require connectivity; browser storage can be cleared or unavailable; local IP limits are not distributed; and provider privacy/availability and external end-to-end passes must be verified against the actual deployment. Unfinished clinical review and pending test scenarios are review work, not shipped guarantees. See [TESTING.md](TESTING.md) for the detailed verification backlog; no dated release roadmap is included.
 
-## License and credits
+<a id="license-and-credits"></a>
+
+## 💛 License and credits
 
 No project-level `LICENSE` file or license field is currently included. The package is marked `private`, and no license has been chosen yet. Bundled PDF fonts have their own included licenses: [Inter](src/lib/report/licenses/Inter-OFL.txt) and [Lora](src/lib/report/licenses/Lora-OFL.txt).
 
 Created by **[Ida Bagus Giri Krisnabhawa](https://github.com/lidxgoesgiri)**, as credited in the application footer. Repository: [lidxgoesgiri/solace](https://github.com/lidxgoesgiri/solace). A dedicated maintenance or security contact is not documented.
 
 Acknowledgements: the DASS and PHQ instrument authors/translators credited in the data files, the cited tip sources, Inter and Lora, Lucide icons, and the open-source projects listed in the technology stack. TestSprite provides the externally managed browser-testing integration.
+
+<p align="center"><a href="https://solace-sc.vercel.app">🌿 Visit Solace</a> · <a href="#top">↑ Back to top</a></p>
