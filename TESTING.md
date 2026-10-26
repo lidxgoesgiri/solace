@@ -164,7 +164,7 @@ The suite was generated in the TestSprite 3.0 portal against https://solace-sc.v
 | Report | RPT-002, and its hidden original RPT-001 | K8 report numbers match the result cards, PDF-03 report language. Both copies kept: K8 is a Safety Contract invariant |
 | Help & exit | HELP-001 to HELP-007 | K11 help button on every page, GL-02 quick exit |
 | Tips & account | TIPS-001, TIPS-004 and its hidden original TIPS-002, TIPS-003 (hidden original), TIPS-006 | K10-a tips by category (TIPS-001), AK-01 sign-up and P3 account deletion (TIPS-004 and TIPS-002, both kept: P3 is a Safety Contract invariant), RW-04 history and daily check-in (TIPS-003), TP-04 swapping a tip that did not help and bringing it back, with TP-02 summaries and A1 for the AI pick (TIPS-006). Each signs up a `demo-…` account and deletes it at the end |
-| AI scenarios added 2026-10-21 | TIPS-007, TIPS-008, TIPS-011, RPT-003 (TIPS-009 removed 2026-10-24; TIPS-010, RPT-004 and TC-001 removed 2026-10-25, see the last sections) | Actual ID-only selection and canonical content/use/restore; risk and crisis gating; simulated invalid/error/limit/timeout/cancel responses; notes-specific opt-in, real tidy-up and revert. Test existence is not evidence of a pass: read the matching deployment/run report. |
+| AI scenarios added 2026-10-21 | TIPS-007, TIPS-008, RPT-003 (TIPS-009 removed 2026-10-24; TIPS-010, RPT-004 and TC-001 removed 2026-10-25; TIPS-011 removed 2026-10-26, see the last sections) | Actual ID-only selection and canonical content/use/restore; risk and crisis gating; simulated invalid/error/limit/timeout/cancel responses; notes-specific opt-in, real tidy-up and revert. Test existence is not evidence of a pass: read the matching deployment/run report. |
 
 Triggers: **Pull Request** (Vercel deployment finished → `https://solace-git-{branch-slug}-ida-bagus.vercel.app`) and **Push** to `main` (production).
 
@@ -279,3 +279,15 @@ Kept on purpose, although they overlap: RPT-002 and its hidden original RPT-001 
 Fixed: SOLACE-002 (UI-01b) opened the PR #16 preview `solace-git-feat-ui-ida-bagus.vercel.app` instead of the run's base URL, so it always tested that old build. It now starts at the base URL of the run.
 
 A run now has 51 tests (about 25.5 credits), and the portal lists 44. The hidden originals cannot be opened or edited in the portal; if one of them needs new steps, add it again and ask TestSprite support to remove the old copy.
+
+## Suite update (2026-10-26)
+
+After the pruning, the PR #25 run reported 49 of 51 passed, with UI-01d failed and TIPS-011 blocked. Both were traced to the runner, not the app.
+
+- **SOLACE-004 (UI-01d):** the agent opened help from the home page without a screening, saw the countdown move on after the tab was hidden, and then expected a results page after `crisis-continue`. Both behaviors are intended: the pacer follows the clock, and without a screening the crisis screen returns to the page that opened it. The description now states both explicitly; the pass condition is unchanged. Rerun: Passed.
+- **TIPS-011 (A2 focused continuation) was removed with the project owner's approval.** It is a Safety Contract case, but its zero-request assertion needs network inspection, which the runner does not offer, so it was Blocked on every run. A2 stays covered end to end by TIPS-008 (risky text opens the crisis screen and the routes stay locked, for tips and notes) and in CI by `src/server/api.test.ts`, which asserts that risky input returns `422 risk_detected` without any call to the primary or fallback model.
+- **Setup only, assertions unchanged:** RPT-003, TIPS-007 and TIPS-008 no longer download the recovery kit, which timed out in the runner; they tick `recovery-kit-saved`, since the code is shown on screen. The checkbox does not require the download.
+- **TIPS-007 now matches the current app:** with a context sentence the reply is `{tipId, reflection}` (since PR #19), the labelled reflection may be shown, and the canonical tips are read from `tips.json` at `8a3b47b` instead of an older commit. It still requires a real AI result, not a fallback.
+- **Open:** TIPS-006 step 5 still expects no `tip-ai-pick-` button "while the AI is switched off", although the AI is on. It passes, but its wording should be updated by the owner; an automated edit was refused as a change to a Safety Contract assertion.
+
+Result on 2026-10-26: the latest result of all 43 portal tests is Passed, including real AI replies in RPT-003 and TIPS-007. A GitHub-triggered run has 50 tests (about 25 credits).
